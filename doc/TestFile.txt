@@ -1,3 +1,10 @@
 Hi my name is Ishaat!!!! :DDDDD
+<<<<<<< HEAD
 
 Hi my name is Jiahao.
+=======
+Marcus was here :OOOOO
+This is me adding a line^_^ ~Alex
+Sam Wu
+
+>>>>>>> e91fd22bbbe16f73ce01aef125bbd4ae3257ad18
