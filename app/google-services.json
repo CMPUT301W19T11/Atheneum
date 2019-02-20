@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "971182223780",
+    "firebase_url": "https://atheneum-42d58.firebaseio.com",
+    "project_id": "atheneum-42d58",
+    "storage_bucket": "atheneum-42d58.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971182223780:android:ccc61fcc1537d2cf",
+        "android_client_info": {
+          "package_name": "com.example.atheneum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "971182223780-efdtg2a7pg0cvr4s7khcl7iuf64l77rh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.atheneum",
+            "certificate_hash": "3c12e2ed0f870a0971fbcc562e258c5199730827"
+          }
+        },
+        {
+          "client_id": "971182223780-9eqq15om0lqddug9igm3lc1rbo8lv0r6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDohlORzNlMkzM5cvqU3jOQmpHif9wzZ6I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971182223780-9eqq15om0lqddug9igm3lc1rbo8lv0r6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
