@@ -178,6 +178,32 @@ public class BookTest {
     }
 
     @Test
+    public void DeleteRequests() {
+        Book book = new Book();
+
+        Request r1 = new Request();
+        Request r2 = new Request();
+        Request r3 = new Request();
+
+        book.addRequest(r1);
+        book.addRequest(r2);
+        book.addRequest(r3);
+
+        book.deleteRequest(r2);
+
+        ArrayList<Request> returnedRequests = book.getRequests();
+        assertFalse(returnedRequests.contains(r2));
+        assertEquals(returnedRequests.size(), 2);
+
+        book.deletePhotos();
+        returnedRequests = book.getPhotos();
+        assertEquals(returnedRequests.size(), 0);
+        assertFalse(returnedRequests.contains(r1));
+        assertFalse(returnedRequests.contains(r2));
+        assertFalse(returnedRequests.contains(r3));
+    }
+
+    @Test
     public void GetPhotos() {
         Book book = new Book();
 

@@ -91,6 +91,10 @@ public class Book {
         this.requests.add(request);
     }
 
+    public void deleteRequest(Request request) {
+        this.requests.remove(request);
+    }
+
     public void deleteRequests() {
         this.requests.clear();
     }
