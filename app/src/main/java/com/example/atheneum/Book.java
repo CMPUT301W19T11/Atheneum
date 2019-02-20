@@ -1,10 +1,11 @@
 package com.example.atheneum;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
 
 public class Book {
-    private int isbn;
+    private Long isbn;
     private String title;
     private String description;
     private String author;
@@ -15,15 +16,19 @@ public class Book {
     private UUID bookID;
     private List<String> photos;
 
+    public enum Status {
+        AVAILABLE, REQUESTED, ACCEPTED, BORROWED
+    }
+
     public Book() {
         this.bookID = UUID.randomUUID();
     }
 
-    public int getIsbn() {
+    public Long getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(int isbn) {
+    public void setIsbn(Long isbn) {
         this.isbn = isbn;
     }
 
