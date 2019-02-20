@@ -91,6 +91,10 @@ public class Book {
         this.requests.add(request);
     }
 
+    public void deleteRequests() {
+        this.requests.clear();
+    }
+
     public UUID getBookID() {
         return bookID;
     }
@@ -105,5 +109,13 @@ public class Book {
 
     public void addPhoto(String photo) {
         this.photos.add(photo);
+    }
+
+    public void deletePhoto(String photo) {
+        this.photos.remove(photo);
+    }
+
+    public void deletePhotos() {
+        this.photos.clear();
     }
 }

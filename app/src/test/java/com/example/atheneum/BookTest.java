@@ -226,4 +226,28 @@ public class BookTest {
 
         assertEquals(returnedPhotos.size(), 3);
     }
+
+    public void DeletePhotos() {
+        Book book = new Book();
+
+        String p1 = "219804uro8dswf";
+        String p2 = "324rsdfsasssss";
+        String p3 = "434rdfsdfdsfdsfs";
+        book.addPhoto(p1);
+        book.addPhoto(p2);
+        book.addPhoto(p3);
+
+        book.deletePhoto(p2);
+
+        ArrayList<String> returnedPhotos = book.getPhotos();
+        assertFalse(returnedPhotos.contains(p2));
+        assertEquals(returnedPhotos.size(), 2);
+
+        book.deletePhotos();
+        returnedPhotos = book.getPhotos();
+        assertEquals(returnedPhotos.size(), 0);
+        assertFalse(returnedPhotos.contains(p1));
+        assertFalse(returnedPhotos.contains(p2));
+        assertFalse(returnedPhotos.contains(p3));
+    }
 }
