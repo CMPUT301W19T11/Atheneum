@@ -1,7 +1,6 @@
 package com.example.atheneum;
 
-import java.math.BigInteger;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Book {
@@ -12,9 +11,9 @@ public class Book {
     private User owner;
     private User borrower;
     private Status status;
-    private List<Request> requests; //Request represents our Request class. NOT java's!
+    private ArrayList<Request> requests; //Request represents our Request class. NOT java's!
     private UUID bookID;
-    private List<String> photos;
+    private ArrayList<String> photos;
 
     public enum Status {
         AVAILABLE, REQUESTED, ACCEPTED, BORROWED
@@ -80,11 +79,11 @@ public class Book {
         this.status = status;
     }
 
-    public List<Request> getRequests() {
+    public ArrayList<Request> getRequests() {
         return requests;
     }
 
-    public void setRequests(List<Request> requests) {
+    public void setRequests(ArrayList<Request> requests) {
         this.requests = requests;
     }
 
@@ -96,11 +95,11 @@ public class Book {
         return bookID;
     }
 
-    public List<String> getPhotos() {
+    public ArrayList<String> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(List<String> photos) {
+    public void setPhotos(ArrayList<String> photos) {
         this.photos = photos;
     }
 
