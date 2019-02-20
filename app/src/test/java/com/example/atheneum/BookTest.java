@@ -10,7 +10,7 @@ public class BookTest {
     @Test
     public void GetIsbn() {
         Book book = new Book();
-        Long bi = Long.valueOf(1234);
+        long bi = 1234L;
 
         book.setIsbn(bi);
         assertEquals(book.getIsbn(), bi);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Book {
-    private Long isbn;
+    private long isbn;
     private String title;
     private String description;
     private String author;
@@ -23,11 +23,11 @@ public class Book {
         this.bookID = UUID.randomUUID();
     }
 
-    public Long getIsbn() {
+    public long getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(Long isbn) {
+    public void setIsbn(long isbn) {
         this.isbn = isbn;
     }
 
