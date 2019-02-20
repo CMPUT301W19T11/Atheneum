@@ -92,6 +92,9 @@ public class BookTest {
 
         book.setOwner(owner);
         assertEquals(book.getOwner(), owner);
+
+        book.setOwner(null);
+        assertNull(book.getOwner());
     }
 
     @Test
@@ -145,6 +148,8 @@ public class BookTest {
         assertEquals(returnedRequests.indexOf(r1), 0);
         assertEquals(returnedRequests.indexOf(r2), 1);
         assertEquals(returnedRequests.indexOf(r3), 2);
+
+        assertEquals(returnedRequests.size(), 3);
     }
 
     @Test
@@ -168,6 +173,8 @@ public class BookTest {
         assertEquals(returnedRequests.indexOf(r1), 0);
         assertEquals(returnedRequests.indexOf(r2), 1);
         assertEquals(returnedRequests.indexOf(r3), 2);
+
+        assertEquals(returnedRequests.size(), 3);
     }
 
     @Test
@@ -192,6 +199,8 @@ public class BookTest {
         assertEquals(returnedPhotos.indexOf(p1), 0);
         assertEquals(returnedPhotos.indexOf(p2), 1);
         assertEquals(returnedPhotos.indexOf(p3), 2);
+
+        assertEquals(returnedPhotos.size(), 3);
     }
 
     @Test
@@ -214,5 +223,7 @@ public class BookTest {
         assertEquals(returnedPhotos.indexOf(p1), 0);
         assertEquals(returnedPhotos.indexOf(p2), 1);
         assertEquals(returnedPhotos.indexOf(p3), 2);
+
+        assertEquals(returnedPhotos.size(), 3);
     }
 }
