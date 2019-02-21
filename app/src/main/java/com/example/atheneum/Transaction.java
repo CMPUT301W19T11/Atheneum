@@ -9,13 +9,13 @@ import java.util.UUID;
  * at a specified location.
  */
 public class Transaction {
-    int type;
-    Location location;
-    User borrower;
-    User owner;
-    UUID bookID;
-    boolean bScan;
-    boolean oScan;
+    private int type;
+    private Location location;
+    private User borrower;
+    private User owner;
+    private UUID bookID;
+    private boolean bScan;
+    private boolean oScan;
 
     /**
      * Creates a new Transaction object using default values for attributes.
@@ -55,6 +55,7 @@ public class Transaction {
      *
      * @return Type of transaction (ie. checkout or return)
      */
+    @PropertyName("type")
     public int getType() {
         return type;
     }
@@ -63,6 +64,7 @@ public class Transaction {
      *
      * @return Location of the transaction
      */
+    @PropertyName("location")
     public Location getLocation() {
         return location;
     }
@@ -71,6 +73,7 @@ public class Transaction {
      *
      * @param location New location of transaction
      */
+    @PropertyName("location")
     public void setLocation(Location location) {
         this.location = location;
     }
@@ -81,6 +84,7 @@ public class Transaction {
      *
      * @return Borrower of the book associated with the transaction
      */
+    @PropertyName("borrower")
     public User getBorrower() {
         return borrower;
     }
@@ -91,6 +95,7 @@ public class Transaction {
      *
      * @return Owner of the book associated with the transaction
      */
+    @PropertyName("owner")
     public User getOwner() {
         return owner;
     }
@@ -101,6 +106,7 @@ public class Transaction {
      *
      * @return ID of book involved in transaction
      */
+    @PropertyName("bookID")
     public UUID getBookID() {
         return bookID;
     }
@@ -109,7 +115,7 @@ public class Transaction {
      *
      * @return True if borrower has scanned the book, false otherwise
      */
-    @PropertyName("bScan") // Used annotation to ensure Firebase properly recognizes this method
+    @PropertyName("bScan")
     public boolean getBScan() {
         return bScan;
     }
@@ -118,7 +124,7 @@ public class Transaction {
      *
      * @param bScan New value of bScan
      */
-    @PropertyName("bScan") // Used annotation to ensure Firebase properly recognizes this method
+    @PropertyName("bScan")
     public void setBScan(boolean bScan) {
         this.bScan = bScan;
     }
@@ -127,7 +133,7 @@ public class Transaction {
      *
      * @return True if owner has scanned the book, false otherwise
      */
-    @PropertyName("oScan") // Used annotation to ensure Firebase properly recognizes this method
+    @PropertyName("oScan")
     public boolean getOScan() {
         return oScan;
     }
@@ -136,7 +142,7 @@ public class Transaction {
      *
      * @param oScan New value of oScan
      */
-    @PropertyName("bScan") // Used annotation to ensure Firebase properly recognizes this method
+    @PropertyName("bScan")
     public void setOScan(boolean oScan) {
         this.oScan = oScan;
     }
