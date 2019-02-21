@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.*;
 
@@ -23,13 +24,13 @@ public class TransactionTest {
 
     @Before
     public void setUp() throws Exception {
-        initalType = 0;
+        initalType = Transaction.RETURN;
         initialLocation = new Location(EDMONTON_LAT, EDMONTON_LON);
         borrower = new User("borrows@borrow.com", 0123456789, 0.0, 0.0);
         owner = new User("owner@owner.com", 9876543210, 5.0, 5.0;
         bookID = UUID.randomUUID();
         transaction = new Transaction(initalType, initialLocation, borrower, owner, bookID, false,
-                                        false);
+                false);
     }
 
     @After
@@ -39,6 +40,11 @@ public class TransactionTest {
     @Test
     public void getType() {
         assertEquals(transaction.getType(), initalType);
+        // Since the transaction's type doesn't have a setter, we create a new transaction in order
+        // to check Transaction.getType() when we create a transaction with type Transaction.RETURN
+        transaction = new Transaction(Transaction.RETURN, initialLocation, borrower, owner, bookID, false,
+                false);
+        assertEquals(transaction.getType(), Transaction.RETURN);
     }
 
     @Test
