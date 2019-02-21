@@ -143,20 +143,9 @@ public class Transaction {
 
     /**
      *
-     * @return True if ISBN scan successful, false otherwise
+     * @return True if the transaction is complete (both owner and borrower have scanned the book,
+     *         false otherwise
      */
-    public boolean borrowerScan() {
-        return false;
-    }
-
-    /**
-     *
-     * @return True if ISBN scann successful, false otherwise
-     */
-    public boolean ownerScan() {
-        return false;
-    }
-
     public boolean isComplete() {
         return oScan && bScan;
     }

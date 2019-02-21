@@ -97,21 +97,9 @@ public class TransactionTest {
     }
 
     @Test
-    public void borrowerScan() {
-        // Currently test will fail since implementation of borrowScan() isn't complete
-        assertEquals(transaction.borrowerScan(), true);
-    }
-
-    @Test
-    public void ownerScan() {
-        // Currently test will fail since implementation of ownerScan() isn't complete
-        assertEquals(transaction.ownerScan(), true);
-    }
-
-    @Test
     public void isComplete() {
-        boolean[] oScanValues = new boolean[2]{false, true};
-        boolean[] bScanValues = new boolean[2]{false, true};
+        boolean[] oScanValues = new boolean[]{false, true};
+        boolean[] bScanValues = new boolean[]{false, true};
         for (boolean oScanVal : oScanValues) {
             for (boolean bScanVal : bScanValues) {
                 transaction.setOScan(oScanVal);
