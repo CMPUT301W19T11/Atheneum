@@ -10,31 +10,37 @@
 
 package com.example.atheneum;
 
+import android.app.Notification;
+
 import java.util.ArrayList;
 
 public class User {
 
     private String userName;
-    private int phoneNumber;
+    private String phoneNumber;
     private double ownerRate;
     private double borrowerRate;
     private ArrayList<String> owning;
     private ArrayList<String> borrowing;
     private ArrayList<String> photos;
 
-    public User(String userName){
+
+
+    public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
         this.userName = userName;
         owning = new ArrayList<String>();
         borrowing = new ArrayList<String>();
         photos = new ArrayList<String>();
-        ownerRate = 0.0;
+        this.ownerRate = ownerRate;
+        this.borrowerRate = borrowerRate;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getUserName(){return this.userName;}
 
-    public void setPhoneNumber(int phoneNumber){this.phoneNumber = phoneNumber;}
+    public void setPhoneNumber(String phoneNumber){this.phoneNumber = phoneNumber;}
 
-    public int getPhoneNumber(){return this.phoneNumber;}
+    public String getPhoneNumber(){return this.phoneNumber;}
 
     public void setOwnerRate(double rate){this.ownerRate = rate;}
 
@@ -67,5 +73,7 @@ public class User {
     public void deleteBorrowing(String bookName){this.borrowing.remove(bookName);}
 
     public void deletePhotos(String photo){this.photos.remove(photo);}
+
+
 
 }

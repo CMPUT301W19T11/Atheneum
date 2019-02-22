@@ -23,7 +23,7 @@ public class UserTest {
 
     @Before
     public void init(){
-        user1 = new User("user1@ualberta.ca");
+        user1 = new User("user1@ualberta.ca", "123-456-7899", 0, 0);
         testListOwning = new ArrayList<String>();
         testListBorrowing = new ArrayList<String>();
         testListPhotos = new ArrayList<String>();
@@ -36,7 +36,7 @@ public class UserTest {
 
     @Test
     public void getPhoneNumber(){
-        int phoneNumber = 1234;
+        String phoneNumber = "987-654-3211";
         user1.setPhoneNumber(phoneNumber);
         assertEquals(phoneNumber, user1.getPhoneNumber());
     }
