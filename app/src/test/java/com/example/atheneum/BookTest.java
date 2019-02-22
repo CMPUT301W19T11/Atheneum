@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class BookTest {
@@ -91,10 +93,7 @@ public class BookTest {
         User owner = new User();
 
         book.setOwner(owner);
-        assertEquals(book.getOwner(), owner);
-
-        book.setOwner(null);
-        assertNull(book.getOwner());
+        assertThat(book.getOwner(), is(owner));
     }
 
     @Test
@@ -103,10 +102,7 @@ public class BookTest {
         User borrower = new User();
 
         book.setBorrower(borrower);
-        assertEquals(book.getBorrower(), borrower);
-
-        book.setBorrower(null);
-        assertNull(book.getBorrower());
+        assertThat(book.getBorrower(), is(borrower));
     }
 
     @Test
@@ -196,7 +192,7 @@ public class BookTest {
         assertEquals(returnedRequests.size(), 2);
 
         book.deletePhotos();
-        returnedRequests = book.getPhotos();
+        returnedRequests = book.getRequests();
         assertEquals(returnedRequests.size(), 0);
         assertFalse(returnedRequests.contains(r1));
         assertFalse(returnedRequests.contains(r2));

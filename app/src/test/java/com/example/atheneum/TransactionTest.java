@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class TransactionTest {
@@ -26,8 +27,8 @@ public class TransactionTest {
     public void setUp() throws Exception {
         initalType = Transaction.RETURN;
         initialLocation = new Location(EDMONTON_LAT, EDMONTON_LON);
-        borrower = new User("borrows@borrow.com", 0123456789, 0.0, 0.0);
-        owner = new User("owner@owner.com", 9876543210, 5.0, 5.0;
+        borrower = new User("borrows@borrow.com", "0123456789", 0.0, 0.0);
+        owner = new User("owner@owner.com", "9876543210", 5.0, 5.0;
         bookID = UUID.randomUUID();
         transaction = new Transaction(initalType, initialLocation, borrower, owner, bookID, false,
                 false);
@@ -63,12 +64,12 @@ public class TransactionTest {
 
     @Test
     public void getBorrower() {
-        assertEquals(transaction.getBorrower(), borrower);
+        assertThat(transaction.getBorrower(), is(borrower));
     }
 
     @Test
     public void getOwner() {
-        assertEquals(transaction.getOwner(), owner);
+        assertThat(transaction.getOwner(), is(owner));
     }
 
     @Test
