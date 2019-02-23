@@ -25,7 +25,6 @@ public class User {
     private ArrayList<String> photos;
 
     public User(){
-
     }
 
     public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
