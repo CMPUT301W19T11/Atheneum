@@ -2,7 +2,6 @@ package com.example.atheneum;
 
 import org.junit.Test;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -191,7 +190,7 @@ public class BookTest {
         assertFalse(returnedRequests.contains(r2));
         assertEquals(returnedRequests.size(), 2);
 
-        book.deletePhotos();
+        book.deleteRequests();
         returnedRequests = book.getRequests();
         assertEquals(returnedRequests.size(), 0);
         assertFalse(returnedRequests.contains(r1));
