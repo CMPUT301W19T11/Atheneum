@@ -8,7 +8,7 @@ import java.util.UUID;
 public class Request {
     private User requester;
     private UUID bookID;
-    private Status rStatus
+    private Status rStatus;
 
     /**
      * The enum Status.
