@@ -8,15 +8,15 @@ import java.util.UUID;
  */
 public class Book {
     private long isbn;
-    private String title;
-    private String description;
-    private String author;
-    private User owner;
-    private User borrower;
-    private Status status;
-    private ArrayList<Request> requests; //Request represents our Request class. NOT java's!
-    private UUID bookID;
-    private ArrayList<String> photos;
+    private String title = null;
+    private String description = null;
+    private String author = null;
+    private User owner = null;
+    private User borrower = null;
+    private Status status = null;
+    private ArrayList<Request> requests = new ArrayList<Request>();
+    private UUID bookID = null;
+    private ArrayList<String> photos = new ArrayList<String>();
 
     /**
      * The enum Status to show the global status of the book.
@@ -44,6 +44,21 @@ public class Book {
      * Instantiates a new Book.
      */
     public Book() {
+        this.bookID = UUID.randomUUID();
+    }
+
+    /**
+     * Instantiates a new Book with specified arguments.
+     */
+    public Book(long isbn, String title, String description, String author, User owner,
+                User borrower, Status status) {
+        this.isbn = isbn;
+        this.title = title;
+        this.description = description;
+        this.author = author;
+        this.owner = owner;
+        this.borrower = borrower;
+        this.status = status;
         this.bookID = UUID.randomUUID();
     }
 
