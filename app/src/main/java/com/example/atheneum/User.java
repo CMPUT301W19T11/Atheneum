@@ -1,5 +1,5 @@
 /*
- * Copyright <YEAR> <COPYRIGHT HOLDER>
+ * Copyright <2019> <CMPUT301W19T11>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -25,14 +25,15 @@ public class User {
     private ArrayList<String> photos;
 
     public User(){
-        this.userName = "user";
+        this.userName = "";
         owning = new ArrayList<String>();
         borrowing = new ArrayList<String>();
         photos = new ArrayList<String>();
         this.ownerRate = 0;
         this.borrowerRate = 0;
-        this.phoneNumber = "911";
+        this.phoneNumber = "";
     }
+
 
     public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
         this.userName = userName;
