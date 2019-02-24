@@ -17,15 +17,14 @@ import static org.junit.Assert.*;
 
 public class UserTest {
     private User user1;
-    private ArrayList<String> testListOwning;
-    private ArrayList<String> testListBorrowing;
+    private OwnerCollection testListOwning;
+    private BorrowerCollection testListBorrowing;
     private ArrayList<String> testListPhotos;
+    private Book deletedBook;
 
     @Before
     public void init(){
         user1 = new User("user1@ualberta.ca", "123-456-7899", 0, 0);
-        testListOwning = new ArrayList<String>();
-        testListBorrowing = new ArrayList<String>();
         testListPhotos = new ArrayList<String>();
     }
 
@@ -57,27 +56,6 @@ public class UserTest {
         assertEquals(rate, user1.getBorrowerRate(), delta);
     }
 
-    @Test
-    public void getOwning(){
-
-        testListOwning.add("book1");
-        testListOwning.add("book2");
-        testListOwning.add("book3");
-
-        user1.setOwning(testListOwning);
-        assertTrue(testListOwning.equals(user1.getOwning()));
-    }
-
-    @Test
-    public void getBorrowing(){
-
-        testListBorrowing.add("book1");
-        testListBorrowing.add("book2");
-        testListBorrowing.add("book3");
-
-        user1.setBorrowing(testListBorrowing);
-        assertTrue(testListBorrowing.equals(user1.getBorrowing()));
-    }
 
     @Test
     public void getPhotos(){
@@ -92,37 +70,45 @@ public class UserTest {
 
     @Test
     public void addOwning(){
-
-        String newbook = "book4";
-        testListOwning.add(newbook);
-        user1.addOwning(newbook);
+        Book book1 = new Book();
+        Book book2 = new Book();
+        Book book3 = new Book();
+        user1.addOwning(book1);
+        user1.addOwning(book2);
+        user1.addOwning(book3);
+        testListOwning = user1.getOwning();
+        Book book4 = new Book();
+        testListOwning.addBook(book4);
+        user1.addOwning(book4);
 
         assertTrue(testListOwning.equals(user1.getOwning()));
     }
 
     @Test
     public void deleteOwning(){
-        String newbook = "book4";
-        testListOwning.remove(newbook);
-        user1.deleteOwing(newbook);
+        deletedBook = new Book();
+        user1.addOwning(deletedBook);
+        testListOwning = user1.getOwning();
+        testListOwning.addBook(deletedBook);
+        testListOwning.deleteBook(deletedBook);
+        user1.deleteOwing(deletedBook);
 
-        assertTrue(testListOwning.equals(user1.getOwning()));
+//        assertTrue(testListOwning.equals(user1.getOwning()));
+        assertEquals(testListOwning, user1.getOwning());
     }
 
     @Test
     public void addBorrowing(){
-        String newbook = "book4";
-        testListBorrowing.add(newbook);
-        user1.addBorrowing(newbook);
-
-        assertTrue(testListBorrowing.equals(user1.getBorrowing()));
-    }
-
-    @Test
-    public void deleteBorrowing(){
-        String newbook = "book4";
-        testListBorrowing.remove(newbook);
-        user1.deleteBorrowing(newbook);
+        Book book1 = new Book();
+        Book book2 = new Book();
+        Book book3 = new Book();
+        user1.addBorrowing(book1);
+        user1.addBorrowing(book2);
+        user1.addBorrowing(book3);
+        Book book4 = new Book();
+        testListBorrowing = user1.getBorrowing();
+        testListBorrowing.addBook(book4);
+        user1.addBorrowing(book4);
 
         assertTrue(testListBorrowing.equals(user1.getBorrowing()));
     }
