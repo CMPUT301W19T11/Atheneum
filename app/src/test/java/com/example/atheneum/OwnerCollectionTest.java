@@ -98,6 +98,7 @@ public class OwnerCollectionTest {
 
         for (Book.Status s : statuses) {
             ArrayList<Book> filteredBooks = ownerCollection.filterBooks(s);
+
             assertTrue(filteredBooks.size() > 0);
 
             for (Book b : filteredBooks) {
@@ -107,3 +108,4 @@ public class OwnerCollectionTest {
         }
     }
 }
+

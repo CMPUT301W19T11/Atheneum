@@ -20,69 +20,136 @@ public class User {
     private String phoneNumber;
     private double ownerRate;
     private double borrowerRate;
-    private ArrayList<String> owning;
-    private ArrayList<String> borrowing;
     private ArrayList<String> photos;
 
+    private BorrowerCollection borrowerCollection;
+    private OwnerCollection ownerCollection;
+
+    /**
+     * init user class with blank constructor
+     */
     public User(){
         this.userName = "";
-        owning = new ArrayList<String>();
-        borrowing = new ArrayList<String>();
         photos = new ArrayList<String>();
         this.ownerRate = 0;
         this.borrowerRate = 0;
         this.phoneNumber = "";
+        borrowerCollection = new BorrowerCollection(this);
+        ownerCollection = new OwnerCollection(this);
     }
 
-
+    /**
+     * init user class with specified attributes
+     * @param userName
+     * @param phoneNumber
+     * @param ownerRate
+     * @param borrowerRate
+     */
     public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
         this.userName = userName;
-        owning = new ArrayList<String>();
-        borrowing = new ArrayList<String>();
         photos = new ArrayList<String>();
         this.ownerRate = ownerRate;
         this.borrowerRate = borrowerRate;
         this.phoneNumber = phoneNumber;
+        borrowerCollection = new BorrowerCollection(this);
+        ownerCollection = new OwnerCollection(this);
     }
 
+    /**
+     *
+     * @return user name of class
+     */
     public String getUserName(){return this.userName;}
 
+    /**
+     *
+     * @param phoneNumber
+     */
     public void setPhoneNumber(String phoneNumber){this.phoneNumber = phoneNumber;}
 
+    /**
+     *
+     * @return phone number of the user
+     */
     public String getPhoneNumber(){return this.phoneNumber;}
 
+    /**
+     *
+     * @param rate
+     */
     public void setOwnerRate(double rate){this.ownerRate = rate;}
 
+    /**
+     *
+     * @return owner rating of the user
+     */
     public double getOwnerRate(){return this.ownerRate;}
 
+    /**
+     *
+     * @param rate
+     */
     public void setBorrowerRate(double rate){this.borrowerRate = rate;}
 
+    /**
+     *
+     * @return borrower rating of the user
+     */
     public double getBorrowerRate(){return  this.borrowerRate;}
 
-    public void setOwning(ArrayList<String> owning){this.owning = owning;}
+    /**
+     *
+     * @return collection of owning books by the user
+     */
+    public OwnerCollection getOwning() { return this.ownerCollection; }
 
-    public ArrayList<String> getOwning() { return this.owning; }
+    /**
+     *
+     * @return collection fo borrowing of the user
+     */
+    public BorrowerCollection getBorrowing(){ return  this.borrowerCollection; }
 
-    public void setBorrowing(ArrayList<String> borrowing){this.borrowing = borrowing;}
-
-    public ArrayList<String> getBorrowing(){ return  this.borrowing; }
-
+    /**
+     *
+     * @param photos
+     */
     public void setPhotos(ArrayList<String> photos){this.photos = photos;}
 
+    /**
+     *
+     * @return collection of the photos of books
+     */
     public ArrayList<String> getPhotos(){return this.photos;}
 
-    public void addOwning(String bookName){this.owning.add(bookName);}
+    /**
+     *
+     * @param book
+     */
+    public void addOwning(Book book){this.ownerCollection.addBook(book);}
 
-    public void addBorrowing(String bookName){this.borrowing.add(bookName);}
+    /**
+     *
+     * @param book
+     */
+    public void addBorrowing(Book book){this.borrowerCollection.addBook(book);}
 
+    /**
+     *
+     * @param photo
+     */
     public void addPhotos(String photo){this.photos.add(photo);}
 
-    public void deleteOwing(String bookName){this.owning.remove(bookName);}
+    /**
+     *
+     * @param book
+     */
+    public void deleteOwing(Book book){this.ownerCollection.deleteBook(book);}
 
-    public void deleteBorrowing(String bookName){this.borrowing.remove(bookName);}
-
+    /**
+     *
+     * @param photo
+     */
     public void deletePhotos(String photo){this.photos.remove(photo);}
-
 
 
 }
