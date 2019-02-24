@@ -1,93 +1,107 @@
 package com.example.atheneum;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.Before;
 
 import java.util.ArrayList;
 
-import static com.example.atheneum.Book.Status.ACCEPTED;
-import static com.example.atheneum.Book.Status.AVAILABLE;
-import static com.example.atheneum.Book.Status.BORROWED;
-import static com.example.atheneum.Book.Status.REQUESTED;
 import static org.junit.Assert.*;
+
 
 public class OwnerCollectionTest {
     private User owner;
-    private OwnerCollection ownerCollection;
-    private  ArrayList<Book> ownList;
-    private Book book1;
-    private Book book2;
-    private Book book3;
-    private Book book4;
-    private  Book book5;
+    private OwnerCollection ownedList;
+    private ArrayList<Book> testBookList;
 
     @Before
-    public void init(){
+    public void init() {
         owner = new User();
-        ownerCollection = new OwnerCollection(owner);
-        book1 = new Book();
-        book2 = new Book();
-        book3 = new Book();
-        book4 = new Book();
-        book5 = new Book();
-        ownList = new ArrayList<>();
+        ownedList = new OwnerCollection(owner);
+        testBookList= new ArrayList<Book>();
+
+        // Add books to the test list
+        testBookList.add(new Book());
+        testBookList.add(new Book(1234567890, "Title", "description", "author", owner, null, Book.Status.AVAILABLE));
+        testBookList.add(new Book(54321, "Unavail", "description", "author", owner, null, Book.Status.BORROWED));
+        testBookList.add(new Book(43134, "Requested", "description", "author", owner, null, Book.Status.REQUESTED));
+        testBookList.add(new Book(453633134, "Accepted", "description", "author", owner, null, Book.Status.ACCEPTED));
+        // 0 is default constructor, 1 is available, 2, is borrowed, 3 is requested, 4 is accepted
     }
 
     @Test
-    public void getUser(){
-        assertEquals(owner, ownerCollection.getOwner());
-
+    public void verifyOwner(){
+        assertTrue(ownedList.getOwner().equals(owner));
     }
 
     @Test
-    public void addBook(){
-        ownList.add(book1);
-        ownList.add(book2);
-        ownList.add(book3);
-
-        ownerCollection.addBook(book1);
-        ownerCollection.addBook(book2);
-        ownerCollection.addBook(book3);
-
-        assertEquals(ownList, ownerCollection.getOwnList());
+    public void setOwnerTest(){
+        assertTrue(ownedList.getOwner().equals(owner));
+        User newOwner = new User();
+        ownedList.setOwner(newOwner);
+        assertFalse(ownedList.getOwner().equals(owner));
+        assertTrue(ownedList.getOwner().equals(newOwner));
     }
 
     @Test
-    public void deleteBook(){
-        ownList.add(book4);
-        ownerCollection.addBook(book4);
-
-        ownList.remove(book4);
-        ownerCollection.deleteBook(book4);
-
-        assertEquals(ownList, ownerCollection.getOwnList());
+    public void addTest(){
+        for (Book b : testBookList) {
+            ownedList.addBook(b);
+            assertTrue(ownedList.getOwnList().contains(b));
+        }
     }
 
     @Test
-    public void stausFilter(){
-        ownerCollection.addBook(book4);
-        ownerCollection.addBook(book5);
+    public void deleteTest(){
+        for (Book b : testBookList) {
+            ownedList.addBook(b);
+            assertTrue(ownedList.getOwnList().contains(b));
+        }
 
-        book1.setStatus(REQUESTED);
-        book2.setStatus(ACCEPTED);
-        book3.setStatus(BORROWED);
-        book4.setStatus(AVAILABLE);
-        book5.setStatus(AVAILABLE);
+        for (Book b : testBookList) {
+            ownedList.deleteBook(b);
+            assertFalse(ownedList.getOwnList().contains(b));
+        }
+    }
 
-        ownerCollection = new OwnerCollection(owner);
+    @Test
+    public void getListTest(){
+        for (Book b : testBookList) {
+            ownedList.addBook(b);
+        }
 
-        ownerCollection.addBook(book1);
-        ownerCollection.addBook(book2);
-        ownerCollection.addBook(book3);
-        ownerCollection.addBook(book4);
-        ownerCollection.addBook(book5);
+        assertTrue(ownedList.getOwnList().equals(testBookList));
+    }
 
+    @Test
+    public void setListTest(){
+        ownedList.setOwnList(testBookList);
 
-        ownList.clear();
-        ownList.add(book4);
-        ownList.add(book5);
+        assertTrue(ownedList.getOwnList().equals(testBookList));
+    }
 
-        assertEquals(ownList,ownerCollection.filterBooks(AVAILABLE));
+    @Test
+    public void constructorListTest(){
+        OwnerCollection testList = new OwnerCollection(owner, testBookList);
 
+        assertTrue(testList.getOwner().equals(owner));
+        assertTrue(testList.getOwnList().equals(testBookList));
+    }
+
+    @Test
+    public void filterTest() {
+        Book.Status[] statuses = new Book.Status[]{Book.Status.AVAILABLE,
+                Book.Status.ACCEPTED,
+                Book.Status.REQUESTED,
+                Book.Status.BORROWED};
+
+        for (Book.Status s : statuses) {
+            ArrayList<Book> filteredBooks = ownedList.filterBooks(s);
+            assertTrue(filteredBooks.size() > 0);
+
+            for (Book b : filteredBooks) {
+                assertTrue(b.getStatus().equals(s));
+            }
+
+        }
     }
 }
