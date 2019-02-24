@@ -10,13 +10,13 @@ import static org.junit.Assert.*;
 
 public class OwnerCollectionTest {
     private User owner;
-    private OwnerCollection ownedList;
+    private OwnerCollection ownerCollection;
     private ArrayList<Book> testBookList;
 
     @Before
     public void init() {
         owner = new User();
-        ownedList = new OwnerCollection(owner);
+        ownerCollection = new OwnerCollection(owner);
         testBookList= new ArrayList<Book>();
 
         // Add books to the test list
@@ -30,53 +30,55 @@ public class OwnerCollectionTest {
 
     @Test
     public void verifyOwner(){
-        assertTrue(ownedList.getOwner().equals(owner));
+        assertTrue(ownerCollection.getOwner().equals(owner));
     }
 
     @Test
     public void setOwnerTest(){
-        assertTrue(ownedList.getOwner().equals(owner));
+        assertTrue(ownerCollection.getOwner().equals(owner));
         User newOwner = new User();
-        ownedList.setOwner(newOwner);
-        assertFalse(ownedList.getOwner().equals(owner));
-        assertTrue(ownedList.getOwner().equals(newOwner));
+        ownerCollection.setOwner(newOwner);
+        assertFalse(ownerCollection.getOwner().equals(owner));
+        assertTrue(ownerCollection.getOwner().equals(newOwner));
     }
 
     @Test
     public void addTest(){
         for (Book b : testBookList) {
-            ownedList.addBook(b);
-            assertTrue(ownedList.getOwnList().contains(b));
+            ownerCollection.addBook(b);
+            assertTrue(ownerCollection.getOwnList().contains(b));
         }
     }
 
     @Test
     public void deleteTest(){
         for (Book b : testBookList) {
-            ownedList.addBook(b);
-            assertTrue(ownedList.getOwnList().contains(b));
+            ownerCollection.addBook(b);
+            assertTrue(ownerCollection.getOwnList().contains(b));
         }
 
         for (Book b : testBookList) {
-            ownedList.deleteBook(b);
-            assertFalse(ownedList.getOwnList().contains(b));
+            ownerCollection.deleteBook(b);
+            assertFalse(ownerCollection.getOwnList().contains(b));
         }
+
+        assertTrue(ownerCollection.getOwnList().isEmpty());
     }
 
     @Test
     public void getListTest(){
         for (Book b : testBookList) {
-            ownedList.addBook(b);
+            ownerCollection.addBook(b);
         }
 
-        assertTrue(ownedList.getOwnList().equals(testBookList));
+        assertTrue(ownerCollection.getOwnList().equals(testBookList));
     }
 
     @Test
     public void setListTest(){
-        ownedList.setOwnList(testBookList);
+        ownerCollection.setOwnList(testBookList);
 
-        assertTrue(ownedList.getOwnList().equals(testBookList));
+        assertTrue(ownerCollection.getOwnList().equals(testBookList));
     }
 
     @Test
@@ -95,7 +97,8 @@ public class OwnerCollectionTest {
                 Book.Status.BORROWED};
 
         for (Book.Status s : statuses) {
-            ArrayList<Book> filteredBooks = ownedList.filterBooks(s);
+            ArrayList<Book> filteredBooks = ownerCollection.filterBooks(s);
+
             assertTrue(filteredBooks.size() > 0);
 
             for (Book b : filteredBooks) {
@@ -105,3 +108,4 @@ public class OwnerCollectionTest {
         }
     }
 }
+
