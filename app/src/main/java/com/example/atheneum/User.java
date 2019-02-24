@@ -24,6 +24,15 @@ public class User {
     private ArrayList<String> borrowing;
     private ArrayList<String> photos;
 
+    public User(){
+        this.userName = "user";
+        owning = new ArrayList<String>();
+        borrowing = new ArrayList<String>();
+        photos = new ArrayList<String>();
+        this.ownerRate = 0;
+        this.borrowerRate = 0;
+        this.phoneNumber = "911";
+    }
 
     public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
         this.userName = userName;
