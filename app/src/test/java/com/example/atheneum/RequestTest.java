@@ -13,12 +13,13 @@ import static org.junit.Assert.assertEquals;
 public class RequestTest {
     private User requester;
     private Request newRequest;
+    private UUID bookID;
 
     @Before
     public void setUp() throws Exception {
         requester = new User();
-
-        newRequest = new Request(requester);
+        bookID = UUID.randomUUID();
+        newRequest = new Request(requester, bookID);
     }
 
     @Test
@@ -28,7 +29,7 @@ public class RequestTest {
 
     @Test
     public void getBookID() {
-        assertTrue(newRequest.getBookID() instanceof UUID);
+        Assert.assertThat(newRequest.getBookID(), is(bookID));
     }
 
     @Test

@@ -32,7 +32,6 @@ public class Request {
      * Instantiates a new Request.
      */
     public Request() {
-        this.bookID = UUID.randomUUID();
         this.rStatus = Status.PENDING;
     }
 
@@ -41,9 +40,9 @@ public class Request {
      *
      * @param requester the requester
      */
-    public Request(User requester) {
+    public Request(User requester, UUID bookID) {
         this.requester = requester;
-        this.bookID = UUID.randomUUID();
+        this.bookID = bookID;
         this.rStatus = Status.PENDING;
     }
 
