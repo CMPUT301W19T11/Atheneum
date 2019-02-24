@@ -22,9 +22,6 @@ public class User {
     private double borrowerRate;
     private ArrayList<String> photos;
 
-    private BorrowerCollection borrowerCollection;
-    private OwnerCollection ownerCollection;
-
     /**
      * init user class with blank constructor
      */
@@ -34,8 +31,6 @@ public class User {
         this.ownerRate = 0;
         this.borrowerRate = 0;
         this.phoneNumber = "";
-        borrowerCollection = new BorrowerCollection(this);
-        ownerCollection = new OwnerCollection(this);
     }
 
     /**
@@ -51,8 +46,6 @@ public class User {
         this.ownerRate = ownerRate;
         this.borrowerRate = borrowerRate;
         this.phoneNumber = phoneNumber;
-        borrowerCollection = new BorrowerCollection(this);
-        ownerCollection = new OwnerCollection(this);
     }
 
     /**
@@ -99,18 +92,6 @@ public class User {
 
     /**
      *
-     * @return collection of owning books by the user
-     */
-    public OwnerCollection getOwning() { return this.ownerCollection; }
-
-    /**
-     *
-     * @return collection fo borrowing of the user
-     */
-    public BorrowerCollection getBorrowing(){ return  this.borrowerCollection; }
-
-    /**
-     *
      * @param photos
      */
     public void setPhotos(ArrayList<String> photos){this.photos = photos;}
@@ -123,27 +104,10 @@ public class User {
 
     /**
      *
-     * @param book
-     */
-    public void addOwning(Book book){this.ownerCollection.addBook(book);}
-
-    /**
-     *
-     * @param book
-     */
-    public void addBorrowing(Book book){this.borrowerCollection.addBook(book);}
-
-    /**
-     *
      * @param photo
      */
     public void addPhotos(String photo){this.photos.add(photo);}
 
-    /**
-     *
-     * @param book
-     */
-    public void deleteOwing(Book book){this.ownerCollection.deleteBook(book);}
 
     /**
      *
