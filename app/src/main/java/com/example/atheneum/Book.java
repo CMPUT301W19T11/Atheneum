@@ -1,6 +1,7 @@
 package com.example.atheneum;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -282,4 +283,21 @@ public class Book {
     public void deletePhotos() {
         this.photos.clear();
     }
+
+    /**
+     * Returns whether or not two Book objects are equal. For the purposes of determining equality,
+     * only the UUID(bookID) is checked, as the UUID should be unique across different copies of the
+     * same book.
+     *
+     * @param o the object to be compared with
+     * @return whether or not the current object is equal to o. Returns false of o is null, or not a book object
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return (this.getBookID().equals(book.getBookID()));
+    }
+
 }
