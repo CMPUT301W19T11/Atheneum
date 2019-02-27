@@ -15,22 +15,28 @@ import android.app.Notification;
 import java.util.ArrayList;
 
 public class User {
-
-    private String userName;
-    private String phoneNumber;
-    private double ownerRate;
-    private double borrowerRate;
-    private ArrayList<String> photos;
+    private String userID = "";
+    private String userName = "";
+    private String phoneNumber = "";
+    private double ownerRate = 0;
+    private double borrowerRate = 0;
+    private ArrayList<String> photos = new ArrayList<String>();
 
     /**
      * init user class with blank constructor
      */
     public User(){
-        this.userName = "";
-        photos = new ArrayList<String>();
-        this.ownerRate = 0;
-        this.borrowerRate = 0;
-        this.phoneNumber = "";
+    }
+
+    /**
+     * init user class with only username, all other values are default
+     *
+     * @param userName
+     * @param userID
+     */
+    public User(String userName, String userID) {
+        this.userName = userName;
+        this.userID = userID;
     }
 
     /**
@@ -39,13 +45,22 @@ public class User {
      * @param phoneNumber
      * @param ownerRate
      * @param borrowerRate
+     * @param userID
      */
-    public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
+    public User(String userName, String phoneNumber, double ownerRate, double borrowerRate, String userID){
         this.userName = userName;
-        photos = new ArrayList<String>();
         this.ownerRate = ownerRate;
         this.borrowerRate = borrowerRate;
         this.phoneNumber = phoneNumber;
+        this.userID = userID;
+    }
+
+    /**
+     *
+     * @return UUID for the user
+     */
+    public String getUserID() {
+        return userID;
     }
 
     /**
@@ -114,6 +129,4 @@ public class User {
      * @param photo
      */
     public void deletePhotos(String photo){this.photos.remove(photo);}
-
-
 }
