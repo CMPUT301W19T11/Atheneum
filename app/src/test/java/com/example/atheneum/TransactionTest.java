@@ -27,8 +27,9 @@ public class TransactionTest {
     public void setUp() throws Exception {
         initalType = Transaction.RETURN;
         initialLocation = new Location(EDMONTON_LAT, EDMONTON_LON);
-        borrower = new User("borrows@borrow.com", "0123456789", 0.0, 0.0);
-        owner = new User("owner@owner.com", "9876543210", 5.0, 5.0);
+        String userID = UUID.randomUUID().toString();
+        borrower = new User(userID, "borrows@borrow.com", "0123456789", 0.0, 0.0);
+        owner = new User(userID, "owner@owner.com", "9876543210", 5.0, 5.0);
         bookID = UUID.randomUUID();
         transaction = new Transaction(initalType, initialLocation, borrower, owner, bookID, false,
                 false);

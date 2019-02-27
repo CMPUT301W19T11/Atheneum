@@ -24,43 +24,57 @@ public class User {
 
     /**
      * init user class with blank constructor
+     *
+     * Note: Needed for Firebase, use the other constructors in application code.
      */
     public User(){
     }
 
     /**
-     * init user class with only username, all other values are default
+     * init user class with only username and userID, all other values are default
      *
-     * @param userName
      * @param userID
+     * @param userName
      */
-    public User(String userName, String userID) {
-        this.userName = userName;
+    public User(String userID, String userName) {
         this.userID = userID;
+        this.userName = userName;
     }
 
     /**
      * init user class with specified attributes
+     * @param userID
      * @param userName
      * @param phoneNumber
      * @param ownerRate
      * @param borrowerRate
      * @param userID
      */
-    public User(String userName, String phoneNumber, double ownerRate, double borrowerRate, String userID){
+    public User(String userID, String userName, String phoneNumber, double ownerRate, double borrowerRate) {
+        this.userID = userID;
         this.userName = userName;
+        this.phoneNumber = phoneNumber;
         this.ownerRate = ownerRate;
         this.borrowerRate = borrowerRate;
-        this.phoneNumber = phoneNumber;
-        this.userID = userID;
     }
 
     /**
+     * Note: No setter provided since can't change userID after construction, provided unique ID by
+     *       Firebase Auth
      *
-     * @return UUID for the user
+     * @return UUID of the user
      */
     public String getUserID() {
         return userID;
+    }
+
+    /**
+     * Changes the user name of the user
+     *
+     * @param userName New username
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**

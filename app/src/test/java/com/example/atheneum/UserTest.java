@@ -13,20 +13,33 @@ package com.example.atheneum;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
+import java.util.UUID;
+
 import static org.junit.Assert.*;
 
 public class UserTest {
     private User user1;
+    private String userID;
     private ArrayList<String> testListPhotos;
 
     @Before
     public void init(){
-        user1 = new User("user1@ualberta.ca", "123-456-7899", 0, 0);
+        userID = UUID.randomUUID().toString();
+        user1 = new User(userID, "user1@ualberta.ca", "123-456-7899", 0, 0);
         testListPhotos = new ArrayList<String>();
     }
 
     @Test
     public void checkUserName(){
+        assertEquals("user1@ualberta.ca", user1.getUserName());
+    }
+
+    @Test
+    public void setUserName() {
+        String newUserName = "blablab@ualberta.ca";
+        user1.setUserName(newUserName);
+        assertEquals(newUserName, user1.getUserName());
+        user1.setUserName("user1@ualberta.ca");
         assertEquals("user1@ualberta.ca", user1.getUserName());
     }
 
@@ -84,5 +97,8 @@ public class UserTest {
     }
 
 
-
+    @Test
+    public void getUserID() {
+        assertTrue(user1.getUserID().equals(userID));
+    }
 }
