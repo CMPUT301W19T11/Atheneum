@@ -48,7 +48,6 @@ public class User {
      * @param phoneNumber
      * @param ownerRate
      * @param borrowerRate
-     * @param userID
      */
     public User(String userID, String userName, String phoneNumber, double ownerRate, double borrowerRate) {
         this.userID = userID;
