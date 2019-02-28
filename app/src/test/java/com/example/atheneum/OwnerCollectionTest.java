@@ -1,5 +1,9 @@
 package com.example.atheneum;
 
+import com.example.atheneum.models.Book;
+import com.example.atheneum.models.OwnerCollection;
+import com.example.atheneum.models.User;
+
 import org.junit.Test;
 import org.junit.Before;
 

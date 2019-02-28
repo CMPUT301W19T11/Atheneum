@@ -1,4 +1,4 @@
-package com.example.atheneum.activites;
+package com.example.atheneum.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

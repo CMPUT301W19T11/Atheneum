@@ -1,4 +1,4 @@
-package com.example.atheneum;
+package com.example.atheneum.models;
 
 /**
  * Represents the data contained in a push notification sent to a user.

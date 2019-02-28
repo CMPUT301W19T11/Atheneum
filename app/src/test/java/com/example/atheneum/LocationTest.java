@@ -1,5 +1,7 @@
 package com.example.atheneum;
 
+import com.example.atheneum.models.Location;
+
 import org.junit.Before;
 import org.junit.Test;
 

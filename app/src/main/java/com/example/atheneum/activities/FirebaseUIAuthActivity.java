@@ -1,4 +1,4 @@
-package com.example.atheneum.activites;
+package com.example.atheneum.activities;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.atheneum.R;
-import com.example.atheneum.User;
+import com.example.atheneum.models.User;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -23,6 +23,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Activity responsible for authentication (sign-in and sign-up) of a user.
+ *
+ * Leverages Firebase UI Auth library to dynamically generate the sign-in activity.
+ * Entry point to the app.
+ */
 public class FirebaseUIAuthActivity extends AppCompatActivity {
     final static String TAG = FirebaseUIAuthActivity.class.getSimpleName();
     static final int AUTH_RC_CODE = 1917;

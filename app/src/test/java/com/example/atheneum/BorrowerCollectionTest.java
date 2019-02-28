@@ -10,6 +10,10 @@
 
 package com.example.atheneum;
 
+import com.example.atheneum.models.Book;
+import com.example.atheneum.models.BorrowerCollection;
+import com.example.atheneum.models.User;
+
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;

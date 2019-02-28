@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activites.BaseActivity">
+    tools:context=".activities.BaseActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,6 +20,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <!--Activity's UI will be contained here. When creating a new activity-->
+    <!--define a new layout for it (ex. content_new_activity.xml) and then inflate the layout-->
+    <!--by inflating R.id.content_frame with your new layout. This ensures that the activity's-->
+    <!--UI always renders below the app bar.-->
     <include layout="@layout/content_base"/>
 
 </android.support.design.widget.CoordinatorLayout>

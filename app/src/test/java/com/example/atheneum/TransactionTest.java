@@ -1,11 +1,14 @@
 package com.example.atheneum;
 
+import com.example.atheneum.models.Location;
+import com.example.atheneum.models.Transaction;
+import com.example.atheneum.models.User;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;

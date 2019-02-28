@@ -1,5 +1,7 @@
 package com.example.atheneum;
 
+import com.example.atheneum.models.Notification;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
