@@ -15,37 +15,65 @@ import android.app.Notification;
 import java.util.ArrayList;
 
 public class User {
-
-    private String userName;
-    private String phoneNumber;
-    private double ownerRate;
-    private double borrowerRate;
-    private ArrayList<String> photos;
+    private String userID = "";
+    private String userName = "";
+    private String phoneNumber = "";
+    private double ownerRate = 0;
+    private double borrowerRate = 0;
+    private ArrayList<String> photos = new ArrayList<String>();
 
     /**
      * init user class with blank constructor
+     *
+     * Note: Needed for Firebase, use the other constructors in application code.
      */
     public User(){
-        this.userName = "";
-        photos = new ArrayList<String>();
-        this.ownerRate = 0;
-        this.borrowerRate = 0;
-        this.phoneNumber = "";
+    }
+
+    /**
+     * init user class with only username and userID, all other values are default
+     *
+     * @param userID
+     * @param userName
+     */
+    public User(String userID, String userName) {
+        this.userID = userID;
+        this.userName = userName;
     }
 
     /**
      * init user class with specified attributes
+     * @param userID
      * @param userName
      * @param phoneNumber
      * @param ownerRate
      * @param borrowerRate
      */
-    public User(String userName, String phoneNumber, double ownerRate, double borrowerRate){
+    public User(String userID, String userName, String phoneNumber, double ownerRate, double borrowerRate) {
+        this.userID = userID;
         this.userName = userName;
-        photos = new ArrayList<String>();
+        this.phoneNumber = phoneNumber;
         this.ownerRate = ownerRate;
         this.borrowerRate = borrowerRate;
-        this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * Note: No setter provided since can't change userID after construction, provided unique ID by
+     *       Firebase Auth
+     *
+     * @return UUID of the user
+     */
+    public String getUserID() {
+        return userID;
+    }
+
+    /**
+     * Changes the user name of the user
+     *
+     * @param userName New username
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**
@@ -114,6 +142,4 @@ public class User {
      * @param photo
      */
     public void deletePhotos(String photo){this.photos.remove(photo);}
-
-
 }
