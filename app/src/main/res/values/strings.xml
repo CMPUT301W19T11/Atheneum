@@ -16,4 +16,16 @@
     <string name="unknown_error">Unknown error!</string>
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
+
+    <!-- Strings for adding/editing books -->
+    <string name="add_book_prompt">Add a Book</string>
+    <string name="edit_book_prompt">Edit Book</string>
+    <string name="bookisbn_prompt">ISBN</string>
+    <string name="populateFromIsbnBtnText">Auto-Populate From ISBN</string>
+    <string name="booktitle_prompt">Title</string>
+    <string name="bookdesc_prompt">Description</string>
+    <string name="bookauthor_prompt">Author</string>
+
+    <string name="action_save">Save</string>
+    <!-- End of Strings for adding/editing books -->
 </resources>
