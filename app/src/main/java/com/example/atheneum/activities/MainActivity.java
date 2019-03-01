@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
+import com.example.atheneum.fragments.HomeFragment;
+import com.example.atheneum.fragments.ViewProfileFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -52,6 +55,10 @@ public class MainActivity extends AppCompatActivity
         } else {
             Log.w(TAG, "User should be authenticated if the user is in this activity!");
         }
+
+        // Initially show the home fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
     }
 
     @Override
@@ -69,11 +76,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.nav_home) {
-            // Do nothing!
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
         } else if (id == R.id.nav_profile) {
-
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
         } else if (id == R.id.nav_owner) {
 
         } else if (id == R.id.nav_borrower) {
