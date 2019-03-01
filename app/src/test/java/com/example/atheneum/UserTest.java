@@ -10,6 +10,8 @@
 
 package com.example.atheneum;
 
+import com.example.atheneum.models.User;
+
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;

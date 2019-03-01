@@ -1,4 +1,4 @@
-package com.example.atheneum;
+package com.example.atheneum.models;
 
 import java.util.ArrayList;
 

@@ -1,5 +1,8 @@
 package com.example.atheneum;
 
+import com.example.atheneum.models.Request;
+import com.example.atheneum.models.User;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

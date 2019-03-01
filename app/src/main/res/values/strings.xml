@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Atheneum</string>
+    <string name="title_activity_main">Home</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <!--Firebase table names-->
+    <string name="db_users">users</string>
+    <!--End of Firebase table names-->
+    <!-- Strings related to login -->
+    <string name="sign_in_cancelled">Canceled Sign-in!</string>
+    <string name="no_internet_connection">No internet connection!</string>
+    <string name="unknown_error">Unknown error!</string>
+    <string name="no_user_signed_in">No user signed in!</string>
+    <!-- End of Strings related to login -->
 </resources>
