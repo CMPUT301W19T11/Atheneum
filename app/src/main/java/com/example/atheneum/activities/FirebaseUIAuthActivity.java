@@ -53,15 +53,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     boolean connected = snapshot.getValue(Boolean.class);
                     if (connected) {
-                        List<AuthUI.IdpConfig> providers = Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build());
-                        // Create and launch sign-in intent
-                        startActivityForResult(
-                                AuthUI.getInstance()
-                                        .createSignInIntentBuilder()
-                                        .setAvailableProviders(providers)
-//                                        .setIsSmartLockEnabled(false) // Disabled for testing, used for password-less login
-                                        .build(),
-                                AUTH_RC_CODE);
+                        generateSignInPage();
                     } else {
                         Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE);
                         sb.show();
@@ -75,6 +67,18 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void generateSignInPage() {
+        List<AuthUI.IdpConfig> providers = Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build());
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+//                                        .setIsSmartLockEnabled(false) // Disabled for testing, used for password-less login
+                        .build(),
+                AUTH_RC_CODE);
     }
 
     @Override
@@ -132,6 +136,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                     Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.sign_in_cancelled, Snackbar.LENGTH_SHORT);
                     sb.show();
                     Log.w(TAG, "User pressed back button");
+                    generateSignInPage();
                     return;
                 }
 
@@ -139,6 +144,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                     Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_LONG);
                     sb.show();
                     Log.w(TAG, "No network");
+                    generateSignInPage();
                     return;
                 }
 
