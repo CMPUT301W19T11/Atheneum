@@ -12,7 +12,7 @@ import com.example.atheneum.activities.MainActivity;
 
 public class OwnerPageFragment extends Fragment {
     private View view;
-    private MainActivity mainActivity;
+    private MainActivity mainActivity = null;
     private Context context;
 
     public OwnerPageFragment() {
@@ -27,9 +27,12 @@ public class OwnerPageFragment extends Fragment {
 
         this.context = getContext();
 
-        mainActivity = (MainActivity) getActivity();
-        // set action bar title
-        mainActivity.setActionBarTitle(context.getResources().getString(R.string.owner_page_title));
+        if (getActivity() instanceof  MainActivity) {
+            mainActivity = (MainActivity) getActivity();
+            // set action bar title
+            mainActivity.setActionBarTitle(context.getResources().getString(R.string.owner_page_title));
+            
+        }
 
         return this.view;
     }
