@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.HomeFragment;
+import com.example.atheneum.fragments.SearchFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+        } else if (id == R.id.nav_search) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).commit();
         } else if (id == R.id.nav_owner) {
 
         } else if (id == R.id.nav_borrower) {
