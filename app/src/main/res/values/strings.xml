@@ -41,4 +41,8 @@
     <!--Strings for borrower page-->
     <string name="borrower_page_title">Borrower Page</string>
     <!--End of Strings for borrower page-->
+
+    <!--Strings for search page-->
+    <string name="search_page_title">Search</string>
+    <!--End of Strings for owner page-->
 </resources>

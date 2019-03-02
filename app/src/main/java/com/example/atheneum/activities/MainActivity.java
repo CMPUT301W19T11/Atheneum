@@ -20,6 +20,7 @@ import com.example.atheneum.fragments.AddBookFragment;
 import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
+import com.example.atheneum.fragments.SearchFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -91,7 +92,8 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
         } else if (id == R.id.nav_borrower) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).commit();
-
+        } else if (id == R.id.nav_search) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).commit();
 
         } else if (id == R.id.nav_logout) {
             // Sign out of account and go back to authentication screen

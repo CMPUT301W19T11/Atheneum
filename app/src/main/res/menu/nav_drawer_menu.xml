@@ -25,6 +25,10 @@
             android:icon="@drawable/ic_shopping_basket_black_24dp"
             android:title="Borrower" />
         <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_menu_search"
+            android:title="Search" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Logout" />
