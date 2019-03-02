@@ -1,5 +1,6 @@
 package com.example.atheneum.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -164,8 +166,12 @@ public class AddBookFragment extends Fragment {
                             ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
                             Log.i("AddBook", "Book added, id=" + newBook.getBookID().toString());
 
-                            // close fragment
-                            mainActivity.getFragmentManager().popBackStack();
+                            // hide keyboard and close fragment
+                            // keyboard hiding taken from:
+                            // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+                            InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            mainActivity.getSupportFragmentManager().beginTransaction().remove(AddBookFragment.this).commit();
 
                         } else {
                             Log.w("AddBook", "AddBook*** Current User doesn't exist in database!");
@@ -178,6 +184,8 @@ public class AddBookFragment extends Fragment {
                         Log.w("AddBook", "AddBook*** User listener was cancelled");
                     }
                 });
+
+
 
             } else {
                 Log.w("AddBook", "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this screen!");
