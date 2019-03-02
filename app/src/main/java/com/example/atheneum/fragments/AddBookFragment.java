@@ -173,6 +173,10 @@ public class AddBookFragment extends Fragment {
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                             mainActivity.getSupportFragmentManager().beginTransaction().remove(AddBookFragment.this).commit();
 
+                            // return to home page fragment
+                            mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
+
+
                         } else {
                             Log.w("AddBook", "AddBook*** Current User doesn't exist in database!");
                         }
