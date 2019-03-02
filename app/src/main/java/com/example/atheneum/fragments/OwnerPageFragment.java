@@ -31,7 +31,7 @@ public class OwnerPageFragment extends Fragment {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.owner_page_title));
-            
+
         }
 
         return this.view;
