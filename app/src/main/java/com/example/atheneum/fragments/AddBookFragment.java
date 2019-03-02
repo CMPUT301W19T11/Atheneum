@@ -31,6 +31,10 @@ public class AddBookFragment extends Fragment {
 
     private User owner;
     private Book newBook;
+    String title;
+    String author;
+    long isbn;
+    String desc;
 
     // references for the various entry fields
     private EditText titleEditText;
@@ -99,7 +103,7 @@ public class AddBookFragment extends Fragment {
         // TODO: FINISH
 
         Log.i("AddBook", "AddBook*** Auto-populate requested");
-        long isbn = -1;
+        this.isbn = -1;
         if (!isbnEditText.getText().toString().equals("")) {
              isbn = Integer.parseInt(isbnEditText.getText().toString());
 
@@ -119,7 +123,7 @@ public class AddBookFragment extends Fragment {
         String desc = descEditText.getText().toString();
 
         boolean allFilled = !title.equals("") && !author.equals("") && !isbn.equals("")
-                && desc.equals("");
+                && !desc.equals("");
 
         return allFilled;
     }
@@ -128,10 +132,10 @@ public class AddBookFragment extends Fragment {
         Log.i("AddBook", "AddBook*** Save Button Pressed");
 
         if (allFieldsFilled()) {
-            String title = titleEditText.getText().toString();
-            String author = authorEditText.getText().toString();
-            long isbn = Long.parseLong(isbnEditText.getText().toString());
-            String desc = descEditText.getText().toString();
+            title = titleEditText.getText().toString();
+            author = authorEditText.getText().toString();
+            isbn = Long.parseLong(isbnEditText.getText().toString());
+            desc = descEditText.getText().toString();
 
             // get user from Firebase auth
             FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -147,6 +151,14 @@ public class AddBookFragment extends Fragment {
                         Log.i("AddBook", "AddBook*** Reading for user");
                         if (dataSnapshot.exists()) {
                             owner = dataSnapshot.getValue(User.class);
+                            Log.i("AddBook", "AddBook*** Got a user");
+
+                            newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
+
+                            // add book to the owner's collection
+                            DatabaseReference ownerColref = db.getReference().child(getString(R.string.db_ownerCollection)).child(owner.getUserID());
+                            ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
+                            Log.i("AddBook", "Book added, id=" + newBook.getBookID().toString());
 
                         } else {
                             Log.w("AddBook", "AddBook*** Current User doesn't exist in database!");
@@ -164,12 +176,7 @@ public class AddBookFragment extends Fragment {
                 Log.w("AddBook", "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this activity!");
             }
 
-            newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
 
-            // add book to the owner's collection
-            DatabaseReference ownerColref = db.getReference().child(getString(R.string.db_ownerCollection)).child(owner.getUserID());
-            ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
-            Log.i("AddBook", "Book added, id=" + newBook.getBookID().toString());
 
         }
         else {
