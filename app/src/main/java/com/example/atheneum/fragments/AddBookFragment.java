@@ -91,10 +91,11 @@ public class AddBookFragment extends Fragment {
                 populateFieldsByIsbn();
             }
         });
-
-        mainActivity = (MainActivity) getActivity();
-        // set action bar title
-        mainActivity.setActionBarTitle(context.getResources().getString(R.string.add_book_prompt));
+        if (getActivity() instanceof MainActivity) {
+            mainActivity = (MainActivity) getActivity();
+            // set action bar title
+            mainActivity.setActionBarTitle(context.getResources().getString(R.string.add_book_prompt));
+        }
 
         return this.view;
     }
@@ -169,12 +170,13 @@ public class AddBookFragment extends Fragment {
                             // hide keyboard and close fragment
                             // keyboard hiding taken from:
                             // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
-                            InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                            mainActivity.getSupportFragmentManager().beginTransaction().remove(AddBookFragment.this).commit();
 
-                            // return to home page fragment
-                            mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            getActivity().getSupportFragmentManager().beginTransaction().remove(AddBookFragment.this).commit();
+
+                            // return to owner page fragment
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
 
 
                         } else {
