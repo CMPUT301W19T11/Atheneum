@@ -7,13 +7,33 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+
     <!--Firebase table names-->
     <string name="db_users">users</string>
+    <string name="db_ownerCollection">ownerCollection</string>
     <!--End of Firebase table names-->
+
     <!-- Strings related to login -->
     <string name="sign_in_cancelled">Canceled Sign-in!</string>
     <string name="no_internet_connection">No internet connection!</string>
     <string name="unknown_error">Unknown error!</string>
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
+
+    <!-- Strings for adding/editing books -->
+    <string name="add_book_prompt">Add a Book</string>
+    <string name="edit_book_prompt">Edit Book</string>
+    <string name="bookisbn_prompt">ISBN</string>
+    <string name="populateFromIsbnBtnText">Auto-Populate From ISBN</string>
+    <string name="booktitle_prompt">Title</string>
+    <string name="bookdesc_prompt">Description</string>
+    <string name="bookauthor_prompt">Author</string>
+
+    <string name="action_save">Save</string>
+    <string name="scanBtnPrompt">Scan</string>
+    <!-- End of Strings for adding/editing books -->
+
+    <!--Strings for owner page-->
+    <string name="owner_page_title">Owner Page</string>
+    <!--End of Strings for owner page-->
 </resources>

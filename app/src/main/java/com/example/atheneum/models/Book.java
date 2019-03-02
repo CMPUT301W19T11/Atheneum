@@ -7,6 +7,8 @@ import java.util.UUID;
  * The Book class.
  */
 public class Book {
+    public static final long INVALILD_ISBN = -1;
+
     private long isbn;
     private String title = null;
     private String description = null;

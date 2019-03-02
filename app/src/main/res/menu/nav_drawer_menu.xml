@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_account_box_black_24dp"
             android:title="Profile" />
         <item
+            android:id="@+id/nav_addbook"
+            android:icon="@drawable/ic_add_black_24dp"
+            android:title="@string/add_book_prompt" />
+        <item
             android:id="@+id/nav_owner"
             android:icon="@drawable/ic_book_black_24dp"
             android:title="Owner" />

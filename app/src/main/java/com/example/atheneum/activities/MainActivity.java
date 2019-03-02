@@ -16,7 +16,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
+import com.example.atheneum.fragments.AddBookFragment;
 import com.example.atheneum.fragments.HomeFragment;
+import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -82,8 +84,10 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+        } else if (id == R.id.nav_addbook)  {
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).commit();
         } else if (id == R.id.nav_owner) {
-
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
         } else if (id == R.id.nav_borrower) {
 
         } else if (id == R.id.nav_logout) {
@@ -102,5 +106,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // allows for setting title of action bar from different fragmenets
+    // taken from https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 }

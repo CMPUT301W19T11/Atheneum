@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +24,10 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // set title
+        ((MainActivity) getActivity()).setActionBarTitle(getContext().getResources().getString(R.string.app_name));
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
