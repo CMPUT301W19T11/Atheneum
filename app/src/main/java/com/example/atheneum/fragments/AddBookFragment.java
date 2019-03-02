@@ -14,11 +14,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.EditTextWithValidator;
+import com.example.atheneum.utils.NonEmptyTextValidator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +47,7 @@ public class AddBookFragment extends Fragment {
     private EditText authorEditText;
     private EditText isbnEditText;
     private EditText descEditText;
+    private EditTextWithValidator[] editTextWithValidatorArray;
 
     private FloatingActionButton saveBtn;
     private Button scanIsbnBtn;
@@ -69,6 +73,14 @@ public class AddBookFragment extends Fragment {
         authorEditText = this.view.findViewById(R.id.authorEditText);
         isbnEditText = this.view.findViewById(R.id.isbnEditText);
         descEditText = this.view.findViewById(R.id.descEditText);
+
+        // Setup all edit texts with their validators
+        editTextWithValidatorArray = new EditTextWithValidator[] {
+                new EditTextWithValidator(titleEditText, new NonEmptyTextValidator(titleEditText)),
+                new EditTextWithValidator(authorEditText, new NonEmptyTextValidator(authorEditText)),
+                new EditTextWithValidator(isbnEditText, new NonEmptyTextValidator(isbnEditText)),
+                new EditTextWithValidator(descEditText, new NonEmptyTextValidator(descEditText)),
+        };
 
         saveBtn = this.view.findViewById(R.id.saveBookBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -203,6 +215,13 @@ public class AddBookFragment extends Fragment {
         else {
             // TODO : Display Error Prompt
             Log.w(TAG, "AddBook*** Error fields unfilled");
+            Toast.makeText(context,"Cannot save with unfilled fields!", Toast.LENGTH_SHORT).show();
+
+            // call all input validations to show error prompts
+            for (EditTextWithValidator editTextVal : editTextWithValidatorArray) {
+                editTextVal.validator.validate(editTextVal.editText);
+            }
+
         }
 
     }
