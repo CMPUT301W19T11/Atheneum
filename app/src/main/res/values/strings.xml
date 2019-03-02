@@ -9,6 +9,7 @@
     <string name="action_settings">Settings</string>
     <!--Firebase table names-->
     <string name="db_users">users</string>
+    <string name="db_ownerCollection">ownerCollection</string>
     <!--End of Firebase table names-->
     <!-- Strings related to login -->
     <string name="sign_in_cancelled">Canceled Sign-in!</string>
@@ -27,5 +28,6 @@
     <string name="bookauthor_prompt">Author</string>
 
     <string name="action_save">Save</string>
+    <string name="scanBtnPrompt">Scan</string>
     <!-- End of Strings for adding/editing books -->
 </resources>

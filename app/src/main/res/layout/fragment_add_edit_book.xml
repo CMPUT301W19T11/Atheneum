@@ -2,7 +2,6 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,7 +11,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/bookImage"
@@ -49,7 +48,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bookTitlePrompt" />
+                app:layout_constraintTop_toBottomOf="@+id/bookTitlePrompt"
+                android:importantForAutofill="no" />
 
             <TextView
                 android:id="@+id/authorPrompt"
@@ -74,7 +74,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/authorPrompt" />
+                app:layout_constraintTop_toBottomOf="@+id/authorPrompt"
+                android:importantForAutofill="no" />
 
             <TextView
                 android:id="@+id/isbnPrompt"
@@ -91,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
-                android:text="Scan"
+                android:text="@string/scanBtnPrompt"
                 app:layout_constraintBaseline_toBaselineOf="@+id/isbnEditText"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -109,7 +110,8 @@
                 app:layout_constraintEnd_toStartOf="@+id/scanIsbnButton"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/isbnPrompt" />
+                app:layout_constraintTop_toBottomOf="@+id/isbnPrompt"
+                android:importantForAutofill="no" />
 
             <Button
                 android:id="@+id/populateFromIsbnBtn"
@@ -130,12 +132,12 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/bookdesc_prompt"
-                app:layout_constraintBottom_toTopOf="@+id/editText4"
+                app:layout_constraintBottom_toTopOf="@+id/descEditText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/populateFromIsbnBtn" />
 
             <EditText
-                android:id="@+id/editText4"
+                android:id="@+id/descEditText"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
                 android:layout_marginStart="16dp"
@@ -146,7 +148,8 @@
                 android:inputType="textMultiLine"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:importantForAutofill="no" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -162,6 +165,7 @@
         app:layout_anchorGravity="bottom|right|end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_save" />
+        app:srcCompat="@android:drawable/ic_menu_save"
+        android:focusable="true" />
 
 </android.support.constraint.ConstraintLayout>
