@@ -132,17 +132,21 @@ public class AddBookFragment extends Fragment {
         Log.i("AddBook", "AddBook*** Save Button Pressed");
 
         if (allFieldsFilled()) {
+            Log.i("AddBook", "AddBook*** Fields checked, all filled");
+
             title = titleEditText.getText().toString();
             author = authorEditText.getText().toString();
             isbn = Long.parseLong(isbnEditText.getText().toString());
             desc = descEditText.getText().toString();
 
             // get user from Firebase auth
-            FirebaseAuth auth = FirebaseAuth.getInstance();
+//            FirebaseAuth auth = FirebaseAuth.getInstance();
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             final FirebaseDatabase db = FirebaseDatabase.getInstance();
 
             if (firebaseUser != null) {
+                Log.i("AddBook", "AddBook*** not null firebaseuser");
+
                 DatabaseReference ref = db.getReference().child(getString(R.string.db_users)).child(firebaseUser.getUid());
                 // retrieve user object from database
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -160,6 +164,9 @@ public class AddBookFragment extends Fragment {
                             ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
                             Log.i("AddBook", "Book added, id=" + newBook.getBookID().toString());
 
+                            // close fragment
+                            mainActivity.getFragmentManager().popBackStack();
+
                         } else {
                             Log.w("AddBook", "AddBook*** Current User doesn't exist in database!");
                         }
@@ -173,7 +180,7 @@ public class AddBookFragment extends Fragment {
                 });
 
             } else {
-                Log.w("AddBook", "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this activity!");
+                Log.w("AddBook", "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this screen!");
             }
 
 
