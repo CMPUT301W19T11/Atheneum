@@ -13,6 +13,11 @@ import android.view.View;
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 
+/**
+ * The fragment for Searching.
+ * See: https://stackoverflow.com/questions/7230893/android-search-with-fragments
+ * See: https://stackoverflow.com/questions/9343241/passing-data-between-a-fragment-and-its-container-activity
+ */
 public class SearchFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     @Override
@@ -24,7 +29,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.search_menu, menu); // removed to not double the menu items
+        inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.search_menu);
         SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
