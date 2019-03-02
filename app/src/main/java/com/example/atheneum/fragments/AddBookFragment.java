@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,8 @@ public class AddBookFragment extends Fragment {
     private FloatingActionButton saveBtn;
     private Button scanIsbnBtn;
     private Button autoPopulateByIsgnBtn;
+
+    private static final String TAG = "AddBook";
 
 
     public AddBookFragment() {
@@ -97,21 +100,21 @@ public class AddBookFragment extends Fragment {
     }
 
     public void scanIsbn() {
-        Log.i("AddBook", "AddBook*** ISBN scan requested");
+        Log.i(TAG, "AddBook*** ISBN scan requested");
         // TODO
     }
 
     public void populateFieldsByIsbn() {
         // TODO: FINISH
 
-        Log.i("AddBook", "AddBook*** Auto-populate requested");
-        this.isbn = -1;
-        if (!isbnEditText.getText().toString().equals("")) {
+        Log.i(TAG, "AddBook*** Auto-populate requested");
+        this.isbn = Book.INVALILD_ISBN;
+        if (!TextUtils.isEmpty(isbnEditText.getText())) {
              isbn = Integer.parseInt(isbnEditText.getText().toString());
 
         }
         else {
-            Log.i("AddBook", "AddBook*** No ISBN ");
+            Log.i(TAG, "AddBook*** No ISBN ");
             // TODO: Print error message
 
         }
@@ -119,22 +122,19 @@ public class AddBookFragment extends Fragment {
     }
 
     public boolean allFieldsFilled() {
-        String title = titleEditText.getText().toString();
-        String author = authorEditText.getText().toString();
-        String isbn = isbnEditText.getText().toString();
-        String desc = descEditText.getText().toString();
-
-        boolean allFilled = !title.equals("") && !author.equals("") && !isbn.equals("")
-                && !desc.equals("");
+        boolean allFilled = !TextUtils.isEmpty(titleEditText.getText()) &&
+                !TextUtils.isEmpty(authorEditText.getText()) &&
+                !TextUtils.isEmpty(isbnEditText.getText()) &&
+                !TextUtils.isEmpty(descEditText.getText());
 
         return allFilled;
     }
 
     public void saveNewBook() {
-        Log.i("AddBook", "AddBook*** Save Button Pressed");
+        Log.i(TAG, "AddBook*** Save Button Pressed");
 
         if (allFieldsFilled()) {
-            Log.i("AddBook", "AddBook*** Fields checked, all filled");
+            Log.i(TAG, "AddBook*** Fields checked, all filled");
 
             title = titleEditText.getText().toString();
             author = authorEditText.getText().toString();
@@ -147,24 +147,24 @@ public class AddBookFragment extends Fragment {
             final FirebaseDatabase db = FirebaseDatabase.getInstance();
 
             if (firebaseUser != null) {
-                Log.i("AddBook", "AddBook*** not null firebaseuser");
+                Log.i(TAG, "AddBook*** not null firebaseuser");
 
                 DatabaseReference ref = db.getReference().child(getString(R.string.db_users)).child(firebaseUser.getUid());
                 // retrieve user object from database
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.i("AddBook", "AddBook*** Reading for user");
+                        Log.i(TAG, "AddBook*** Reading for user");
                         if (dataSnapshot.exists()) {
                             owner = dataSnapshot.getValue(User.class);
-                            Log.i("AddBook", "AddBook*** Got a user");
+                            Log.i(TAG, "AddBook*** Got a user");
 
                             newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
 
                             // add book to the owner's collection
                             DatabaseReference ownerColref = db.getReference().child(getString(R.string.db_ownerCollection)).child(owner.getUserID());
                             ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
-                            Log.i("AddBook", "Book added, id=" + newBook.getBookID().toString());
+                            Log.i(TAG, "Book added, id=" + newBook.getBookID().toString());
 
                             // hide keyboard and close fragment
                             // keyboard hiding taken from:
@@ -178,21 +178,21 @@ public class AddBookFragment extends Fragment {
 
 
                         } else {
-                            Log.w("AddBook", "AddBook*** Current User doesn't exist in database!");
+                            Log.w(TAG, "AddBook*** Current User doesn't exist in database!");
                         }
 
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.w("AddBook", "AddBook*** User listener was cancelled");
+                        Log.w(TAG, "AddBook*** User listener was cancelled");
                     }
                 });
 
 
 
             } else {
-                Log.w("AddBook", "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this screen!");
+                Log.w(TAG, "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this screen!");
             }
 
 
@@ -200,7 +200,7 @@ public class AddBookFragment extends Fragment {
         }
         else {
             // TODO : Display Error Prompt
-            Log.w("AddBook", "AddBook*** Error fields unfilled");
+            Log.w(TAG, "AddBook*** Error fields unfilled");
         }
 
     }
