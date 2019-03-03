@@ -68,7 +68,7 @@ public class OwnerPageFragment extends Fragment {
 
         retrieveBooks();
 
-        ownerBooksRecyclerView = (RecyclerView) getView().findViewById(R.id.owner_books_recycler_view);
+        ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
         ownerBooksRecyclerView.setHasFixedSize(true);
         ownerBooksLayoutManager = new LinearLayoutManager(this.context);
         ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
@@ -77,7 +77,7 @@ public class OwnerPageFragment extends Fragment {
         ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL));
 
-        FloatingActionButton fab = (FloatingActionButton) getView().findViewById(R.id.add_book);
+        FloatingActionButton fab = (FloatingActionButton) this.view.findViewById(R.id.add_book);
         //TODO: go to add book activity
         //fab.setOnClickListener();
 
