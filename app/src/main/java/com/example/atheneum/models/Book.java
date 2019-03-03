@@ -243,6 +243,13 @@ public class Book {
     }
 
     /**
+     * Sets unique book id.
+     *
+     * @param bookID
+     */
+    public void setBookID(UUID bookID) { this.bookID = bookID; }
+
+    /**
      * Gets photos for the book
      *
      * @return the photos
