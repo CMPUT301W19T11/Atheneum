@@ -25,9 +25,15 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="1dp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="368dp"
-        android:layout_height="436dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="43dp" />
+    <EditText
+        android:id="@+id/bookIDTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="bookID(for test)"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:layout_editor_absoluteX="50dp" />
+
 </android.support.constraint.ConstraintLayout>

@@ -11,6 +11,7 @@
     <!--Firebase table names-->
     <string name="db_users">users</string>
     <string name="db_ownerCollection">ownerCollection</string>
+    <string name="db_requestCollection">requestCollection</string>
     <!--End of Firebase table names-->
 
     <!-- Strings related to login -->
