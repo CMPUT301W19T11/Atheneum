@@ -58,7 +58,6 @@ public class newRequest extends Fragment {
 
         bookIDTest = this.view.findViewById(R.id.bookIDTest);
 
-        final FragmentManager fragmentManager = getFragmentManager();
         savebtn = this.view.findViewById(R.id.save);
         savebtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +93,6 @@ public class newRequest extends Fragment {
                     }
                 });
 
-//                fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).commit();
             }
         });
 
