@@ -11,6 +11,12 @@ public class OwnerCollection {
     private ArrayList<Book> ownList;
 
     /**
+     * No-argument constructor
+     * Required for firebase
+     */
+    public OwnerCollection() {}
+
+    /**
      * Instantiates a new Owner collection, with no books initially added.
      * This should be the constructor used any time a new User is created, as by default, a new
      * user will not have any owned books.
