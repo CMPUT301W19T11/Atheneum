@@ -1,6 +1,7 @@
 package com.example.atheneum.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
@@ -20,14 +22,21 @@ import com.example.atheneum.fragments.AddBookFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
+import com.example.atheneum.models.User;
+import com.example.atheneum.utils.PhotoUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-// See: https://stackoverflow.com/a/36103112/11039833
-// See: https://stackoverflow.com/a/19451842/11039833
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
@@ -45,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView = navigationView.getHeaderView(0);
@@ -61,6 +70,28 @@ public class MainActivity extends AppCompatActivity
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
+
+        // Update user's profile photo
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                                        .child(getString(R.string.db_users))
+                                        .child(firebaseUser.getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                ArrayList<String> photos = user.getPhotos();
+                if (!photos.isEmpty()) {
+                    Bitmap profilePic = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
+                    ImageView imageView = (ImageView) ((View) navigationView).findViewById(R.id.nav_user_profile_picture);
+                    imageView.setImageBitmap(profilePic);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "User listener cancelled!");
+            }
+        });
     }
 
     @Override
