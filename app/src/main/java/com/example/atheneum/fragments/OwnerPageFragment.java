@@ -1,5 +1,6 @@
 package com.example.atheneum.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -31,8 +32,11 @@ import java.util.UUID;
 /**
  * The Owner page fragment that can be navigated to using the hamburger menu on the main pages
  * after user has logged in.
+<<<<<<< HEAD
  *
  * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
+=======
+>>>>>>> f907a56c65469a4ebbc8c6e67853d6301ea1b03c
  */
 public class OwnerPageFragment extends Fragment {
     private View view;
@@ -85,7 +89,13 @@ public class OwnerPageFragment extends Fragment {
     }
 
     /**
+<<<<<<< HEAD
      * Retrieve owner books from Firebase.
+=======
+     * Retrieve books from Firebase.
+     *
+     * See: https://stackoverflow.com/questions/37902635/no-setter-field-for-warning-firebase-database-retrieve-data-populate-listview
+>>>>>>> f907a56c65469a4ebbc8c6e67853d6301ea1b03c
      */
     public void retrieveBooks() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
