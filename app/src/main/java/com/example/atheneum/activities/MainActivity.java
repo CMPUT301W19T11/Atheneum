@@ -1,8 +1,13 @@
 package com.example.atheneum.activities;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
@@ -21,14 +27,24 @@ import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
+import com.example.atheneum.models.User;
+import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-// See: https://stackoverflow.com/a/36103112/11039833
-// See: https://stackoverflow.com/a/19451842/11039833
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
@@ -46,22 +62,41 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView = navigationView.getHeaderView(0);
-        TextView nav_username = (TextView)((View) headerView).findViewById(R.id.nav_user_name);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            // Set the user's email on the nav bar
-            nav_username.setText(firebaseUser.getEmail());
-        } else {
-            Log.w(TAG, "User should be authenticated if the user is in this activity!");
-        }
+        final TextView nav_username = (TextView)((View) headerView).findViewById(R.id.nav_user_name);
 
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
+
+        // Update user information in the navbar
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            UserViewModelFactory userViewModelFactory = new UserViewModelFactory(firebaseUser.getUid());
+            UserViewModel userViewModel = ViewModelProviders.of(this, userViewModelFactory).get(UserViewModel.class);
+            LiveData<User> userLiveData = userViewModel.getUserLiveData();
+            userLiveData.observe(this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    if (user != null) {
+                        nav_username.setText(user.getUserName());
+
+                        ArrayList<String> photos = user.getPhotos();
+                        if (!photos.isEmpty()) {
+                            Bitmap profilePic = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
+                            ImageView imageView = (ImageView) ((View) navigationView).findViewById(R.id.nav_user_profile_picture);
+                            imageView.setImageBitmap(profilePic);
+                        }
+                    }
+                }
+            });
+        } else {
+            Log.w(TAG, "Shouldn't happen!");
+        }
     }
 
     @Override

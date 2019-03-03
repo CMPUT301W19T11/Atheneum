@@ -69,6 +69,18 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
         }
     }
 
+    private void postSignUpTransition() {
+        Intent intent = new Intent(getApplicationContext(), CompleteRegistrationActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void postSignInTransition() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void generateSignInPage() {
         List<AuthUI.IdpConfig> providers = Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build());
         // Create and launch sign-in intent
@@ -105,18 +117,18 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                                 User newUser = new User(firebaseUser.getUid(), firebaseUser.getEmail());
                                 DatabaseReference userRef = db.getReference().child(getString(R.string.db_users)).child(newUser.getUserID());
                                 userRef.setValue(newUser);
-                                Log.d(TAG, "User doesn't exist in database!");
+                                Log.i(TAG, "User doesn't exist in database!");
+                                postSignUpTransition();
                             } else {
-                                Log.d(TAG, "User already exists in database!");
+                                Log.i(TAG, "User already exists in database!");
+                                postSignInTransition();
                             }
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(intent);
-                            finish();
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             Log.w(TAG, "User listener was cancelled");
+                            postSignInTransition();
                         }
                     });
                 } else {
@@ -124,6 +136,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                     Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_user_signed_in, Snackbar.LENGTH_INDEFINITE);
                     sb.show();
                     Log.w(TAG, "If sign in successful, currentUser must be non-null! Strange condition!");
+                    generateSignInPage();
                 }
                 // ...
             } else {
@@ -141,7 +154,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                 }
 
                 if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_LONG);
+                    Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_SHORT);
                     sb.show();
                     Log.w(TAG, "No network");
                     generateSignInPage();
@@ -151,6 +164,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                 Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.unknown_error, Snackbar.LENGTH_SHORT);
                 sb.show();
                 Log.e(TAG, "Sign-in error: ", response.getError());
+                generateSignInPage();
             }
         }
     }
