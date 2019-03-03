@@ -13,6 +13,18 @@
     <string name="db_users">users</string>
     <string name="db_ownerCollection">ownerCollection</string>
     <string name="db_requestCollection">requestCollection</string>
+    <string name="db_book_isbn">isbn</string>
+    <string name="db_book_title">title</string>
+    <string name="db_book_description">description</string>
+    <string name="db_book_author">author</string>
+    <string name="db_book_owner">owner</string>
+    <string name="db_book_borrower">borrower</string>
+    <string name="db_book_status">status</string>
+    <string name="db_book_requests">requests</string>
+    <string name="db_book_bookID">bookID</string>
+    <string name="db_book_bookID_leastSigBits">leastSignificantBits</string>
+    <string name="db_book_bookID_mostSigBits">mostSignificantBits</string>
+    <string name="db_book_photos">photos</string>
     <!--End of Firebase table names-->
 
     <!-- Strings related to login -->

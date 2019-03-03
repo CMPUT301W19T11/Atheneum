@@ -5,7 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +23,7 @@ import com.example.atheneum.models.Book;
 import com.example.atheneum.models.OwnerCollection;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.OwnerBooksAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -35,11 +41,17 @@ import java.util.UUID;
 /**
  * The Owner page fragment that can be navigated to using the hamburger menu on the main pages
  * after user has logged in.
+ *
+ * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
  */
 public class OwnerPageFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
+
+    private RecyclerView ownerBooksRecyclerView;
+    private RecyclerView.Adapter ownerBooksRecyclerAdapter;
+    private RecyclerView.LayoutManager ownerBooksLayoutManager;
 
     private ArrayList<Book> ownerBooks = new ArrayList<Book>();
 
@@ -66,6 +78,19 @@ public class OwnerPageFragment extends Fragment {
 
         retrieveBooks();
 
+        ownerBooksRecyclerView = (RecyclerView) getView().findViewById(R.id.owner_books_recycler_view);
+        ownerBooksRecyclerView.setHasFixedSize(true);
+        ownerBooksLayoutManager = new LinearLayoutManager(this.context);
+        ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
+        ownerBooksRecyclerAdapter = new OwnerBooksAdapter(ownerBooks);
+        ownerBooksRecyclerView.setAdapter(ownerBooksRecyclerAdapter);
+        ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL));
+
+        FloatingActionButton fab = (FloatingActionButton) getView().findViewById(R.id.add_book);
+        //TODO: go to add book activity
+        //fab.setOnClickListener();
+
         return this.view;
     }
 
@@ -87,37 +112,59 @@ public class OwnerPageFragment extends Fragment {
                     Iterable<DataSnapshot> dataSnapshotIterable = dataSnapshot.getChildren();
                     for (DataSnapshot data : dataSnapshotIterable) {
                         Book book = new Book();
-                        book.setIsbn(data.child("isbn").getValue() != null ?
-                                (long)data.child("isbn").getValue() : null);
-                        book.setTitle(data.child("title").getValue() != null ?
-                                (String)data.child("title").getValue() : null);
-                        book.setDescription(data.child("description").getValue() != null ?
-                                (String)data.child("description").getValue() : null);
-                        book.setAuthor(data.child("author").getValue() != null ?
-                                (String)data.child("author").getValue() : null);
+                        book.setIsbn(data.child(getString(R.string.db_book_isbn))
+                                .getValue() != null ?
+                                (long)data.child(getString(R.string.db_book_isbn))
+                                        .getValue() : null);
+                        book.setTitle(data.child(getString(R.string.db_book_title))
+                                .getValue() != null ?
+                                (String)data.child(getString(R.string.db_book_title))
+                                        .getValue() : null);
+                        book.setDescription(data.child(getString(R.string.db_book_description))
+                                .getValue() != null ?
+                                (String)data.child(getString(R.string.db_book_description))
+                                        .getValue() : null);
+                        book.setAuthor(data.child(getString(R.string.db_book_author))
+                                .getValue() != null ?
+                                (String)data.child(getString(R.string.db_book_author))
+                                        .getValue() : null);
                         //book.setOwner(data.child("owner").getValue() != null ?
                         //        (User)data.child("owner").getValue() : null);
                         //book.setBorrower(data.child("borrower").getValue() != null ?
                         //        (User)data.child("borrower").getValue() : null);
-                        book.setStatus(data.child("status").getValue() != null ?
+                        book.setStatus(data.child(getString(R.string.db_book_status))
+                                .getValue() != null ?
                                 Book.Status.valueOf(
-                                        (String)data.child("status").getValue()) : null);
-                        book.setRequests(data.child("requests").getValue() != null ?
-                                (ArrayList<Request>)data.child("requests").getValue() : null);
-                        long leastSigBits = data.child("bookID").child("leastSignificantBits").
-                                getValue() != null ? (long)data.child("bookID").
-                                child("leastSignificantBits").getValue() : null;
-                        long mostSigBits = data.child("bookID").child("mostSignificantBits").
-                                getValue() != null ? (long)data.child("bookID").
-                                child("mostSignificantBits").getValue() : null;
+                                        (String)data.child(getString(R.string.db_book_status))
+                                                .getValue()) : null);
+                        book.setRequests(data.child(getString(R.string.db_book_requests))
+                                .getValue() != null ?
+                                (ArrayList<Request>)data.child(getString(R.string.db_book_requests))
+                                        .getValue() : null);
+                        long leastSigBits = data.child(getString(R.string.db_book_bookID))
+                                .child(getString(R.string.db_book_bookID_leastSigBits))
+                                .getValue() != null ? (long)data.child(
+                                        getString(R.string.db_book_bookID))
+                                .child(getString(R.string.db_book_bookID_leastSigBits))
+                                .getValue() : null;
+                        long mostSigBits = data.child(getString(R.string.db_book_bookID))
+                                .child(getString(R.string.db_book_bookID_mostSigBits))
+                                .getValue() != null ? (long)data.child(
+                                getString(R.string.db_book_bookID))
+                                .child(getString(R.string.db_book_bookID_mostSigBits))
+                                .getValue() : null;
                         UUID bookID = new UUID(mostSigBits, leastSigBits);
                         book.setBookID(bookID);
-                        book.setPhotos(data.child("photos").getValue() != null ?
-                                (ArrayList<String>)data.child("photos").getValue() : null);
+                        book.setPhotos(data.child(getString(R.string.db_book_photos))
+                                .getValue() != null ?
+                                (ArrayList<String>)data.child(getString(R.string.db_book_photos))
+                                        .getValue() : null);
                         ownerBooks.add(book);
 
                         System.out.println(ownerBooks);
                     }
+
+                    ownerBooksRecyclerAdapter.notifyDataSetChanged();
                 }
 
                 @Override
