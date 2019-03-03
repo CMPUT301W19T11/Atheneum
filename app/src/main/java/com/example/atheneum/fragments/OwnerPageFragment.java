@@ -16,6 +16,7 @@ import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.OwnerCollection;
+import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +28,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.security.acl.Owner;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * The Owner page fragment that can be navigated to using the hamburger menu on the main pages
@@ -36,6 +40,8 @@ public class OwnerPageFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
+
+    private ArrayList<Book> ownerBooks = new ArrayList<Book>();
 
     /**
      * Instantiates a new Owner page fragment.
@@ -64,30 +70,59 @@ public class OwnerPageFragment extends Fragment {
     }
 
     /**
-     * Retrieve books from Firebase.
-     *
-     * See: https://stackoverflow.com/questions/37902635/no-setter-field-for-warning-firebase-database-retrieve-data-populate-listview
+     * Retrieve owner books from Firebase.
      */
     public void retrieveBooks() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        String dbOwnerBooksPath = getString(R.string.db_ownerCollection) + "/" + firebaseUser.getUid().toString();
-        DatabaseReference ref = db.getReference(dbOwnerBooksPath);
+        DatabaseReference ref = db.getReference().child(getString(R.string.db_ownerCollection)).
+                child(firebaseUser.getUid());
 
         if (firebaseUser != null) {
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Iterable<DataSnapshot> books = dataSnapshot.getChildren();
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //TODO: make ownerBookFirebaseParser class
+                    //manually parse every field in book
+                    Iterable<DataSnapshot> dataSnapshotIterable = dataSnapshot.getChildren();
+                    for (DataSnapshot data : dataSnapshotIterable) {
+                        Book book = new Book();
+                        book.setIsbn(data.child("isbn").getValue() != null ?
+                                (long)data.child("isbn").getValue() : null);
+                        book.setTitle(data.child("title").getValue() != null ?
+                                (String)data.child("title").getValue() : null);
+                        book.setDescription(data.child("description").getValue() != null ?
+                                (String)data.child("description").getValue() : null);
+                        book.setAuthor(data.child("author").getValue() != null ?
+                                (String)data.child("author").getValue() : null);
+                        //book.setOwner(data.child("owner").getValue() != null ?
+                        //        (User)data.child("owner").getValue() : null);
+                        //book.setBorrower(data.child("borrower").getValue() != null ?
+                        //        (User)data.child("borrower").getValue() : null);
+                        book.setStatus(data.child("status").getValue() != null ?
+                                Book.Status.valueOf(
+                                        (String)data.child("status").getValue()) : null);
+                        book.setRequests(data.child("requests").getValue() != null ?
+                                (ArrayList<Request>)data.child("requests").getValue() : null);
+                        long leastSigBits = data.child("bookID").child("leastSignificantBits").
+                                getValue() != null ? (long)data.child("bookID").
+                                child("leastSignificantBits").getValue() : null;
+                        long mostSigBits = data.child("bookID").child("mostSignificantBits").
+                                getValue() != null ? (long)data.child("bookID").
+                                child("mostSignificantBits").getValue() : null;
+                        UUID bookID = new UUID(mostSigBits, leastSigBits);
+                        book.setBookID(bookID);
+                        book.setPhotos(data.child("photos").getValue() != null ?
+                                (ArrayList<String>)data.child("photos").getValue() : null);
+                        ownerBooks.add(book);
 
-                    for (DataSnapshot book : books) {
-                        System.out.println(book.getValue(Book.class));
+                        System.out.println(ownerBooks);
                     }
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
                 }
             });
         }
