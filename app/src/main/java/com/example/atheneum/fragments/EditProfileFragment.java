@@ -59,6 +59,22 @@ public class EditProfileFragment extends Fragment {
     private ImageView profilePicture;
     private PictureController pictureController;
     private Bitmap bitmapPhoto;
+    private OnEditProfileCompleteListener editProfileCompleteListener;
+
+    /**
+     * Defines callbacks that handle events that occur after the user profile edit has been completed
+     */
+    public interface OnEditProfileCompleteListener {
+        /**
+         * Handles success of editing the profile
+         */
+        void onSuccess(EditProfileFragment editProfileFragment);
+
+        /**
+         * Handles failure to edit the profile
+         */
+        void onFailure(EditProfileFragment editProfileFragment);
+    }
 
     /**
      * Handles events resulting from clicking the image view on the form
@@ -123,18 +139,24 @@ public class EditProfileFragment extends Fragment {
                             user.setPhotos(photos);
                         }
                         userRef.setValue(user);
-                        EditProfileFragment.this.startMainActivity();
+                        if (editProfileCompleteListener != null) {
+                            editProfileCompleteListener.onSuccess(EditProfileFragment.this);
+                        }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         Log.w(TAG, "userID listener cancelled!");
-                        EditProfileFragment.this.startMainActivity();
+                        if (editProfileCompleteListener != null) {
+                            editProfileCompleteListener.onFailure(EditProfileFragment.this);
+                        }
                     }
                 });
             } else {
                 Log.w(TAG, "If the user is in this fragment, they should already be logged in!");
-                EditProfileFragment.this.startMainActivity();
+                if (editProfileCompleteListener != null) {
+                    editProfileCompleteListener.onFailure(EditProfileFragment.this);
+                }
             }
         }
     }
@@ -159,13 +181,8 @@ public class EditProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Starts MainActivity via passing an intent
-     */
-    private void startMainActivity() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
-        getActivity().finish();
+    public void setEditProfileCompleteListener(OnEditProfileCompleteListener editProfileCompleteListener) {
+        this.editProfileCompleteListener = editProfileCompleteListener;
     }
 
     /**
@@ -208,5 +225,4 @@ public class EditProfileFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         pictureController.onActivityResult(requestCode, resultCode, data);
     }
-
 }
