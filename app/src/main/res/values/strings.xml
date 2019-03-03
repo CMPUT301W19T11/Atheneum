@@ -12,6 +12,7 @@
     <!--Firebase table names-->
     <string name="db_users">users</string>
     <string name="db_ownerCollection">ownerCollection</string>
+    <string name="db_requestCollection">requestCollection</string>
     <!--End of Firebase table names-->
 
     <!-- Strings related to login -->
@@ -49,4 +50,7 @@
     <string name="prompt_user_phone">Phone Number</string>
     <string name="user_profile_picture_prompt">Profile Picture (click image to change)</string>
     <!--End of Strings for EditProfileFragment-->
+    <!--Strings for borrower page-->
+    <string name="borrower_page_title">Borrower Page</string>
+    <!--End of Strings for borrower page-->
 </resources>
