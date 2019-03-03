@@ -83,7 +83,7 @@ public class newRequest extends Fragment {
                             getActivity().getSupportFragmentManager().beginTransaction().remove(newRequest.this).commit();
 
                             // return to owner page fragment
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).commit();
 
                         }
                     }
