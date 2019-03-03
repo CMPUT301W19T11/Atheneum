@@ -203,6 +203,37 @@ public class EditProfileFragment extends Fragment {
 
         pictureController = PictureController.newInstance(this);
         pictureController.setPictureTakenListener(new PictureTakenListener());
+
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            UserViewModelFactory userViewModelFactory = new UserViewModelFactory(firebaseUser.getUid());
+            userViewModel = ViewModelProviders.of(this, userViewModelFactory).get(UserViewModel.class);
+            final LiveData<User> userLiveData = userViewModel.getUserLiveData();
+            userLiveData.observe(this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    // Auto-fill profile
+                    if (user != null) {
+                        Log.i(TAG, "Auto-fill profile!!");
+                        phoneNumberField.setText(user.getPhoneNumber());
+                        ArrayList<String> photos = user.getPhotos();
+                        if (!photos.isEmpty()) {
+                            Bitmap image = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
+                            profilePicture.setImageBitmap(image);
+                        }
+                    }
+                    // Remove the observer after auto-fill so that the image view is properly
+                    // updated when the user takes a picture.
+                    // See: https://stackoverflow.com/a/47872807/11039833
+                    // Simulates using addSingleEventValueListener on a database reference
+                    userLiveData.removeObserver(this);
+                }
+            });
+        } else {
+            Log.w(TAG, "Shouldn't happen!");
+        }
+
         return view;
     }
 
