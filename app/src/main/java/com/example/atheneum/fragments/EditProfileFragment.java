@@ -1,6 +1,9 @@
 package com.example.atheneum.fragments;
 
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +13,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -28,7 +32,10 @@ import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.EmailValidator;
+import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,6 +67,7 @@ public class EditProfileFragment extends Fragment {
     private PictureController pictureController;
     private Bitmap bitmapPhoto;
     private OnEditProfileCompleteListener editProfileCompleteListener;
+    private UserViewModel userViewModel;
 
     /**
      * Defines callbacks that handle events that occur after the user profile edit has been completed
@@ -113,45 +121,25 @@ public class EditProfileFragment extends Fragment {
             }
             Log.i(TAG, "Save successful!");
 
-            // TODO: Could I use a controller here instead of doing this manually?
-            //       I feel like I'm in callback hell.
-            final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (firebaseUser != null) {
-                String userID = firebaseUser.getUid();
-                final DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
-                                                    .child(getString(R.string.db_users))
-                                                    .child(userID);
-                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        User user = dataSnapshot.getValue(User.class);
-                        user.setPhoneNumber(phoneNumberField.getText().toString());
-                        if (bitmapPhoto != null) {
-                            String encodedPhoto = PhotoUtils.EncodeBitmapPhotoBase64(bitmapPhoto);
-                            // TODO: Either add setPhoto(position) method to user class or replace
-                            //       array of photo with just a single one
-                            ArrayList<String> photos = user.getPhotos();
-                            if (photos.isEmpty()) {
-                                photos.add(encodedPhoto);
-                            } else {
-                                photos.set(0, encodedPhoto);
-                            }
-                            user.setPhotos(photos);
-                        }
-                        userRef.setValue(user);
-                        if (editProfileCompleteListener != null) {
-                            editProfileCompleteListener.onSuccess(EditProfileFragment.this);
-                        }
+            if (userViewModel != null) {
+                User user = userViewModel.getUserLiveData().getValue();
+                // Update the user based on form input
+                user.setPhoneNumber(phoneNumberField.getText().toString());
+                if (bitmapPhoto != null) {
+                    String encodedPhoto = PhotoUtils.EncodeBitmapPhotoBase64(bitmapPhoto);
+                    ArrayList<String> photos = user.getPhotos();
+                    if (photos.isEmpty()) {
+                        photos.add(encodedPhoto);
+                    } else {
+                        photos.set(0, encodedPhoto);
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.w(TAG, "userID listener cancelled!");
-                        if (editProfileCompleteListener != null) {
-                            editProfileCompleteListener.onFailure(EditProfileFragment.this);
-                        }
-                    }
-                });
+                    user.setPhotos(photos);
+                }
+                // Send updated user to Firebase
+                userViewModel.setUser(user);
+                if (editProfileCompleteListener != null) {
+                    editProfileCompleteListener.onSuccess(EditProfileFragment.this);
+                }
             } else {
                 Log.w(TAG, "If the user is in this fragment, they should already be logged in!");
                 if (editProfileCompleteListener != null) {
@@ -181,6 +169,11 @@ public class EditProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Sets OnEditProfileCompleteListener
+     *
+     * @param editProfileCompleteListener New listener
+     */
     public void setEditProfileCompleteListener(OnEditProfileCompleteListener editProfileCompleteListener) {
         this.editProfileCompleteListener = editProfileCompleteListener;
     }

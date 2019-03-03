@@ -1,9 +1,13 @@
 package com.example.atheneum.activities;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -23,7 +27,10 @@ import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -58,40 +65,37 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView = navigationView.getHeaderView(0);
-        TextView nav_username = (TextView)((View) headerView).findViewById(R.id.nav_user_name);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            // Set the user's email on the nav bar
-            nav_username.setText(firebaseUser.getEmail());
-        } else {
-            Log.w(TAG, "User should be authenticated if the user is in this activity!");
-        }
+        final TextView nav_username = (TextView)((View) headerView).findViewById(R.id.nav_user_name);
 
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
 
-        // Update user's profile photo
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
-                                        .child(getString(R.string.db_users))
-                                        .child(firebaseUser.getUid());
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                ArrayList<String> photos = user.getPhotos();
-                if (!photos.isEmpty()) {
-                    Bitmap profilePic = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
-                    ImageView imageView = (ImageView) ((View) navigationView).findViewById(R.id.nav_user_profile_picture);
-                    imageView.setImageBitmap(profilePic);
-                }
-            }
+        // Update user information in the navbar
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            UserViewModelFactory userViewModelFactory = new UserViewModelFactory(firebaseUser.getUid());
+            UserViewModel userViewModel = ViewModelProviders.of(this, userViewModelFactory).get(UserViewModel.class);
+            LiveData<User> userLiveData = userViewModel.getUserLiveData();
+            userLiveData.observe(this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    if (user != null) {
+                        nav_username.setText(user.getUserName());
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w(TAG, "User listener cancelled!");
-            }
-        });
+                        ArrayList<String> photos = user.getPhotos();
+                        if (!photos.isEmpty()) {
+                            Bitmap profilePic = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
+                            ImageView imageView = (ImageView) ((View) navigationView).findViewById(R.id.nav_user_profile_picture);
+                            imageView.setImageBitmap(profilePic);
+                        }
+                    }
+                }
+            });
+        } else {
+            Log.w(TAG, "Shouldn't happen!");
+        }
     }
 
     @Override
