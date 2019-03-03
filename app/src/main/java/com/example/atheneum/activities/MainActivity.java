@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.AddBookFragment;
+import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
         } else if (id == R.id.nav_borrower) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).commit();
+
 
         } else if (id == R.id.nav_logout) {
             // Sign out of account and go back to authentication screen
