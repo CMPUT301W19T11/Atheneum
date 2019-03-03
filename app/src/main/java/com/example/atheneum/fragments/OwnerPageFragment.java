@@ -1,5 +1,6 @@
 package com.example.atheneum.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -85,7 +86,9 @@ public class OwnerPageFragment extends Fragment {
     }
 
     /**
-     * Retrieve owner books from Firebase.
+     * Retrieve books from Firebase.
+     *
+     * See: https://stackoverflow.com/questions/37902635/no-setter-field-for-warning-firebase-database-retrieve-data-populate-listview
      */
     public void retrieveBooks() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
