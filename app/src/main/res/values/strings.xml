@@ -36,4 +36,8 @@
     <!--Strings for owner page-->
     <string name="owner_page_title">Owner Page</string>
     <!--End of Strings for owner page-->
+
+    <!--Strings for borrower page-->
+    <string name="borrower_page_title">Borrower Page</string>
+    <!--End of Strings for borrower page-->
 </resources>
