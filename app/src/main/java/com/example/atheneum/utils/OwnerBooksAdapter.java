@@ -31,6 +31,8 @@ import java.util.UUID;
  * See: https://developer.android.com/guide/topics/ui/layout/recyclerview#java
  * See: https://www.androidhive.info/2016/01/android-working-with-recycler-view/
  *
+ * Might no longer need it once FirebaseRecyclerAdapter is done
+ *
  * @author marcus
  * @version 1.0
  * @since 2019-01-27

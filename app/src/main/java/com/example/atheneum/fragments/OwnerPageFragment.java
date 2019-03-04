@@ -2,7 +2,10 @@ package com.example.atheneum.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -11,13 +14,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.BookViewHolder;
 import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,10 +53,8 @@ public class OwnerPageFragment extends Fragment {
     private Context context;
 
     private RecyclerView ownerBooksRecyclerView;
-    private RecyclerView.Adapter ownerBooksRecyclerAdapter;
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager ownerBooksLayoutManager;
-
-    private ArrayList<Book> ownerBooks = new ArrayList<Book>();
 
     /**
      * Instantiates a new Owner page fragment.
@@ -59,11 +66,13 @@ public class OwnerPageFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        firebaseRecyclerAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        firebaseRecyclerAdapter.stopListening();
     }
 
     @Override
@@ -80,22 +89,61 @@ public class OwnerPageFragment extends Fragment {
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.owner_page_title));
         }
 
-        // TESTING FIREBASE RECYCLERVIEW ADAPTER
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child(getString(R.string.db_ownerCollection))
                 .child(firebaseUser.getUid());
-        // END TESTTING FIREBASE RECYCLERVIEW ADAPTER
 
-        retrieveBooks();
+        FirebaseRecyclerOptions<Book> options =
+                new FirebaseRecyclerOptions.Builder<Book>()
+                        .setQuery(query, Book.class)
+                        .build();
+
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull BookViewHolder holder, int position, @NonNull Book book) {
+                //Bind Book object to BookViewHolder
+                holder.titleTextView.setText(
+                        book.getTitle());
+                holder.authorTextView.setText(
+                        book.getAuthor());
+                holder.statusTextView.setText(
+                        book.getStatus().toString());
+            }
+
+            @Override
+            public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                // Create a new instance of the ViewHolder, in this case we are using a custom
+                // layout called R.layout.message for each item
+                // create a new view
+                LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.book_card, parent, false);
+                final BookViewHolder vh = new BookViewHolder(v);
+
+                return vh;
+            }
+
+            @Override
+            public void onDataChanged() {
+                // Called each time there is a new data snapshot. You may want to use this method
+                // to hide a loading spinner or check for the "no documents" state and update your UI.
+                // ...
+            }
+
+            @Override
+            public void onError(DatabaseError e) {
+                // Called when there is an error getting data. You may want to update
+                // your UI to display an error message to the user.
+                // ...
+            }
+        };
 
         ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
         ownerBooksRecyclerView.setHasFixedSize(true);
         ownerBooksLayoutManager = new LinearLayoutManager(this.context);
         ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
-        ownerBooksRecyclerAdapter = new OwnerBooksAdapter(ownerBooks);
-        ownerBooksRecyclerView.setAdapter(ownerBooksRecyclerAdapter);
+        ownerBooksRecyclerView.setAdapter(firebaseRecyclerAdapter);
         ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL));
 
@@ -104,41 +152,5 @@ public class OwnerPageFragment extends Fragment {
         //fab.setOnClickListener();
 
         return this.view;
-    }
-
-    /**
-     * Retrieve books from Firebase.
-     *
-     * See: https://stackoverflow.com/questions/37902635/no-setter-field-for-warning-firebase-database-retrieve-data-populate-listview
-     */
-    public void retrieveBooks() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child(getString(R.string.db_ownerCollection)).
-                child(firebaseUser.getUid());
-
-        if (firebaseUser != null) {
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    //TODO: make ownerBookFirebaseParser class
-                    //manually parse every field in book
-                    Iterable<DataSnapshot> dataSnapshotIterable = dataSnapshot.getChildren();
-                    for (DataSnapshot data : dataSnapshotIterable) {
-                        Book book = data.getValue(Book.class);
-                        ownerBooks.add(book);
-
-                        System.out.println(ownerBooks);
-                    }
-
-                    ownerBooksRecyclerAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-            });
-        }
     }
 }
