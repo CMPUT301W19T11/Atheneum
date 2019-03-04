@@ -34,6 +34,10 @@
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
 
+    <!--Strings for profile page-->
+    <string name="profile_title">Profile</string>
+    <!--End of Strings for profile page-->
+
     <!-- Strings for adding/editing books -->
     <string name="add_book_prompt">Add a Book</string>
     <string name="edit_book_prompt">Edit Book</string>
@@ -68,5 +72,5 @@
 
     <!--Strings for search page-->
     <string name="search_page_title">Search</string>
-    <!--End of Strings for owner page-->
+    <!--End of Strings for search page-->
 </resources>

@@ -1,11 +1,14 @@
 package com.example.atheneum.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -28,8 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -44,14 +47,28 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
     private MainActivity mainActivity = null;
     private Context context;
 
+    /**
+     * The User list view.
+     */
     ListView userListView;
+    /**
+     * The User list.
+     */
     ArrayList<User> userList;
 
+    /**
+     * The Database object for Firebase
+     */
     FirebaseDatabase db;
+    /**
+     * The reference to the Firebase Database object.
+     */
     DatabaseReference dbRef;
 
     private static final String TAG = "Search";
 
+    //See: https://stackoverflow.com/questions/27425547/cannot-resolve-method-getsupportfragmentmanager-inside-fragment
+    //See: https://stackoverflow.com/questions/7645880/listview-with-onitemclicklistener-android
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -70,10 +87,16 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
         userListView = (ListView) this.view.findViewById(R.id.userListView);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            //See: https://stackoverflow.com/questions/7073577/how-to-get-object-from-listview-in-setonitemclicklistener-in-android
+            //See: https://stackoverflow.com/questions/2139134/how-to-send-an-object-from-one-android-activity-to-another-using-intents
+            //See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+                User selectedUser = (User) parent.getAdapter().getItem(position);
+//                Intent intent = new Intent(getActivity().getBaseContext(), MainActivity.class);
+//                intent.putExtra("user", (new Gson()).toJson(selectedUser));
+//                getActivity().startActivity(intent);
+                ((MainActivity)getActivity()).passDatatoFragment(selectedUser);
             }
         });
 
@@ -113,6 +136,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
     //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
     //See: https://developer.android.com/reference/android/widget/SearchView
+    //See: https://www.youtube.com/watch?v=_7B5iuyhIFk
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
 
@@ -193,3 +217,4 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         return false;
     }
 }
+

@@ -36,18 +36,12 @@ import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -110,7 +104,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -152,5 +146,16 @@ public class MainActivity extends AppCompatActivity
     // taken from https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+    /**
+     * Method for search user fragment to pass data to view profile fragment.
+     * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
+     * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
+     */
+    public void passDatatoFragment(User user) {
+        getIntent().putExtra("user", user);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
     }
 }
