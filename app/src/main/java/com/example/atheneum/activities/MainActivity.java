@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -35,13 +36,7 @@ import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -70,7 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
 
         // Update user information in the navbar
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
@@ -99,12 +94,27 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //See: https://stackoverflow.com/questions/7992216/android-fragment-handle-back-button-press
+    //See: https://stackoverflow.com/questions/14460109/android-fragmenttransaction-addtobackstack-confusion
+    //See: https://stackoverflow.com/questions/41431546/android-peek-backstack-without-popping
     @Override
     public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        FragmentManager.BackStackEntry topBackStackEntry = getSupportFragmentManager().getBackStackEntryAt(count - 1);
+        String tag = topBackStackEntry.getName();
+
+        Fragment homeFragment = (Fragment) getSupportFragmentManager().findFragmentByTag("Home");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (tag == "Home") {
+            Log.d(TAG, "Prevented removing home frag");
+            return;
+        } else if (count > 0) {
+            Log.d(TAG, "Popped top fragment from stack");
+            getSupportFragmentManager().popBackStack();
         } else {
+            Log.d(TAG, "BACKPRESS");
             super.onBackPressed();
         }
     }
@@ -117,15 +127,15 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.nav_home) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
         } else if (id == R.id.nav_profile) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
         } else if (id == R.id.nav_addbook)  {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).addToBackStack("AddBook").commit();
         } else if (id == R.id.nav_owner) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).addToBackStack("BorrowerPage").commit();
 
 
         } else if (id == R.id.nav_logout) {
@@ -151,4 +161,5 @@ public class MainActivity extends AppCompatActivity
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
+
 }
