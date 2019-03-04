@@ -80,6 +80,7 @@ public class BorrowerPageFragment extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                requestList.clear();
                 for (DataSnapshot item: dataSnapshot.getChildren()) {
                     Request requestItem = new Request();
                     long leastSigBits = item.child(getString(R.string.db_book_bookID))
@@ -101,7 +102,7 @@ public class BorrowerPageFragment extends Fragment {
                     requestItem.setRequester(requester);
                     Request.Status status = item.child(getString(R.string.db_book_request_status)).getValue(Request.Status.class);
                     requestItem.setrStatus(status);
-                    
+
                     Log.d(TAG, "find request "+requestItem.getBookID().toString());
                     requestList.add(requestItem);
                     requestAdapter.notifyDataSetChanged();
