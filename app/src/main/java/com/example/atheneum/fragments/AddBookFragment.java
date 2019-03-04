@@ -16,6 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
@@ -29,6 +36,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class AddBookFragment extends Fragment {
     private View view;
@@ -123,7 +133,61 @@ public class AddBookFragment extends Fragment {
         Log.i(TAG, "AddBook*** Auto-populate requested");
         this.isbn = Book.INVALILD_ISBN;
         if (!TextUtils.isEmpty(isbnEditText.getText())) {
-             isbn = Integer.parseInt(isbnEditText.getText().toString());
+            String isbn_str = isbnEditText.getText().toString();
+            // auto populate with Google Books API
+            String apiUrlString = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn_str;
+            String requestResponse;
+            final StringBuilder mStringBuilder = new StringBuilder();
+
+            // taken from https://developer.android.com/training/volley/simple.html
+            // Instantiate the RequestQueue.
+            RequestQueue queue = Volley.newRequestQueue(mainActivity);
+
+            final EditText titleEditText = this.view.findViewById(R.id.bookTitleEditText);
+            final EditText authorEditText = this.view.findViewById(R.id.authorEditText);
+            final EditText descEditText = this.view.findViewById(R.id.descEditText);
+
+            // Request a JSON response from the provided URL.
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, apiUrlString, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // check if at least one item exists with that isbn
+                            try {
+                                if (response.getInt("totalItems") > 0) {
+                                    JSONObject firstBookInfo = response.getJSONArray("items").getJSONObject(0).getJSONObject("volumeInfo");
+
+                                    titleEditText.setText(firstBookInfo.getString("title"));
+                                    JSONArray authorArr = firstBookInfo.getJSONArray("authors");
+                                    String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
+//
+                                    for (int i = 1; i < authorArr.length(); i++) {
+                                        authorListString += ", " + authorArr.getString(i);
+                                    }
+                                    authorEditText.setText(authorListString);
+
+                                    descEditText.setText(firstBookInfo.getString("description"));
+                                }
+                            }
+                            catch(Exception e) {
+                                Log.e(TAG, "AddBook *** JSONObject error");
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO: Handle error
+                            Log.e(TAG, "AddBook *** VolleyError");
+                        }
+                    });
+
+
+            // Add the request to the RequestQueue.
+            queue.add(jsonObjectRequest);
 
         }
         else {
