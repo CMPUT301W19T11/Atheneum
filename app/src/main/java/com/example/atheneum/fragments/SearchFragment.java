@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -14,8 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
@@ -66,18 +69,28 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         dbRef = db.getReference("users");
 
         userListView = (ListView) this.view.findViewById(R.id.userListView);
+        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+            }
+        });
+
         userList = new ArrayList<>();
         final ArrayList<String> userNameList = new ArrayList<>();
 
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "On Data Change was Called");
+//                Log.d(TAG, "On Data Change was Called");
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     User aUser = child.getValue(User.class);
                     userList.add(aUser);
                     userNameList.add(aUser.getUserName());
                 }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
+                userListView.setAdapter(adapter);
             }
 
             @Override
@@ -86,8 +99,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
             }
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
-        userListView.setAdapter(adapter);
+
 
         return this.view;
     }
@@ -112,15 +124,23 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "On Query Text Submit was Called");
                 db = FirebaseDatabase.getInstance();
                 dbRef = db.getReference("users");
                 dbRef.orderByChild("userName").equalTo(query).addListenerForSingleValueEvent(new ValueEventListener() {
+                    final ArrayList<String> userNameList = new ArrayList<>();
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            Log.d(TAG, "PARENT: "+ child.getKey());
-                            Log.d(TAG,""+ child.child("userName").getValue());
+                            User aUser = child.getValue(User.class);
+                            userList.add(aUser);
+                            userNameList.add(aUser.getUserName());
                         }
+                        if (userNameList.isEmpty()) {
+                            Toast.makeText(getActivity(), "No exact matches found for search query", Toast.LENGTH_SHORT).show();
+                        }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
+                        userListView.setAdapter(adapter);
                     }
 
                     @Override
@@ -136,11 +156,12 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
                 return false;
             }
         });
-        sv.setOnQueryTextListener(this);
+//        sv.setOnQueryTextListener(this);
         sv.setIconifiedByDefault(false);
         sv.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "On CLICKC was Called");
             }
         });
 
@@ -163,6 +184,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "OUTER ONQueryTextSubmit Called");
         return true;
     }
 
