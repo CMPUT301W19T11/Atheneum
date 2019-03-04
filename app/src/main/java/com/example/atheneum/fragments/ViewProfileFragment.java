@@ -13,11 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.User;
+
+import org.w3c.dom.Text;
 
 /**
  * The fragment for users to view their own profiles
@@ -49,12 +52,20 @@ public class ViewProfileFragment extends Fragment {
 
         user = (User) i.getSerializableExtra("user");
 
+        profilePicture = view.findViewById(R.id.user_profile_pic);
         String userPic = user.getPhotos().get(0);
-
         bitmapPhoto = StringToBitMap(userPic);
         profilePicture.setImageBitmap(bitmapPhoto);
 
-        profilePicture = view.findViewById(R.id.user_profile_pic);
+        TextView username = view.findViewById(R.id.username);
+        TextView phone = view.findViewById(R.id.phone);
+        TextView borrower_rating = view.findViewById(R.id.borrower_rating);
+        TextView owner_rating = view.findViewById(R.id.owner_rating);
+
+        username.setText("User Name: " + user.getUserName());
+        phone.setText("Phone Number: " + user.getPhoneNumber());
+        borrower_rating.setText("Borrower Rating: " + user.getBorrowerRate());
+        owner_rating.setText("Owner Rating: " + user.getOwnerRate());
 
         if (getActivity() instanceof MainActivity) {
             mainActivity = (MainActivity) getActivity();

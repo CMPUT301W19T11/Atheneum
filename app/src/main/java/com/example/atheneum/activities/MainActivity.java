@@ -37,7 +37,11 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -114,6 +118,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
         } else if (id == R.id.nav_profile) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference dbRef = db.getReference("users").child(firebaseUser.getUid());
+
+            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    User thisUser = dataSnapshot.getValue(User.class);
+                    getIntent().putExtra("user", thisUser);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
             fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
         } else if (id == R.id.nav_addbook)  {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).commit();
