@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.DatabaseRefUtils;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -28,10 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
  *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_22.html
  */
 public class UserViewModel extends ViewModel {
-    // Can't use getString(R.string.db_users) here for some reason
-    private static final DatabaseReference USER_TABLE_REF =
-            FirebaseDatabase.getInstance().getReference().child("users");
-
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
@@ -47,7 +44,7 @@ public class UserViewModel extends ViewModel {
      * @param userID User ID of user queried in the database
      */
     public UserViewModel(String userID) {
-        userRef = USER_TABLE_REF.child(userID);
+        userRef = DatabaseRefUtils.USERS_REF.child(userID);
         queryLiveData = new FirebaseQueryLiveData(userRef);
         userLiveData = Transformations.map(queryLiveData, new Deserializer());
     }
