@@ -29,7 +29,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-//See: https://www.youtube.com/watch?v=jJYSm_yrT7I
+/**
+ * The fragment for Searching.
+ * See: https://stackoverflow.com/questions/7230893/android-search-with-fragments
+ * See: https://stackoverflow.com/questions/9343241/passing-data-between-a-fragment-and-its-container-activity
+ * See: https://www.youtube.com/watch?v=jJYSm_yrT7I
+ */
 public class SearchFragment extends Fragment implements SearchView.OnQueryTextListener {
     private View view;
     private MainActivity mainActivity = null;
@@ -89,12 +94,13 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         setHasOptionsMenu(true);
     }
 
+
     //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
     //See: https://developer.android.com/reference/android/widget/SearchView
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.search_menu, menu); // removed to not double the menu items
+        inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.search_menu);
         SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
@@ -126,11 +132,11 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
                 return false;
             }
         });
+        sv.setOnQueryTextListener(this);
         sv.setIconifiedByDefault(false);
         sv.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
             }
         });
 
