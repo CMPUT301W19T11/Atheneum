@@ -70,6 +70,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "On Data Change was Called");
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     User aUser = child.getValue(User.class);
                     userList.add(aUser);
@@ -82,7 +83,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
             }
         });
 
-        ArrayAdapter<User> adapter = new ArrayAdapter<>(getActivity(), R.layout.fragment_search, userList);
+        ArrayAdapter<User> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userList);
         userListView.setAdapter(adapter);
 
         return this.view;
