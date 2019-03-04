@@ -92,7 +92,9 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
             //See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User selectedUser = (User) parent.getAdapter().getItem(position);
+                //TODO fix this
+//                User selectedUser = (User) parent.getAdapter().getItem(position);
+                User selectedUser = userList.get(position); //TODO test this instead of above
 //                Intent intent = new Intent(getActivity().getBaseContext(), MainActivity.class);
 //                intent.putExtra("user", (new Gson()).toJson(selectedUser));
 //                getActivity().startActivity(intent);
