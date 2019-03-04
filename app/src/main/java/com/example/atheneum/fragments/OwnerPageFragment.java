@@ -73,7 +73,7 @@ public class OwnerPageFragment extends Fragment {
         ownerBooksRecyclerView.setHasFixedSize(true);
         ownerBooksLayoutManager = new LinearLayoutManager(this.context);
         ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
-        ownerBooksRecyclerAdapter = new OwnerBooksAdapter(ownerBooks, context);
+        ownerBooksRecyclerAdapter = new OwnerBooksAdapter(ownerBooks);
         ownerBooksRecyclerView.setAdapter(ownerBooksRecyclerAdapter);
         ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL));

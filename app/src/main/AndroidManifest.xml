@@ -13,11 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
+        <!--android:theme="@style/AppTheme.NoActionBar" ommitted-->
         <activity
             android:name=".activities.CompleteRegistrationActivity"
-            android:label="@string/title_activity_complete_registration"></activity>
+            android:label="@string/title_activity_complete_registration">
+        </activity>
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.FirebaseUIAuthActivity">
             <intent-filter>
@@ -26,10 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.BookInfoActivity"
-            android:label="@string/title_activity_book_info"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
