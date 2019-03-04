@@ -14,8 +14,8 @@ public class Book {
     private String description = null;
     private String author = null;
     // owner and borrower are represented by the user ID
-    private String ownerID;
-    private String borrowerID;
+    private String ownerID = "";
+    private String borrowerID = "";
 
     private Status status = null;
     private ArrayList<Request> requests = new ArrayList<Request>();
@@ -60,8 +60,8 @@ public class Book {
         this.title = title;
         this.description = description;
         this.author = author;
-        this.ownerID = owner.getUserID();
-        this.borrowerID = borrower.getUserID();
+        this.ownerID = owner == null ? "" : owner.getUserID();
+        this.borrowerID = borrower == null ? "" : borrower.getUserID();
         this.status = status;
         this.bookID = UUID.randomUUID().toString();
     }
@@ -75,8 +75,8 @@ public class Book {
         this.title = title;
         this.description = description;
         this.author = author;
-        this.ownerID = ownerID;
-        this.borrowerID = borrowerID;
+        this.ownerID = ownerID == null ? "" : ownerID;
+        this.borrowerID = borrowerID == null ? "" : borrowerID;
         this.status = status;
         this.bookID = UUID.randomUUID().toString();
     }
@@ -165,15 +165,6 @@ public class Book {
     /**
      * Sets ownerID of the book
      *
-     * @param owner the owner object
-     */
-    public void setOwnerID(User owner) {
-        this.ownerID = owner.getUserID();
-    }
-
-    /**
-     * Sets ownerID of the book
-     *
      * @param ownerID the User object's string ID
      */
     public void setOwnerID(String ownerID) {
@@ -189,14 +180,6 @@ public class Book {
         return borrowerID;
     }
 
-    /**
-     * Sets borrowerID of the book
-     *
-     * @param borrower the borrower
-     */
-    public void setBorrowerID(User borrower) {
-        this.borrowerID = borrower.getUserID();
-    }
 
     /**
      * Sets borrowerID of the book
@@ -276,13 +259,6 @@ public class Book {
     public String getBookID() {
         return bookID;
     }
-
-    /**
-     * Sets unique book id.
-     *
-     * @param bookID A UUID object of the book ID
-     */
-    public void setBookID(UUID bookID) { this.bookID = bookID.toString(); }
 
     /**
      * Sets unique book id.
