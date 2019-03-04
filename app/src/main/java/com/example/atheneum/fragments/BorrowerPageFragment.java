@@ -1,15 +1,10 @@
 package com.example.atheneum.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +15,6 @@ import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
-import com.example.atheneum.utils.OwnerBooksAdapter;
 import com.example.atheneum.utils.requestAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -58,16 +52,14 @@ public class BorrowerPageFragment extends Fragment {
         this.context = getContext();
         requestView = (ListView) this.view.findViewById(R.id.requestView);
 
-
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
-
         }
 
         /**
-         * Retrive request
+         * Retrieve request
          */
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -76,7 +68,6 @@ public class BorrowerPageFragment extends Fragment {
         /**
          * looping the request list
          */
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -133,7 +124,7 @@ public class BorrowerPageFragment extends Fragment {
 
         final FragmentManager fragmentManager = getFragmentManager();
 
-        addRequest = this.view.findViewById(R.id.newrequest);
+        addRequest = this.view.findViewById(R.id.new_request);
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
