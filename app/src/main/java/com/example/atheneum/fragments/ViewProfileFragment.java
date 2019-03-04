@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.w3c.dom.Text;
 
@@ -36,6 +39,8 @@ public class ViewProfileFragment extends Fragment {
     private Bitmap bitmapPhoto;
 
     private User user;
+
+    private static final String TAG = "View Profile";
 
     public ViewProfileFragment() {
         // Required empty public constructor
@@ -66,8 +71,8 @@ public class ViewProfileFragment extends Fragment {
         TextView borrower_rating = view.findViewById(R.id.borrower);
         TextView owner_rating = view.findViewById(R.id.owner);
 
-        username.setText("User Name: " + user.getUserName());
-        phone.setText("Phone Number: " + user.getPhoneNumber());
+        username.setText(user.getUserName());
+        phone.setText(user.getPhoneNumber());
 
         borrower_rating.setText(Double.toString(user.getBorrowerRate()));
         owner_rating.setText(Double.toString(user.getOwnerRate()));
@@ -78,35 +83,43 @@ public class ViewProfileFragment extends Fragment {
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.profile_title));
         }
 
+        FirebaseUser currUser = FirebaseAuthUtils.getCurrentUser();
         FloatingActionButton triggerEditUserProfile = view.findViewById(R.id.trigger_edit_user_profile);
-        triggerEditUserProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getActivity() instanceof MainActivity) {
-                    EditProfileFragment editProfileFragment = new EditProfileFragment();
-                    editProfileFragment.setEditProfileCompleteListener(new EditProfileFragment.OnEditProfileCompleteListener() {
-                        private void startViewProfileFragment(EditProfileFragment fragment) {
-                            fragment.getActivity()
-                                    .getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.content_frame, new ViewProfileFragment())
-                                    .commit();
-                        }
+        Log.d(TAG, "curr user UID is " + currUser.getUid());
+        Log.d(TAG, "selected user USERID is " + user.getUserID());
+        if (!currUser.getUid().equals(user.getUserID())) {
+            Log.d(TAG, "hiding the FAB");
+            triggerEditUserProfile.hide();
+        } else {
+            triggerEditUserProfile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (getActivity() instanceof MainActivity) {
+                        EditProfileFragment editProfileFragment = new EditProfileFragment();
+                        editProfileFragment.setEditProfileCompleteListener(new EditProfileFragment.OnEditProfileCompleteListener() {
+                            private void startViewProfileFragment(EditProfileFragment fragment) {
+                                fragment.getActivity()
+                                        .getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.content_frame, new ViewProfileFragment())
+                                        .commit();
+                            }
 
-                        @Override
-                        public void onSuccess(EditProfileFragment fragment) {
-                            startViewProfileFragment(fragment);
-                        }
+                            @Override
+                            public void onSuccess(EditProfileFragment fragment) {
+                                startViewProfileFragment(fragment);
+                            }
 
-                        @Override
-                        public void onFailure(EditProfileFragment fragment) {
-                            startViewProfileFragment(fragment);
-                        }
-                    });
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, editProfileFragment).commit();
+                            @Override
+                            public void onFailure(EditProfileFragment fragment) {
+                                startViewProfileFragment(fragment);
+                            }
+                        });
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, editProfileFragment).commit();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return view;
     }
