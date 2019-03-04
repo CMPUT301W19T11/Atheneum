@@ -104,54 +104,7 @@ public class OwnerPageFragment extends Fragment {
                     //manually parse every field in book
                     Iterable<DataSnapshot> dataSnapshotIterable = dataSnapshot.getChildren();
                     for (DataSnapshot data : dataSnapshotIterable) {
-                        Book book = new Book();
-                        book.setIsbn(data.child(getString(R.string.db_book_isbn))
-                                .getValue() != null ?
-                                (long)data.child(getString(R.string.db_book_isbn))
-                                        .getValue() : null);
-                        book.setTitle(data.child(getString(R.string.db_book_title))
-                                .getValue() != null ?
-                                (String)data.child(getString(R.string.db_book_title))
-                                        .getValue() : null);
-                        book.setDescription(data.child(getString(R.string.db_book_description))
-                                .getValue() != null ?
-                                (String)data.child(getString(R.string.db_book_description))
-                                        .getValue() : null);
-                        book.setAuthor(data.child(getString(R.string.db_book_author))
-                                .getValue() != null ?
-                                (String)data.child(getString(R.string.db_book_author))
-                                        .getValue() : null);
-                        //book.setOwner(data.child("owner").getValue() != null ?
-                        //        (User)data.child("owner").getValue() : null);
-                        //book.setBorrower(data.child("borrower").getValue() != null ?
-                        //        (User)data.child("borrower").getValue() : null);
-                        book.setStatus(data.child(getString(R.string.db_book_status))
-                                .getValue() != null ?
-                                Book.Status.valueOf(
-                                        (String)data.child(getString(R.string.db_book_status))
-                                                .getValue()) : null);
-                        book.setRequests(data.child(getString(R.string.db_book_requests))
-                                .getValue() != null ?
-                                (ArrayList<Request>)data.child(getString(R.string.db_book_requests))
-                                        .getValue() : null);
-                        long leastSigBits = data.child(getString(R.string.db_book_bookID))
-                                .child(getString(R.string.db_book_bookID_leastSigBits))
-                                .getValue() != null ? (long)data.child(
-                                        getString(R.string.db_book_bookID))
-                                .child(getString(R.string.db_book_bookID_leastSigBits))
-                                .getValue() : null;
-                        long mostSigBits = data.child(getString(R.string.db_book_bookID))
-                                .child(getString(R.string.db_book_bookID_mostSigBits))
-                                .getValue() != null ? (long)data.child(
-                                getString(R.string.db_book_bookID))
-                                .child(getString(R.string.db_book_bookID_mostSigBits))
-                                .getValue() : null;
-                        UUID bookID = new UUID(mostSigBits, leastSigBits);
-                        book.setBookID(bookID);
-                        book.setPhotos(data.child(getString(R.string.db_book_photos))
-                                .getValue() != null ?
-                                (ArrayList<String>)data.child(getString(R.string.db_book_photos))
-                                        .getValue() : null);
+                        Book book = data.getValue(Book.class);
                         ownerBooks.add(book);
 
                         System.out.println(ownerBooks);

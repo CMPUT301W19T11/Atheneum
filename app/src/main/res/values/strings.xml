@@ -36,6 +36,10 @@
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
 
+    <!--Strings for profile page-->
+    <string name="profile_title">Profile</string>
+    <!--End of Strings for profile page-->
+
     <!--Strings for EditProfileFragment-->
     <string name="hint_email">E-mail</string>
     <string name="hint_phone_number">Phone Number</string>
@@ -71,4 +75,8 @@
     <string name="requests">Requests</string>
     <string name="accepted">Accepted</string>
     <!--End of Strings for borrower page-->
+
+    <!--Strings for search page-->
+    <string name="search_page_title">Search</string>
+    <!--End of Strings for search page-->
 </resources>
