@@ -172,12 +172,12 @@ public class AddBookFragment extends Fragment {
                             owner = dataSnapshot.getValue(User.class);
                             Log.i(TAG, "AddBook*** Got a user");
 
-                            newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
+                            newBook = new Book(isbn, title, desc, author, owner.getUserID(), null, Book.Status.AVAILABLE);
 
                             // add book to the owner's collection
                             DatabaseReference ownerColref = db.getReference().child(getString(R.string.db_ownerCollection)).child(owner.getUserID());
                             ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
-                            Log.i(TAG, "Book added, id=" + newBook.getBookID().toString());
+                            Log.i(TAG, "Book added, id=" + newBook.getBookID());
 
                             // hide keyboard and close fragment
                             // keyboard hiding taken from:

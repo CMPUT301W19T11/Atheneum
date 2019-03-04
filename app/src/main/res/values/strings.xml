@@ -25,6 +25,8 @@
     <string name="db_book_bookID_leastSigBits">leastSignificantBits</string>
     <string name="db_book_bookID_mostSigBits">mostSignificantBits</string>
     <string name="db_book_photos">photos</string>
+    <string name="db_book_requester">requester</string>
+    <string name="db_book_request_status">rStatus</string>
     <!--End of Firebase table names-->
 
     <!-- Strings related to login -->
@@ -33,6 +35,10 @@
     <string name="unknown_error">Unknown error!</string>
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
+
+    <!--Strings for profile page-->
+    <string name="profile_title">Profile</string>
+    <!--End of Strings for profile page-->
 
     <!-- Strings for adding/editing books -->
     <string name="add_book_prompt">Add a Book</string>
@@ -67,4 +73,8 @@
     <string name="title_activity_book_info">BookInfoActivity</string>
     <string name="title_activity_add_book">AddBookActivity</string>
     <!--End of Strings for borrower page-->
+
+    <!--Strings for search page-->
+    <string name="search_page_title">Search</string>
+    <!--End of Strings for search page-->
 </resources>

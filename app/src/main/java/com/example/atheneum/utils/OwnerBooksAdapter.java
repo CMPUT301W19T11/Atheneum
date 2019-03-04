@@ -88,7 +88,6 @@ public class OwnerBooksAdapter extends
                 .inflate(R.layout.book_card, parent, false);
         final MeasurementViewHolder vh = new MeasurementViewHolder(v);
 
-
         return vh;
     }
 
