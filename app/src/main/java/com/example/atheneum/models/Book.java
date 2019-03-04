@@ -17,7 +17,7 @@ public class Book {
     private User borrower = null;
     private Status status = null;
     private ArrayList<Request> requests = new ArrayList<Request>();
-    private UUID bookID = null;
+    private String bookID;
     private ArrayList<String> photos = new ArrayList<String>();
 
     /**
@@ -46,7 +46,7 @@ public class Book {
      * Instantiates a new Book.
      */
     public Book() {
-        this.bookID = UUID.randomUUID();
+        this.bookID = UUID.randomUUID().toString();
     }
 
     /**
@@ -61,7 +61,7 @@ public class Book {
         this.owner = owner;
         this.borrower = borrower;
         this.status = status;
-        this.bookID = UUID.randomUUID();
+        this.bookID = UUID.randomUUID().toString();
     }
 
     /**
@@ -238,16 +238,23 @@ public class Book {
      *
      * @return the book id
      */
-    public UUID getBookID() {
+    public String getBookID() {
         return bookID;
     }
 
     /**
      * Sets unique book id.
      *
-     * @param bookID
+     * @param bookID A UUID object of the book ID
      */
-    public void setBookID(UUID bookID) { this.bookID = bookID; }
+    public void setBookID(UUID bookID) { this.bookID = bookID.toString(); }
+
+    /**
+     * Sets unique book id.
+     *
+     * @param bookID A string represetnation of the book ID
+     */
+    public void setBookID(String bookID) { this.bookID = bookID; }
 
     /**
      * Gets photos for the book
