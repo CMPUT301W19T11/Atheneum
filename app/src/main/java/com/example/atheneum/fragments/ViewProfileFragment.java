@@ -53,21 +53,24 @@ public class ViewProfileFragment extends Fragment {
         user = (User) i.getSerializableExtra("user");
 
         profilePicture = view.findViewById(R.id.user_profile_pic);
-        if (user.getPhotos() != null) {
+        try {
             String userPic = user.getPhotos().get(0);
             bitmapPhoto = StringToBitMap(userPic);
             profilePicture.setImageBitmap(bitmapPhoto);
+        } catch (Exception ignore) {
+
         }
 
         TextView username = view.findViewById(R.id.username);
         TextView phone = view.findViewById(R.id.phone);
-        TextView borrower_rating = view.findViewById(R.id.borrower_rating);
-        TextView owner_rating = view.findViewById(R.id.owner_rating);
+        TextView borrower_rating = view.findViewById(R.id.borrower);
+        TextView owner_rating = view.findViewById(R.id.owner);
 
         username.setText("User Name: " + user.getUserName());
         phone.setText("Phone Number: " + user.getPhoneNumber());
-        borrower_rating.setText("Borrower Rating: " + user.getBorrowerRate());
-        owner_rating.setText("Owner Rating: " + user.getOwnerRate());
+
+        borrower_rating.setText(Double.toString(user.getBorrowerRate()));
+        owner_rating.setText(Double.toString(user.getOwnerRate()));
 
         if (getActivity() instanceof MainActivity) {
             mainActivity = (MainActivity) getActivity();
