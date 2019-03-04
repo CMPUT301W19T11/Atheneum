@@ -95,7 +95,8 @@ public class OwnerBooksAdapter extends
             @Override
             public void onClick(View v){
                 Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
-                UUID bookID = ownerBooks.get(vh.getAdapterPosition()).getBookID();
+//                UUID bookID = ownerBooks.get(vh.getAdapterPosition()).getBookID();
+                String bookID = ownerBooks.get(vh.getAdapterPosition()).getBookID();
                 Intent intent = new Intent(parent.getContext(), BookInfoFragment.class);
                 intent.putExtra("bookID", bookID);
                 parent.getContext().startActivity(intent);

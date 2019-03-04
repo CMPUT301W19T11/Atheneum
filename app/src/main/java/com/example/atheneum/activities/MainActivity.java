@@ -27,6 +27,7 @@ import com.example.atheneum.fragments.AddBookFragment;
 import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
+import com.example.atheneum.fragments.SearchFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
@@ -40,8 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -128,15 +128,35 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
-        } else if (id == R.id.nav_profile) {
+        } else if (id == R.id.nav_profile) 
+
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference dbRef = db.getReference("users").child(firebaseUser.getUid());
+
+            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    User thisUser = dataSnapshot.getValue(User.class);
+                    getIntent().putExtra("user", thisUser);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
             fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
+
         } else if (id == R.id.nav_addbook)  {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).addToBackStack("AddBook").commit();
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).addToBackStack("BorrowerPage").commit();
-
+        } else if (id == R.id.nav_search) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).commit();
 
         } else if (id == R.id.nav_logout) {
             // Sign out of account and go back to authentication screen
@@ -160,6 +180,17 @@ public class MainActivity extends AppCompatActivity
     // taken from https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+    /**
+     * Method for search user fragment to pass data to view profile fragment.
+     * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
+     * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
+     */
+    public void passDatatoFragment(User user) {
+        getIntent().putExtra("user", user);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
     }
 
 }
