@@ -121,7 +121,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
         } else if (id == R.id.nav_addbook)  {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).commit();
+            Intent intent = new Intent(this, AddBookActivity.class);
+            startActivity(intent);
+            //fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).commit();
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
         } else if (id == R.id.nav_borrower) {

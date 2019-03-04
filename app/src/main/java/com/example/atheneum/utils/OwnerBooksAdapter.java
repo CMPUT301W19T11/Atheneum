@@ -112,13 +112,12 @@ public class OwnerBooksAdapter extends
             public void onClick(View v){
 //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
                 Log.i("OwnerBook", "clicked on a book");
-                UUID bookID = ownerBooks.get(holder.getAdapterPosition()).getBookID();
-                String sBookId = bookID.toString();
+                String bookID = ownerBooks.get(holder.getAdapterPosition()).getBookID();
                 Intent intent = new Intent(mContext, BookInfoActivity.class);
-                intent.putExtra("bookID", sBookId);
-                intent.putExtra("position", position);
-
-                mActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
+                intent.putExtra("bookID", bookID);
+                //intent.putExtra("position", position);
+                mContext.startActivity(intent);
+                //mActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
 
             }
         });

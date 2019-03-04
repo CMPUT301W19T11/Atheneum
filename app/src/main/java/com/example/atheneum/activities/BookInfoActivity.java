@@ -102,18 +102,12 @@ public class BookInfoActivity extends AppCompatActivity {
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    Log.i("title", dataSnapshot.child("title").getValue(String.class));
-//                    Log.i("author", dataSnapshot.child("author").getValue(String.class));
-                    String tItle = dataSnapshot.child("title").getValue(String.class);
-                    textTitle.setText(tItle);
-                    String aUthor = dataSnapshot.child("author").getValue(String.class);
-                    textAuthor.setText(aUthor);
-//                    String Isbn = dataSnapshot.child("isbn").getValue(Long.class);
-//                    textIsbn.setText(Isbn);
-                    String desc = dataSnapshot.child("description").getValue(String.class);
-                    textDesc.setText(desc);
-                    String stat = dataSnapshot.child("status").getValue(String.class);
-                    textStatus.setText(stat);
+                    Book book = dataSnapshot.getValue(Book.class);
+                    textTitle.setText(book.getTitle());
+                    textAuthor.setText(book.getAuthor());
+                    textIsbn.setText(String.valueOf(book.getIsbn()));
+                    textDesc.setText(book.getDescription());
+                    textStatus.setText(String.valueOf(book.getStatus()));
                 }
 
                 @Override
@@ -136,10 +130,10 @@ public class BookInfoActivity extends AppCompatActivity {
         if(firebaseUser != null) {
             ref.child(bookID).removeValue();
         }
-        int position = Integer.valueOf(getIntent().getStringExtra("position"));
-        Intent intent = new Intent();
-        intent.putExtra(OwnerBooksAdapter.REQUEST_DELETE_ENTRY, BOOK_INFO_CHANGED);
-        setResult(OwnerBooksAdapter.REQUEST_DELETE_ENTRY);
+        //int position = Integer.valueOf(getIntent().getStringExtra("position"));
+        //Intent intent = new Intent();
+        //intent.putExtra(OwnerBooksAdapter.REQUEST_DELETE_ENTRY, BOOK_INFO_CHANGED);
+        //setResult(OwnerBooksAdapter.REQUEST_DELETE_ENTRY);
 
 
 

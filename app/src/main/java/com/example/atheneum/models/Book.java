@@ -13,11 +13,13 @@ public class Book {
     private String title = null;
     private String description = null;
     private String author = null;
-    private User owner = null;
-    private User borrower = null;
+    // owner and borrower are represented by the user ID
+    private String ownerID = "";
+    private String borrowerID = "";
+
     private Status status = null;
     private ArrayList<Request> requests = new ArrayList<Request>();
-    private UUID bookID = null;
+    private String bookID;
     private ArrayList<String> photos = new ArrayList<String>();
 
     /**
@@ -46,7 +48,7 @@ public class Book {
      * Instantiates a new Book.
      */
     public Book() {
-        this.bookID = UUID.randomUUID();
+        this.bookID = UUID.randomUUID().toString();
     }
 
     /**
@@ -58,10 +60,25 @@ public class Book {
         this.title = title;
         this.description = description;
         this.author = author;
-        this.owner = owner;
-        this.borrower = borrower;
+        this.ownerID = owner == null ? "" : owner.getUserID();
+        this.borrowerID = borrower == null ? "" : borrower.getUserID();
         this.status = status;
-        this.bookID = UUID.randomUUID();
+        this.bookID = UUID.randomUUID().toString();
+    }
+
+    /**
+     * Instantiates a new Book with specified arguments.
+     */
+    public Book(long isbn, String title, String description, String author, String ownerID,
+                String borrowerID, Status status) {
+        this.isbn = isbn;
+        this.title = title;
+        this.description = description;
+        this.author = author;
+        this.ownerID = ownerID == null ? "" : ownerID;
+        this.borrowerID = borrowerID == null ? "" : borrowerID;
+        this.status = status;
+        this.bookID = UUID.randomUUID().toString();
     }
 
     /**
@@ -137,39 +154,40 @@ public class Book {
     }
 
     /**
-     * Gets owner of the book
+     * Gets ownerID of the book
      *
-     * @return the owner
+     * @return the owner's user ID
      */
-    public User getOwner() {
-        return owner;
+    public String getOwnerID() {
+        return ownerID;
     }
 
     /**
-     * Sets owner of the book
+     * Sets ownerID of the book
      *
-     * @param owner the owner
+     * @param ownerID the User object's string ID
      */
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setOwnerID(String ownerID) {
+        this.ownerID = ownerID;
     }
 
     /**
-     * Gets borrower of the book
+     * Gets borrowerID of the book
      *
-     * @return the borrower
+     * @return the borrower's user ID
      */
-    public User getBorrower() {
-        return borrower;
+    public String getBorrowerID() {
+        return borrowerID;
     }
 
+
     /**
-     * Sets borrower of the book
+     * Sets borrowerID of the book
      *
-     * @param borrower the borrower
+     * @param borrowerID the borrower's string user ID
      */
-    public void setBorrower(User borrower) {
-        this.borrower = borrower;
+    public void setBorrowerID(String borrowerID) {
+        this.borrowerID = borrowerID;
     }
 
     /**
@@ -238,16 +256,16 @@ public class Book {
      *
      * @return the book id
      */
-    public UUID getBookID() {
+    public String getBookID() {
         return bookID;
     }
 
     /**
      * Sets unique book id.
      *
-     * @param bookID
+     * @param bookID A string represetnation of the book ID
      */
-    public void setBookID(UUID bookID) { this.bookID = bookID; }
+    public void setBookID(String bookID) { this.bookID = bookID; }
 
     /**
      * Gets photos for the book

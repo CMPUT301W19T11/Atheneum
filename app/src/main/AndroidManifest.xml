@@ -17,7 +17,7 @@
         <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
         <activity
             android:name=".activities.CompleteRegistrationActivity"
-            android:label="@string/title_activity_complete_registration"></activity>
+            android:label="@string/title_activity_complete_registration" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.FirebaseUIAuthActivity">
             <intent-filter>
@@ -29,6 +29,10 @@
         <activity
             android:name=".activities.BookInfoActivity"
             android:label="@string/title_activity_book_info"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.AddBookActivity"
+            android:label="@string/title_activity_add_book"
             android:theme="@style/AppTheme"></activity>
     </application>
 
