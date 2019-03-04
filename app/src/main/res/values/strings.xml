@@ -25,6 +25,8 @@
     <string name="db_book_bookID_leastSigBits">leastSignificantBits</string>
     <string name="db_book_bookID_mostSigBits">mostSignificantBits</string>
     <string name="db_book_photos">photos</string>
+    <string name="db_book_requester">requester</string>
+    <string name="db_book_request_status">rStatus</string>
     <!--End of Firebase table names-->
 
     <!-- Strings related to login -->
