@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,8 @@ public class OwnerPageFragment extends Fragment {
     private RecyclerView ownerBooksRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager ownerBooksLayoutManager;
+
+    private static final String TAG = OwnerPageFragment.class.getSimpleName();
 
     /**
      * Instantiates a new Owner page fragment.
@@ -136,6 +139,7 @@ public class OwnerPageFragment extends Fragment {
                 // Called when there is an error getting data. You may want to update
                 // your UI to display an error message to the user.
                 // ...
+                Log.i(TAG, e.getMessage());
             }
         };
 
