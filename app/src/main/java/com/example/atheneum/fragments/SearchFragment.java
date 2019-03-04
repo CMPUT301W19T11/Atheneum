@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -66,6 +67,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
         userListView = (ListView) this.view.findViewById(R.id.userListView);
         userList = new ArrayList<>();
+        final ArrayList<String> userNameList = new ArrayList<>();
 
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -74,6 +76,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     User aUser = child.getValue(User.class);
                     userList.add(aUser);
+                    userNameList.add(aUser.getUserName());
                 }
             }
 
@@ -83,7 +86,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
             }
         });
 
-        ArrayAdapter<User> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
         userListView.setAdapter(adapter);
 
         return this.view;
