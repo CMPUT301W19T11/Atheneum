@@ -1,14 +1,10 @@
 package com.example.atheneum.fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -31,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -55,7 +50,10 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
      * The User list.
      */
     ArrayList<User> userList;
-
+    /**
+     * The default user list with all user names
+     */
+    ArrayList<String> defaultUserNameList = new ArrayList<>();
     /**
      * The Database object for Firebase
      */
@@ -92,12 +90,8 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
             //See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO fix this
 //                User selectedUser = (User) parent.getAdapter().getItem(position);
-                User selectedUser = userList.get(position); //TODO test this instead of above
-//                Intent intent = new Intent(getActivity().getBaseContext(), MainActivity.class);
-//                intent.putExtra("user", (new Gson()).toJson(selectedUser));
-//                getActivity().startActivity(intent);
+                User selectedUser = userList.get(position);
                 ((MainActivity)getActivity()).passDatatoFragment(selectedUser);
             }
         });
@@ -114,6 +108,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
                     userList.add(aUser);
                     userNameList.add(aUser.getUserName());
                 }
+                defaultUserNameList = userNameList;
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
                 userListView.setAdapter(adapter);
             }
@@ -144,6 +139,25 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.search_menu);
+
+        db = FirebaseDatabase.getInstance();
+        dbRef = db.getReference("users");
+
+        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                Log.d(TAG, "menu item collapse");
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, defaultUserNameList);
+                userListView.setAdapter(adapter);
+                return true;
+            }
+        });
+
         SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, sv);
@@ -171,7 +185,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        Log.d(TAG, "On Cancelled of Options Menu");
                     }
                 });
                 return false;
@@ -182,26 +196,11 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
                 return false;
             }
         });
-//        sv.setOnQueryTextListener(this);
         sv.setIconifiedByDefault(false);
         sv.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                Log.d(TAG, "On CLICKC was Called");
-            }
-        });
-
-        MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                // Do something when collapsed
-                return true;  // Return true to collapse action view
-            }
-
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                // Do something when expanded
-                return true;  // Return true to expand action view
             }
         });
 
