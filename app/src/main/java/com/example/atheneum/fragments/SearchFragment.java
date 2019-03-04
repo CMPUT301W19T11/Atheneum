@@ -187,7 +187,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         sv.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "On CLICKC was Called");
+//                Log.d(TAG, "On CLICKC was Called");
             }
         });
 

@@ -53,9 +53,11 @@ public class ViewProfileFragment extends Fragment {
         user = (User) i.getSerializableExtra("user");
 
         profilePicture = view.findViewById(R.id.user_profile_pic);
-        String userPic = user.getPhotos().get(0);
-        bitmapPhoto = StringToBitMap(userPic);
-        profilePicture.setImageBitmap(bitmapPhoto);
+        if (user.getPhotos() != null) {
+            String userPic = user.getPhotos().get(0);
+            bitmapPhoto = StringToBitMap(userPic);
+            profilePicture.setImageBitmap(bitmapPhoto);
+        }
 
         TextView username = view.findViewById(R.id.username);
         TextView phone = view.findViewById(R.id.phone);
