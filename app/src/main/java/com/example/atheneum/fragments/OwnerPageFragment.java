@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ import java.util.UUID;
  * after user has logged in.
  *
  * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
+ * See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
+ * See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
  */
 public class OwnerPageFragment extends Fragment {
     private View view;
@@ -54,6 +57,16 @@ public class OwnerPageFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -66,6 +79,14 @@ public class OwnerPageFragment extends Fragment {
             // set action bar title
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.owner_page_title));
         }
+
+        // TESTING FIREBASE RECYCLERVIEW ADAPTER
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child(getString(R.string.db_ownerCollection))
+                .child(firebaseUser.getUid());
+        // END TESTTING FIREBASE RECYCLERVIEW ADAPTER
 
         retrieveBooks();
 
