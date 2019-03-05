@@ -325,17 +325,4 @@ public class Book {
         Book book = (Book) o;
         return (this.getBookID().equals(book.getBookID()));
     }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "isbn=" + isbn +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", ownerID='" + ownerID + '\'' +
-                ", borrowerID='" + borrowerID + '\'' +
-                ", status=" + status +
-                ", bookID='" + bookID + '\'' +
-                '}';
-    }
 }

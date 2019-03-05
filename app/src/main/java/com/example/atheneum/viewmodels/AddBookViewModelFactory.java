@@ -21,6 +21,6 @@ public class AddBookViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new UserViewModel(userID);
+        return (T) new AddBookViewModel(userID);
     }
 }
