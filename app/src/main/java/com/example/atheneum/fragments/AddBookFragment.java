@@ -136,8 +136,6 @@ public class AddBookFragment extends Fragment {
             String isbn_str = isbnEditText.getText().toString();
             // auto populate with Google Books API
             String apiUrlString = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn_str;
-            String requestResponse;
-            final StringBuilder mStringBuilder = new StringBuilder();
 
             // taken from https://developer.android.com/training/volley/simple.html
             // Instantiate the RequestQueue.

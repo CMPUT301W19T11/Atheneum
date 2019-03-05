@@ -26,6 +26,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.AddBookFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
@@ -41,15 +47,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class AddBookActivity extends AppCompatActivity {
 
     private Context context;
     private User owner;
     private Book newBook;
-    String title;
-    String author;
-    long isbn;
-    String desc;
+    private String title;
+    private String author;
+    private long isbn;
+    private String desc;
 
     // references for the various entry fields
     private EditText titleEditText;
@@ -60,9 +69,10 @@ public class AddBookActivity extends AppCompatActivity {
 
     private FloatingActionButton saveBtn;
     private Button scanIsbnBtn;
-    private Button autoPopulateByIsgnBtn;
+    private Button autoPopulateByIsbnBtn;
 
     private static final String TAG = "AddBook";
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +90,7 @@ public class AddBookActivity extends AppCompatActivity {
 //            }
 //        });
 
+        this.view = findViewById(android.R.id.content);
 
         // bind editText references to UI elements
         titleEditText = findViewById(R.id.bookTitleEditText);
@@ -109,8 +120,8 @@ public class AddBookActivity extends AppCompatActivity {
                 scanIsbn();
             }
         });
-        autoPopulateByIsgnBtn = findViewById(R.id.populateFromIsbnBtn);
-        autoPopulateByIsgnBtn.setOnClickListener(new View.OnClickListener() {
+        autoPopulateByIsbnBtn = findViewById(R.id.populateFromIsbnBtn);
+        autoPopulateByIsbnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 populateFieldsByIsbn();
@@ -129,7 +140,59 @@ public class AddBookActivity extends AppCompatActivity {
         Log.i(TAG, "AddBook*** Auto-populate requested");
         this.isbn = Book.INVALILD_ISBN;
         if (!TextUtils.isEmpty(isbnEditText.getText())) {
-            isbn = Integer.parseInt(isbnEditText.getText().toString());
+            String isbn_str = isbnEditText.getText().toString();
+            // auto populate with Google Books API
+            String apiUrlString = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn_str;
+
+            // taken from https://developer.android.com/training/volley/simple.html
+            // Instantiate the RequestQueue.
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            final EditText titleEditText = this.view.findViewById(R.id.bookTitleEditText);
+            final EditText authorEditText = this.view.findViewById(R.id.authorEditText);
+            final EditText descEditText = this.view.findViewById(R.id.descEditText);
+
+            // Request a JSON response from the provided URL.
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, apiUrlString, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // check if at least one item exists with that isbn
+                            try {
+                                if (response.getInt("totalItems") > 0) {
+                                    JSONObject firstBookInfo = response.getJSONArray("items").getJSONObject(0).getJSONObject("volumeInfo");
+
+                                    titleEditText.setText(firstBookInfo.getString("title"));
+                                    JSONArray authorArr = firstBookInfo.getJSONArray("authors");
+                                    String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
+//
+                                    for (int i = 1; i < authorArr.length(); i++) {
+                                        authorListString += ", " + authorArr.getString(i);
+                                    }
+                                    authorEditText.setText(authorListString);
+
+                                    descEditText.setText(firstBookInfo.getString("description"));
+                                }
+                            }
+                            catch(Exception e) {
+                                Log.e(TAG, "AddBook *** JSONObject error");
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO: Handle error
+                            Log.e(TAG, "AddBook *** VolleyError");
+                        }
+                    });
+
+
+            // Add the request to the RequestQueue.
+            queue.add(jsonObjectRequest);
 
         } else {
             Log.i(TAG, "AddBook*** No ISBN ");
