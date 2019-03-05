@@ -7,11 +7,10 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
 import com.example.atheneum.models.User;
-import com.example.atheneum.utils.DatabaseRefUtils;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Abstracts operations on a user retrieved from a Firebase query and provides a LiveData stream
@@ -44,7 +43,7 @@ public class UserViewModel extends ViewModel {
      * @param userID User ID of user queried in the database
      */
     public UserViewModel(String userID) {
-        userRef = DatabaseRefUtils.USERS_REF.child(userID);
+        userRef = UsersRefUtils.getUsersRef(userID);
         queryLiveData = new FirebaseQueryLiveData(userRef);
         userLiveData = Transformations.map(queryLiveData, new Deserializer());
     }
