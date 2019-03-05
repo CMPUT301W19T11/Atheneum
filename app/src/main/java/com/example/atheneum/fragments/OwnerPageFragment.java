@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.AddBookActivity;
 import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
@@ -177,8 +178,13 @@ public class OwnerPageFragment extends Fragment {
                     DividerItemDecoration.VERTICAL));
 
             FloatingActionButton fab = (FloatingActionButton) this.view.findViewById(R.id.add_book);
-            //TODO: go to add book activity
-            //fab.setOnClickListener();
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), AddBookActivity.class);
+                    startActivity(intent);
+                }
+            });
         } else {
             Log.w(TAG, "impossible!!!");
         }
