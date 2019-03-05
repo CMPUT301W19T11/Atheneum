@@ -10,6 +10,10 @@
 
 package com.example.atheneum.activities;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +29,8 @@ import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.example.atheneum.viewmodels.BookViewModel;
+import com.example.atheneum.viewmodels.BookViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,6 +84,22 @@ public class BookInfoActivity extends AppCompatActivity {
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
 
+        BookViewModelFactory factory = new BookViewModelFactory(bookID);
+        BookViewModel bookViewModel = ViewModelProviders.of(this, factory).get(BookViewModel.class);
+        LiveData<Book> bookLiveData = bookViewModel.getBookLiveData();
+        bookLiveData.observe(this, new Observer<Book>() {
+            @Override
+            public void onChanged(@Nullable Book book) {
+                if (book != null) {
+                    textTitle.setText(book.getTitle());
+                    textAuthor.setText(book.getAuthor());
+                    textIsbn.setText(String.valueOf(book.getIsbn()));
+                    textDesc.setText(book.getDescription());
+                    textStatus.setText(String.valueOf(book.getStatus()));
+                }
+            }
+        });
+
         deleteBtn = findViewById(R.id.buttonDelete);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,37 +109,8 @@ public class BookInfoActivity extends AppCompatActivity {
         });
         editBtn = findViewById(R.id.buttonEdit);
         //TODO: implement edit book button
-
-        retrieveBookInfo();
-
     }
 
-    public void retrieveBookInfo(){
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        if(firebaseUser != null){
-            DatabaseReference ref = BooksRefUtils.getBookRef(bookID);
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Book book = dataSnapshot.getValue(Book.class);
-                        textTitle.setText(book.getTitle());
-                        textAuthor.setText(book.getAuthor());
-                        textIsbn.setText(String.valueOf(book.getIsbn()));
-                        textDesc.setText(book.getDescription());
-                        textStatus.setText(String.valueOf(book.getStatus()));
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-            });
-
-        }
-    }
 
     public void deleteBook(){
         Log.i(TAG, "Delete book button pressed");
