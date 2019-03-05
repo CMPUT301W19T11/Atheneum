@@ -6,32 +6,19 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
-/**
- * Abstracts operations on a user retrieved from a Firebase query and provides a LiveData stream
- * to a View (either an Activity or Fragment). This livedata stream can be observed for changes by
- * adding a listener and then updating the view based on the changes to the data.
- *
- * Since we can't call {@code ViewModelProviders.of(lifeCycleOwner).get(UserViewModel.class)} to get
- * a UserViewModel with a userID passed in, we have to use the UserViewModelFactory to instantiate
- * the UserViewModel: {@code ViewModelProviders.of(lifeCycleOwner, new UserViewModelFactory(userID)).get(UserViewModel.class) }
- *
- * lifecyleOwner refers to either an Activity or a Fragment.
- *
- * See: https://firebase.googleblog.com/2017/12/using-android-architecture-components.html
- *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_20.html
- *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_22.html
- */
-public class UserViewModel extends ViewModel {
+public class AddBookViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
-    private final LiveData<User> userLiveData;
+    private final LiveData<User> ownerLiveData;
     // Reference to user in Firebase
     private final DatabaseReference userRef;
 
@@ -42,10 +29,10 @@ public class UserViewModel extends ViewModel {
      *
      * @param userID User ID of user queried in the database
      */
-    public UserViewModel(String userID) {
+    public AddBookViewModel(String userID) {
         userRef = UsersRefUtils.getUsersRef(userID);
         queryLiveData = new FirebaseQueryLiveData(userRef);
-        userLiveData = Transformations.map(queryLiveData, new Deserializer());
+        ownerLiveData = Transformations.map(queryLiveData, new AddBookViewModel.Deserializer());
     }
 
     /**
@@ -58,13 +45,8 @@ public class UserViewModel extends ViewModel {
         }
     }
 
-    /**
-     * Updates the user information in the database
-     *
-     * @param user New user value
-     */
-    public void setUser(User user) {
-        userRef.setValue(user);
+    public void addBook(User owner, Book book) {
+        DatabaseWriteHelper.addNewBook(owner, book);
     }
 
     /**
@@ -72,7 +54,7 @@ public class UserViewModel extends ViewModel {
      * @return Observable User data from Firebase
      */
     @NonNull
-    public LiveData<User> getUserLiveData() {
-        return userLiveData;
+    public LiveData<User> getOwnerLiveData() {
+        return ownerLiveData;
     }
 }
