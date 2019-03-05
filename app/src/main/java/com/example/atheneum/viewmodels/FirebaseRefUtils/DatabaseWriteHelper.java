@@ -39,4 +39,32 @@ public class DatabaseWriteHelper {
             }
         });
     }
+
+    public static void deleteBook(String ownerUserID, String bookID) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+        // Atomically update multiple database paths at once by using a multi-path update
+        // Note: Can't use the DatabaseReference objects and then convert to a key, must use formatted
+        // strings when doing multi-path updates
+        final String bookRef = String.format("books/%s", bookID);
+        final String ownerBookRef = String.format("ownerCollection/%s/%s", ownerUserID, bookID);
+        // Add null to a node to delete it
+        updates.put(bookRef, null);
+        updates.put(ownerBookRef, null);
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "bookRef: " + bookRef.toString());
+                    Log.i(TAG, "ownerBookRef: " + ownerBookRef.toString());
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
+
+    public static void deleteBook(User owner, Book book) {
+        deleteBook(owner.getUserID(), book.getBookID());
+    }
 }

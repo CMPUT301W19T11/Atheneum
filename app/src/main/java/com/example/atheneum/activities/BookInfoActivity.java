@@ -25,6 +25,8 @@ import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,9 +40,6 @@ public class BookInfoActivity extends AppCompatActivity {
     private static final int BOOK_INFO_DELETED =0;
     private static final int BOOK_INFO_EDITED = 1;
 
-
-    private User owner;
-    private Book book;
     String title;
     String author;
     long isbn;
@@ -97,17 +96,18 @@ public class BookInfoActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
         if(firebaseUser != null){
-            DatabaseReference ref = db.getReference().child("ownerCollection").child(firebaseUser.getUid()).
-                child(bookID);
+            DatabaseReference ref = BooksRefUtils.getBookRef(bookID);
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Book book = dataSnapshot.getValue(Book.class);
-                    textTitle.setText(book.getTitle());
-                    textAuthor.setText(book.getAuthor());
-                    textIsbn.setText(String.valueOf(book.getIsbn()));
-                    textDesc.setText(book.getDescription());
-                    textStatus.setText(String.valueOf(book.getStatus()));
+                    if (dataSnapshot.exists()) {
+                        Book book = dataSnapshot.getValue(Book.class);
+                        textTitle.setText(book.getTitle());
+                        textAuthor.setText(book.getAuthor());
+                        textIsbn.setText(String.valueOf(book.getIsbn()));
+                        textDesc.setText(book.getDescription());
+                        textStatus.setText(String.valueOf(book.getStatus()));
+                    }
                 }
 
                 @Override
@@ -117,27 +117,17 @@ public class BookInfoActivity extends AppCompatActivity {
             });
 
         }
-
     }
-
 
     public void deleteBook(){
         Log.i(TAG, "Delete book button pressed");
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        if(firebaseUser != null) {
-            DatabaseReference ref = db.getReference().child("ownerCollection"). child(firebaseUser.getUid());
-            ref.child(bookID).removeValue();
+        if (firebaseUser != null) {
+            DatabaseWriteHelper.deleteBook(firebaseUser.getUid(), bookID);
+            finish();
         }
-        //int position = Integer.valueOf(getIntent().getStringExtra("position"));
-        //Intent intent = new Intent();
-        //intent.putExtra(OwnerBooksAdapter.REQUEST_DELETE_ENTRY, BOOK_INFO_CHANGED);
-        //setResult(OwnerBooksAdapter.REQUEST_DELETE_ENTRY);
-
-
-
-
     }
 
 }

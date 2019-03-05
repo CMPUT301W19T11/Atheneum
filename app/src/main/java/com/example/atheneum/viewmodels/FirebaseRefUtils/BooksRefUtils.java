@@ -9,4 +9,8 @@ public class BooksRefUtils extends RootRefUtils {
     public static DatabaseReference getBookRef(Book book) {
         return BOOKS_REF.child(book.getBookID());
     }
+
+    public static DatabaseReference getBookRef(String bookID) {
+        return BOOKS_REF.child(bookID);
+    }
 }
