@@ -35,7 +35,7 @@ import android.support.v4.app.NotificationCompat;
 
 /**
  * Firebase messaging service used for push notifications
- * Mainly used for requests
+ * Mainly used for receiving requests
  *
  * See: https://firebase.google.com/docs/cloud-messaging/android/client
  * See: https://www.codementor.io/flame3/send-push-notifications-to-android-with-firebase-du10860kb
