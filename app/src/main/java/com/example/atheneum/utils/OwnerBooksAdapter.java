@@ -1,25 +1,18 @@
 package com.example.atheneum.utils;
 
-import android.app.Dialog;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import android.content.Intent;
 import com.example.atheneum.R;
-//import com.example.atheneum.fragments.BookInfoFragment;
-import com.example.atheneum.fragments.BookInfoFragment;
-import com.example.atheneum.fragments.OwnerPageFragment;
+import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.models.Book;
 
 import java.util.ArrayList;
@@ -31,6 +24,8 @@ import java.util.UUID;
  * See: https://developer.android.com/guide/topics/ui/layout/recyclerview#java
  * See: https://www.androidhive.info/2016/01/android-working-with-recycler-view/
  *
+ * Might no longer need it once FirebaseRecyclerAdapter is done
+ *
  * @author marcus
  * @version 1.0
  * @since 2019-01-27
@@ -39,13 +34,15 @@ public class OwnerBooksAdapter extends
         RecyclerView.Adapter<OwnerBooksAdapter.MeasurementViewHolder> {
     private ArrayList<Book> ownerBooks;
     private OwnerBooksAdapter activity = this;
-
+    private Context mContext;
+    private Activity mActivity;
 
     /**
      * The books view holder.
      */
     public static class MeasurementViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout bookItem;
+
         public TextView titleTextView;
         public TextView authorTextView;
         public TextView statusTextView;
@@ -72,8 +69,9 @@ public class OwnerBooksAdapter extends
      *
      * @param ownerBooks
      */
-    public OwnerBooksAdapter(ArrayList<Book> ownerBooks) {
+    public OwnerBooksAdapter(ArrayList<Book> ownerBooks, Context context) {
         this.ownerBooks = ownerBooks;
+        this.mContext = context;
     }
 
     /**
@@ -91,17 +89,6 @@ public class OwnerBooksAdapter extends
                 .inflate(R.layout.book_card, parent, false);
         final MeasurementViewHolder vh = new MeasurementViewHolder(v);
 
-        vh.bookItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
-//                UUID bookID = ownerBooks.get(vh.getAdapterPosition()).getBookID();
-                String bookID = ownerBooks.get(vh.getAdapterPosition()).getBookID();
-                Intent intent = new Intent(parent.getContext(), BookInfoFragment.class);
-                intent.putExtra("bookID", bookID);
-                parent.getContext().startActivity(intent);
-            }
-        });
         return vh;
     }
 
@@ -112,13 +99,24 @@ public class OwnerBooksAdapter extends
      * @param position
      */
     @Override
-    public void onBindViewHolder(MeasurementViewHolder holder, final int position)  {
+    public void onBindViewHolder(final MeasurementViewHolder holder, final int position)  {
         holder.titleTextView.setText(
                 ownerBooks.get(position).getTitle());
         holder.authorTextView.setText(
                 ownerBooks.get(position).getAuthor());
         holder.statusTextView.setText(
                 ownerBooks.get(position).getStatus().toString());
+
+        holder.bookItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                Log.i("OwnerBook", "clicked on a book");
+                String bookID = ownerBooks.get(holder.getAdapterPosition()).getBookID();
+                Intent intent = new Intent(mContext, BookInfoActivity.class);
+                intent.putExtra("bookID", bookID);
+                mContext.startActivity(intent);
+            }
+        });
 
     }
 
