@@ -25,7 +25,10 @@ import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookViewHolder;
+import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.OwnerCollectionRefUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -95,88 +98,90 @@ public class OwnerPageFragment extends Fragment {
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.owner_page_title));
         }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child(getString(R.string.db_ownerCollection))
-                .child(firebaseUser.getUid());
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            Query keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid());
+            DatabaseReference dataRef = BooksRefUtils.BOOKS_REF;
 
-        FirebaseRecyclerOptions<Book> options =
-                new FirebaseRecyclerOptions.Builder<Book>()
-                        .setQuery(query, Book.class)
-                        .build();
+            FirebaseRecyclerOptions<Book> options =
+                    new FirebaseRecyclerOptions.Builder<Book>()
+                            .setIndexedQuery(keyQuery, dataRef, Book.class)
+                            .build();
 
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
-                //Bind Book object to BookViewHolder
-                holder.titleTextView.setText(
-                        book.getTitle());
-                holder.authorTextView.setText(
-                        book.getAuthor());
-                holder.statusTextView.setText(
-                        book.getStatus().toString());
-                holder.bookItem.setOnClickListener(new View.OnClickListener() {
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
+                @Override
+                protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
+                    //Bind Book object to BookViewHolder
+                    holder.titleTextView.setText(
+                            book.getTitle());
+                    holder.authorTextView.setText(
+                            book.getAuthor());
+                    holder.statusTextView.setText(
+                            book.getStatus().toString());
+                    holder.bookItem.setOnClickListener(new View.OnClickListener() {
 
-                    @Override
-                    public void onClick(View v){
-    //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
-                        Log.i("OwnerBook", "clicked on a book");
-                        String sBookId = book.getBookID();
-                        Intent intent = new Intent(context, BookInfoActivity.class);
-                        intent.putExtra("bookID", sBookId);
-                        intent.putExtra("position", holder.getAdapterPosition());
+                        @Override
+                        public void onClick(View v){
+                            //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                            Log.i("OwnerBook", "clicked on a book");
+                            String sBookId = book.getBookID();
+                            Intent intent = new Intent(context, BookInfoActivity.class);
+                            intent.putExtra("bookID", sBookId);
+                            intent.putExtra("position", holder.getAdapterPosition());
 
-                        mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
+                            mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
 
-                    }
-            });
-
-
-            }
-
-            @Override
-            public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                // Create a new instance of the ViewHolder, in this case we are using a custom
-                // layout called R.layout.message for each item
-                // create a new view
-                LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.book_card, parent, false);
-                final BookViewHolder vh = new BookViewHolder(v);
-
-                return vh;
-            }
-
-            @Override
-            public void onDataChanged() {
-                // Called each time there is a new data snapshot. You may want to use this method
-                // to hide a loading spinner or check for the "no documents" state and update your UI.
-                // ...
-            }
-
-            @Override
-            public void onError(DatabaseError e) {
-                // Called when there is an error getting data. You may want to update
-                // your UI to display an error message to the user.
-                // ...
-                Log.i(TAG, e.getMessage());
-            }
+                        }
+                    });
 
 
+                }
 
-        };
+                @Override
+                public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    // Create a new instance of the ViewHolder, in this case we are using a custom
+                    // layout called R.layout.message for each item
+                    // create a new view
+                    LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.book_card, parent, false);
+                    final BookViewHolder vh = new BookViewHolder(v);
 
-        ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
-        ownerBooksRecyclerView.setHasFixedSize(true);
-        ownerBooksLayoutManager = new LinearLayoutManager(this.context);
-        ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
-        ownerBooksRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
-                DividerItemDecoration.VERTICAL));
+                    return vh;
+                }
 
-        FloatingActionButton fab = (FloatingActionButton) this.view.findViewById(R.id.add_book);
-        //TODO: go to add book activity
-        //fab.setOnClickListener();
+                @Override
+                public void onDataChanged() {
+                    // Called each time there is a new data snapshot. You may want to use this method
+                    // to hide a loading spinner or check for the "no documents" state and update your UI.
+                    // ...
+                }
+
+                @Override
+                public void onError(DatabaseError e) {
+                    // Called when there is an error getting data. You may want to update
+                    // your UI to display an error message to the user.
+                    // ...
+                    Log.i(TAG, e.getMessage());
+                }
+
+
+
+            };
+
+            ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
+            ownerBooksRecyclerView.setHasFixedSize(true);
+            ownerBooksLayoutManager = new LinearLayoutManager(this.context);
+            ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
+            ownerBooksRecyclerView.setAdapter(firebaseRecyclerAdapter);
+            ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
+                    DividerItemDecoration.VERTICAL));
+
+            FloatingActionButton fab = (FloatingActionButton) this.view.findViewById(R.id.add_book);
+            //TODO: go to add book activity
+            //fab.setOnClickListener();
+        } else {
+            Log.w(TAG, "impossible!!!");
+        }
 
         return this.view;
     }
