@@ -2,6 +2,7 @@ package com.example.atheneum.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,7 @@ import android.widget.ListView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
+import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.requestAdapter;
@@ -35,7 +37,7 @@ public class BorrowerPageFragment extends Fragment {
     private FloatingActionButton addRequest;
     private ListView requestView;
 
-    private static ArrayList<Request> requestList=new ArrayList<Request>();;
+    private static ArrayList<Book> requestList=new ArrayList<Book>();;
     private requestAdapter requestAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
@@ -75,19 +77,7 @@ public class BorrowerPageFragment extends Fragment {
                 requestList.clear();
                 for (DataSnapshot item: dataSnapshot.getChildren()) {
                     Request requestItem = new Request();
-//                    long leastSigBits = item.child(getString(R.string.db_book_bookID))
-//                            .child(getString(R.string.db_book_bookID_leastSigBits))
-//                            .getValue() != null ? (long)item.child(
-//                            getString(R.string.db_book_bookID))
-//                            .child(getString(R.string.db_book_bookID_leastSigBits))
-//                            .getValue() : null;
-//                    long mostSigBits = item.child(getString(R.string.db_book_bookID))
-//                            .child(getString(R.string.db_book_bookID_mostSigBits))
-//                            .getValue() != null ? (long)item.child(
-//                            getString(R.string.db_book_bookID))
-//                            .child(getString(R.string.db_book_bookID_mostSigBits))
-//                            .getValue() : null;
-//                    UUID requestID = new UUID(mostSigBits, leastSigBits);
+
 
                     String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
                     requestItem.setBookID(bookID);
@@ -99,8 +89,30 @@ public class BorrowerPageFragment extends Fragment {
                     requestItem.setrStatus(status);
 
                     Log.d(TAG, "find request " + requestItem.getBookID());
-                    requestList.add(requestItem);
-                    requestAdapter.notifyDataSetChanged();
+
+//                    UUID bookUUID = UUID.fromString(bookID);
+                    DatabaseReference ref_book = db.getReference().child("books").child(bookID);
+                    ref_book.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+
+                                Book book = dataSnapshot.getValue(Book.class);
+                                Log.d(TAG, "find book " + book.getTitle());
+                                requestList.add(book);
+                                requestAdapter.notifyDataSetChanged();
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
                 }
             }
             @Override
