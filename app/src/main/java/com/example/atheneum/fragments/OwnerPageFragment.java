@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
@@ -58,6 +59,8 @@ public class OwnerPageFragment extends Fragment {
     private RecyclerView.LayoutManager ownerBooksLayoutManager;
 
     private static final String TAG = OwnerPageFragment.class.getSimpleName();
+
+    public static final int REQUEST_DELETE_ENTRY = 1;
 
     /**
      * Instantiates a new Owner page fragment.
@@ -105,7 +108,7 @@ public class OwnerPageFragment extends Fragment {
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull BookViewHolder holder, int position, @NonNull Book book) {
+            protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
                 //Bind Book object to BookViewHolder
                 holder.titleTextView.setText(
                         book.getTitle());
@@ -113,6 +116,23 @@ public class OwnerPageFragment extends Fragment {
                         book.getAuthor());
                 holder.statusTextView.setText(
                         book.getStatus().toString());
+                holder.bookItem.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v){
+    //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                        Log.i("OwnerBook", "clicked on a book");
+                        String sBookId = book.getBookID();
+                        Intent intent = new Intent(context, BookInfoActivity.class);
+                        intent.putExtra("bookID", sBookId);
+                        intent.putExtra("position", holder.getAdapterPosition());
+
+                        mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
+
+                    }
+            });
+
+
             }
 
             @Override
@@ -141,6 +161,9 @@ public class OwnerPageFragment extends Fragment {
                 // ...
                 Log.i(TAG, e.getMessage());
             }
+
+
+
         };
 
         ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);

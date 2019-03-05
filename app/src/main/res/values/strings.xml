@@ -70,6 +70,8 @@
     <!--End of Strings for EditProfileFragment-->
     <!--Strings for borrower page-->
     <string name="borrower_page_title">Borrower Page</string>
+    <string name="title_activity_book_info">BookInfoActivity</string>
+    <string name="title_activity_add_book">AddBookActivity</string>
     <!--End of Strings for borrower page-->
 
     <!--Strings for search page-->

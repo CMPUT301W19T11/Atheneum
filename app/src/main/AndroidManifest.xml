@@ -13,11 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <!--android:theme="@style/AppTheme.NoActionBar" ommitted-->
+
+        <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
         <activity
             android:name=".activities.CompleteRegistrationActivity"
-            android:label="@string/title_activity_complete_registration">
-        </activity>
+            android:label="@string/title_activity_complete_registration" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.FirebaseUIAuthActivity">
             <intent-filter>
@@ -25,7 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <service android:name=".utils.RequestFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -41,6 +40,14 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+        <activity
+            android:name=".activities.BookInfoActivity"
+            android:label="@string/title_activity_book_info"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.AddBookActivity"
+            android:label="@string/title_activity_add_book"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
