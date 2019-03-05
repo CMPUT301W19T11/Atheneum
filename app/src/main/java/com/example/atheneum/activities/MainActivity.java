@@ -49,6 +49,10 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 
+/**
+ * The Main activity.
+ *
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
 
@@ -186,7 +190,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    // allows for setting title of action bar from different fragmenets
+    /**
+     * Sets action bar title.
+     *
+     * @param title the title
+     */
+// allows for setting title of action bar from different fragmenets
     // taken from https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
@@ -196,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Method for search user fragment to pass data to view profile fragment.
      * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
      * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
+     *
+     * @param user the user
      */
     public void passDatatoFragment(User user) {
         getIntent().putExtra("user", user);

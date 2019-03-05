@@ -47,6 +47,7 @@ public class RequestFirebaseMessagingService extends FirebaseMessagingService {
 
     /**
      * Called when message is received.
+     * Will execute when application is in foreground
      *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
