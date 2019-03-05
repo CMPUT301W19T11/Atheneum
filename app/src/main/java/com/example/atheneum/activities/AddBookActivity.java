@@ -11,9 +11,13 @@
 package com.example.atheneum.activities;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +36,13 @@ import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.EditTextWithValidator;
+import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.NonEmptyTextValidator;
+import com.example.atheneum.viewmodels.AddBookViewModel;
+import com.example.atheneum.viewmodels.AddBookViewModelFactory;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,8 +54,6 @@ import com.google.firebase.database.ValueEventListener;
 public class AddBookActivity extends AppCompatActivity {
 
     private Context context;
-    private User owner;
-    private Book newBook;
     String title;
     String author;
     long isbn;
@@ -151,71 +159,7 @@ public class AddBookActivity extends AppCompatActivity {
     public void saveNewBook() {
         Log.i(TAG, "AddBook*** Save Button Pressed");
 
-        if (allFieldsFilled()) {
-            Log.i(TAG, "AddBook*** Fields checked, all filled");
-
-            title = titleEditText.getText().toString();
-            author = authorEditText.getText().toString();
-            isbn = Long.parseLong(isbnEditText.getText().toString());
-            desc = descEditText.getText().toString();
-
-            // get user from Firebase auth
-//            FirebaseAuth auth = FirebaseAuth.getInstance();
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            final FirebaseDatabase db = FirebaseDatabase.getInstance();
-
-            if (firebaseUser != null) {
-                Log.i(TAG, "AddBook*** not null firebaseuser");
-
-                DatabaseReference ref = db.getReference().child(getString(R.string.db_users)).child(firebaseUser.getUid());
-                // retrieve user object from database
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.i(TAG, "AddBook*** Reading for user");
-                        if (dataSnapshot.exists()) {
-                            owner = dataSnapshot.getValue(User.class);
-                            Log.i(TAG, "AddBook*** Got a user");
-
-                            newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
-
-                            // add book to the owner's collection
-                            DatabaseReference ownerColref = db.getReference().child(getString(R.string.db_ownerCollection)).child(owner.getUserID());
-                            ownerColref.child(newBook.getBookID().toString()).setValue(newBook);
-                            Log.i(TAG, "Book added, id=" + newBook.getBookID().toString());
-
-                            // hide keyboard and close fragment
-                            // keyboard hiding taken from:
-                            // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
-
-                            //InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                            //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                            //getActivity().getSupportFragmentManager().beginTransaction().remove(AddBookFragment.this).commit();
-
-                            // return to owner page fragment
-                            //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).commit();
-
-                            finish();
-
-                        } else {
-                            Log.w(TAG, "AddBook*** Current User doesn't exist in database!");
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.w(TAG, "AddBook*** User listener was cancelled");
-                    }
-                });
-
-
-            } else {
-                Log.w(TAG, "AddBook*** ERROR UNAUTH USER : User should be authenticated if the user is in this screen!");
-            }
-
-
-        } else {
+        if (!allFieldsFilled()) {
             // TODO : Display Error Prompt
             Log.w(TAG, "AddBook*** Error fields unfilled");
             Toast.makeText(context, "Cannot save with unfilled fields!", Toast.LENGTH_SHORT).show();
@@ -224,7 +168,35 @@ public class AddBookActivity extends AppCompatActivity {
             for (EditTextWithValidator editTextVal : editTextWithValidatorArray) {
                 editTextVal.validator.validate(editTextVal.editText);
             }
+            return;
+        }
 
+        Log.i(TAG, "AddBook*** Fields checked, all filled");
+
+        title = titleEditText.getText().toString();
+        author = authorEditText.getText().toString();
+        isbn = Long.parseLong(isbnEditText.getText().toString());
+        desc = descEditText.getText().toString();
+
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            AddBookViewModelFactory factory = new AddBookViewModelFactory(firebaseUser.getUid());
+            final AddBookViewModel addBookViewModel = ViewModelProviders.of(AddBookActivity.this, factory).get(AddBookViewModel.class);
+            LiveData<User> userLiveData = addBookViewModel.getOwnerLiveData();
+            userLiveData.observe(AddBookActivity.this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User owner) {
+                    if (owner != null) {
+                        Log.i(TAG, "Got owner "+ owner.toString());
+                        Book newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
+                        Log.i(TAG, "newBook " + newBook.toString());
+                        addBookViewModel.addBook(owner, newBook);
+                    } else {
+                        Log.i(TAG, "owner is null!");
+                    }
+                    finish();
+                }
+            });
         }
 
     }

@@ -10,14 +10,14 @@ public class Book {
     public static final long INVALILD_ISBN = -1;
 
     private long isbn;
-    private String title = null;
-    private String description = null;
-    private String author = null;
+    private String title = "";
+    private String description = "";
+    private String author = "";
     // owner and borrower are represented by the user ID
     private String ownerID = "";
     private String borrowerID = "";
 
-    private Status status = null;
+    private Status status = Status.AVAILABLE;
     private ArrayList<Request> requests = new ArrayList<Request>();
     private String bookID;
     private ArrayList<String> photos = new ArrayList<String>();
@@ -326,4 +326,16 @@ public class Book {
         return (this.getBookID().equals(book.getBookID()));
     }
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "isbn=" + isbn +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", ownerID='" + ownerID + '\'' +
+                ", borrowerID='" + borrowerID + '\'' +
+                ", status=" + status +
+                ", bookID='" + bookID + '\'' +
+                '}';
+    }
 }
