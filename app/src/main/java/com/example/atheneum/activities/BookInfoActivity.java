@@ -96,9 +96,10 @@ public class BookInfoActivity extends AppCompatActivity {
     public void retrieveBookInfo(){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child("ownerCollection").child(firebaseUser.getUid()).
-                child(bookID);
+
         if(firebaseUser != null){
+            DatabaseReference ref = db.getReference().child("ownerCollection").child(firebaseUser.getUid()).
+                child(bookID);
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
