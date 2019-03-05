@@ -71,13 +71,12 @@ public class newRequest extends Fragment {
                         if (dataSnapshot.exists()) {
                             requester = dataSnapshot.getValue(User.class);
                             String bookID = bookIDTest.getText().toString();
-                            UUID bookUUID =UUID.fromString(bookID);
-                            Request newRequest = new Request(requester, bookUUID);
+                            Request newRequest = new Request(requester, bookID);
                             // add book to the owner's collection
-                            Log.i(TAG, "send added, id=" + newRequest.getBookID().toString());
+                            Log.i(TAG, "send added, id=" + newRequest.getBookID());
                             DatabaseReference requestColref = db.getReference().child(getString(R.string.db_requestCollection)).child(newRequest.getRequester().getUserID());
-                            requestColref.child(newRequest.getBookID().toString()).setValue(newRequest);
-                            Log.i(TAG, "Request added, id=" + newRequest.getBookID().toString());
+                            requestColref.child(newRequest.getBookID()).setValue(newRequest);
+                            Log.i(TAG, "Request added, id=" + newRequest.getBookID());
 
                             getActivity().getSupportFragmentManager().beginTransaction().remove(newRequest.this).commit();
 

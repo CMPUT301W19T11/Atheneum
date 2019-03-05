@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.atheneum.R;
@@ -66,7 +67,7 @@ public class BorrowerPageFragment extends Fragment {
         DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection)).child(currentUser.getUid());
 
         /**
-         * looping the request list
+         * Get the request list
          */
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -74,39 +75,39 @@ public class BorrowerPageFragment extends Fragment {
                 requestList.clear();
                 for (DataSnapshot item: dataSnapshot.getChildren()) {
                     Request requestItem = new Request();
-                    long leastSigBits = item.child(getString(R.string.db_book_bookID))
-                            .child(getString(R.string.db_book_bookID_leastSigBits))
-                            .getValue() != null ? (long)item.child(
-                            getString(R.string.db_book_bookID))
-                            .child(getString(R.string.db_book_bookID_leastSigBits))
-                            .getValue() : null;
-                    long mostSigBits = item.child(getString(R.string.db_book_bookID))
-                            .child(getString(R.string.db_book_bookID_mostSigBits))
-                            .getValue() != null ? (long)item.child(
-                            getString(R.string.db_book_bookID))
-                            .child(getString(R.string.db_book_bookID_mostSigBits))
-                            .getValue() : null;
-                    UUID requestID = new UUID(mostSigBits, leastSigBits);
-                    requestItem.setBookID(requestID);
-                    User requester = item.child(getString(R.string.db_book_requester)).getValue(User.class);
+//                    long leastSigBits = item.child(getString(R.string.db_book_bookID))
+//                            .child(getString(R.string.db_book_bookID_leastSigBits))
+//                            .getValue() != null ? (long)item.child(
+//                            getString(R.string.db_book_bookID))
+//                            .child(getString(R.string.db_book_bookID_leastSigBits))
+//                            .getValue() : null;
+//                    long mostSigBits = item.child(getString(R.string.db_book_bookID))
+//                            .child(getString(R.string.db_book_bookID_mostSigBits))
+//                            .getValue() != null ? (long)item.child(
+//                            getString(R.string.db_book_bookID))
+//                            .child(getString(R.string.db_book_bookID_mostSigBits))
+//                            .getValue() : null;
+//                    UUID requestID = new UUID(mostSigBits, leastSigBits);
 
+                    String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
+                    requestItem.setBookID(bookID);
+
+                    User requester = item.child(getString(R.string.db_book_requester)).getValue(User.class);
                     requestItem.setRequester(requester);
+
                     Request.Status status = item.child(getString(R.string.db_book_request_status)).getValue(Request.Status.class);
                     requestItem.setrStatus(status);
 
-                    Log.d(TAG, "find request "+requestItem.getBookID().toString());
+                    Log.d(TAG, "find request " + requestItem.getBookID());
                     requestList.add(requestItem);
                     requestAdapter.notifyDataSetChanged();
-
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
-
         });
+
         Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
         requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
         requestView.setAdapter(requestAdapter);
@@ -123,12 +124,11 @@ public class BorrowerPageFragment extends Fragment {
 
 
         final FragmentManager fragmentManager = getFragmentManager();
-
         addRequest = this.view.findViewById(R.id.new_request);
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new newRequest()).commit();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, new newRequest()).addToBackStack("NewRequest").commit();
             }
         });
 

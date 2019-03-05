@@ -71,6 +71,7 @@
 
     <!--Strings for borrower page-->
     <string name="borrower_page_title">Borrower Page</string>
+    <string name="save">Save</string>
     <string name="borrowed">Borrowed</string>
     <string name="requests">Requests</string>
     <string name="accepted">Accepted</string>
