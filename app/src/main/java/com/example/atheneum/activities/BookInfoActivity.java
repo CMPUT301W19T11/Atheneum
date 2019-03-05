@@ -96,7 +96,6 @@ public class BookInfoActivity extends AppCompatActivity {
     public void retrieveBookInfo(){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-
         if(firebaseUser != null){
             DatabaseReference ref = db.getReference().child("ownerCollection").child(firebaseUser.getUid()).
                 child(bookID);
@@ -127,8 +126,8 @@ public class BookInfoActivity extends AppCompatActivity {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child("ownerCollection"). child(firebaseUser.getUid());
         if(firebaseUser != null) {
+            DatabaseReference ref = db.getReference().child("ownerCollection"). child(firebaseUser.getUid());
             ref.child(bookID).removeValue();
         }
         //int position = Integer.valueOf(getIntent().getStringExtra("position"));
