@@ -12,11 +12,9 @@ package com.example.atheneum.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,19 +25,12 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.User;
-import com.example.atheneum.utils.OwnerBooksAdapter;
-import com.example.atheneum.viewmodels.BookViewModel;
-import com.example.atheneum.viewmodels.BookViewModelFactory;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
+import com.example.atheneum.viewmodels.BookInfoViewModel;
+import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class BookInfoActivity extends AppCompatActivity {
 
@@ -51,6 +42,7 @@ public class BookInfoActivity extends AppCompatActivity {
     long isbn;
     String desc;
     private String bookID;
+    private BookInfoViewModel bookInfoViewModel;
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -84,9 +76,9 @@ public class BookInfoActivity extends AppCompatActivity {
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
 
-        BookViewModelFactory factory = new BookViewModelFactory(bookID);
-        BookViewModel bookViewModel = ViewModelProviders.of(this, factory).get(BookViewModel.class);
-        LiveData<Book> bookLiveData = bookViewModel.getBookLiveData();
+        BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
+        bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
+        LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
@@ -118,7 +110,7 @@ public class BookInfoActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
         if (firebaseUser != null) {
-            DatabaseWriteHelper.deleteBook(firebaseUser.getUid(), bookID);
+            bookInfoViewModel.deleteBook(firebaseUser.getUid());
             finish();
         }
     }

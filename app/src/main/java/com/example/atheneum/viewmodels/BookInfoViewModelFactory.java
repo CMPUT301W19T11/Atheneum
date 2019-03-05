@@ -4,10 +4,10 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-public class BookViewModelFactory implements ViewModelProvider.Factory {
+public class BookInfoViewModelFactory implements ViewModelProvider.Factory {
     private final String bookID;
 
-    public BookViewModelFactory(String bookID) {
+    public BookInfoViewModelFactory(String bookID) {
         this.bookID = bookID;
     }
 
@@ -21,6 +21,6 @@ public class BookViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new BookViewModel(bookID);
+        return (T) new BookInfoViewModel(bookID);
     }
 }
