@@ -36,6 +36,7 @@ import com.example.atheneum.R;
 import com.example.atheneum.fragments.AddBookFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.EditTextWithValidator;
 import com.example.atheneum.utils.NonEmptyTextValidator;
@@ -144,16 +145,13 @@ public class AddBookActivity extends AppCompatActivity {
             // auto populate with Google Books API
             String apiUrlString = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn_str;
 
-            // taken from https://developer.android.com/training/volley/simple.html
-            // Instantiate the RequestQueue.
-            RequestQueue queue = Volley.newRequestQueue(this);
-
+            // need final instances of these EditTexts to be usable inside the lambda below
             final EditText titleEditText = this.view.findViewById(R.id.bookTitleEditText);
             final EditText authorEditText = this.view.findViewById(R.id.authorEditText);
             final EditText descEditText = this.view.findViewById(R.id.descEditText);
 
+            // taken from https://developer.android.com/training/volley/request.html
             // Request a JSON response from the provided URL.
-
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                     (Request.Method.GET, apiUrlString, null, new Response.Listener<JSONObject>() {
 
@@ -192,7 +190,8 @@ public class AddBookActivity extends AppCompatActivity {
 
 
             // Add the request to the RequestQueue.
-            queue.add(jsonObjectRequest);
+            SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
+
 
         } else {
             Log.i(TAG, "AddBook*** No ISBN ");
