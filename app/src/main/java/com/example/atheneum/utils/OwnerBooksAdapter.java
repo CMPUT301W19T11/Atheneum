@@ -36,7 +36,6 @@ public class OwnerBooksAdapter extends
     private OwnerBooksAdapter activity = this;
     private Context mContext;
     private Activity mActivity;
-    public static final int REQUEST_DELETE_ENTRY = 1;
 
     /**
      * The books view holder.
@@ -111,15 +110,11 @@ public class OwnerBooksAdapter extends
         holder.bookItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-//                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
                 Log.i("OwnerBook", "clicked on a book");
                 String bookID = ownerBooks.get(holder.getAdapterPosition()).getBookID();
                 Intent intent = new Intent(mContext, BookInfoActivity.class);
                 intent.putExtra("bookID", bookID);
-                //intent.putExtra("position", position);
                 mContext.startActivity(intent);
-                //mActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
-
             }
         });
 
