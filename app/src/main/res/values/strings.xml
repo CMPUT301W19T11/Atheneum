@@ -36,6 +36,10 @@
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
 
+    <!--Strings for profile page-->
+    <string name="profile_title">Profile</string>
+    <!--End of Strings for profile page-->
+
     <!-- Strings for adding/editing books -->
     <string name="add_book_prompt">Add a Book</string>
     <string name="edit_book_prompt">Edit Book</string>
@@ -66,5 +70,11 @@
     <!--End of Strings for EditProfileFragment-->
     <!--Strings for borrower page-->
     <string name="borrower_page_title">Borrower Page</string>
+    <string name="title_activity_book_info">BookInfoActivity</string>
+    <string name="title_activity_add_book">AddBookActivity</string>
     <!--End of Strings for borrower page-->
+
+    <!--Strings for search page-->
+    <string name="search_page_title">Search</string>
+    <!--End of Strings for search page-->
 </resources>
