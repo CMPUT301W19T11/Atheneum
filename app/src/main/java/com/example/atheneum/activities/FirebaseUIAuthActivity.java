@@ -43,29 +43,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
-            // .info/connected is a special node that holds the connection status of a client. This
-            // node is not synchronized in the cloud since it is particular to each client.
-            // We add a listener to check for network connectivity events and if the network is connected
-            // we build the sign-in ui
-            DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-            connectedRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    boolean connected = snapshot.getValue(Boolean.class);
-                    if (connected) {
-                        generateSignInPage();
-                    } else {
-                        Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE);
-                        sb.show();
-                        Log.d(TAG, "not connected");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.w(TAG, "Connected listener was cancelled");
-                }
-            });
+            generateSignInPage();
         }
     }
 
@@ -150,21 +128,40 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                     sb.show();
                     Log.w(TAG, "User pressed back button");
                     generateSignInPage();
-                    return;
-                }
-
-                if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
+                } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
                     Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_SHORT);
                     sb.show();
                     Log.w(TAG, "No network");
-                    generateSignInPage();
-                    return;
-                }
+                    // .info/connected is a special node that holds the connection status of a client. This
+                    // node is not synchronized in the cloud since it is particular to each client.
+                    // We add a listener to check for network connectivity events and if the network is connected
+                    // we build the sign-in ui
+                    final DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+                    connectedRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            boolean connected = snapshot.getValue(Boolean.class);
+                            if (connected) {
+                                generateSignInPage();
+                                connectedRef.removeEventListener(this);
+                            } else {
+                                Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE);
+                                sb.show();
+                                Log.d(TAG, "not connected");
+                            }
+                        }
 
-                Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.unknown_error, Snackbar.LENGTH_SHORT);
-                sb.show();
-                Log.e(TAG, "Sign-in error: ", response.getError());
-                generateSignInPage();
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.w(TAG, "Connected listener was cancelled");
+                        }
+                    });
+                } else {
+                    Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.unknown_error, Snackbar.LENGTH_SHORT);
+                    sb.show();
+                    Log.e(TAG, "Sign-in error: ", response.getError());
+                    generateSignInPage();
+                }
             }
         }
     }
