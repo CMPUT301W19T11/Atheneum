@@ -41,6 +41,7 @@ public class BorrowerPageFragment extends Fragment {
     private requestAdapter requestAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
+    Book book;
 
     public BorrowerPageFragment() {
         // required empty constructor
@@ -55,11 +56,18 @@ public class BorrowerPageFragment extends Fragment {
         this.context = getContext();
         requestView = (ListView) this.view.findViewById(R.id.requestView);
 
+
+
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
+
+        requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
+        requestView.setAdapter(requestAdapter);
+//        requestList.clear();
+//        requestAdapter.notifyDataSetChanged();
 
         /**
          * Retrieve request
@@ -72,11 +80,15 @@ public class BorrowerPageFragment extends Fragment {
          * Get the request list
          */
         ref.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 requestList.clear();
+//                requestAdapter.notifyDataSetChanged();
+
                 for (DataSnapshot item: dataSnapshot.getChildren()) {
                     Request requestItem = new Request();
+
 
 
                     String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
@@ -97,10 +109,15 @@ public class BorrowerPageFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
 
-                                Book book = dataSnapshot.getValue(Book.class);
+                                book = dataSnapshot.getValue(Book.class);
                                 Log.d(TAG, "find book " + book.getTitle());
-                                requestList.add(book);
+                                if(!requestList.contains(book)){
+                                    requestList.add(book);
+
+                                }
                                 requestAdapter.notifyDataSetChanged();
+
+
 
                             }
                         }
@@ -111,8 +128,6 @@ public class BorrowerPageFragment extends Fragment {
                         }
                     });
 
-
-
                 }
             }
             @Override
@@ -120,10 +135,8 @@ public class BorrowerPageFragment extends Fragment {
             }
         });
 
-        Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
-        requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
-        requestView.setAdapter(requestAdapter);
 
+        Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
 //        ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
 //        ownerBooksRecyclerView.setHasFixedSize(true);
 //        ownerBooksLayoutManager = new LinearLayoutManager(this.context);
@@ -140,6 +153,8 @@ public class BorrowerPageFragment extends Fragment {
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                requestList.clear();
+//                requestAdapter.notifyDataSetChanged();
                 fragmentManager.beginTransaction().replace(R.id.content_frame, new newRequest()).addToBackStack("NewRequest").commit();
             }
         });
