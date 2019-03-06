@@ -1,13 +1,11 @@
 package com.example.atheneum.models;
 
-import java.util.UUID;
-
 /**
  * The Request class for requests made of owner books by borrowers.
  */
 public class Request {
     private User requester;
-    private UUID bookID;
+    private String bookID;
     private Status rStatus;
 
     /**
@@ -40,7 +38,7 @@ public class Request {
      *
      * @param requester the requester
      */
-    public Request(User requester, UUID bookID) {
+    public Request(User requester, String bookID) {
         this.requester = requester;
         this.bookID = bookID;
         this.rStatus = Status.PENDING;
@@ -60,7 +58,7 @@ public class Request {
      *
      * @return the unique book id
      */
-    public UUID getBookID() {
+    public String getBookID() {
         return this.bookID;
     }
 
@@ -87,7 +85,7 @@ public class Request {
      *
      * @param bookID the unique book id
      */
-    public void setBookID(UUID bookID) {
+    public void setBookID(String bookID) {
         this.bookID = bookID;
     }
 
