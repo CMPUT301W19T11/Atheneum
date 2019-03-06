@@ -154,10 +154,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
 
-        } else if (id == R.id.nav_addbook)  {
-            Intent intent = new Intent(this, AddBookActivity.class);
-            startActivity(intent);
-//            fragmentManager.beginTransaction().replace(R.id.content_frame, new AddBookFragment()).addToBackStack("AddBook").commit();
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {

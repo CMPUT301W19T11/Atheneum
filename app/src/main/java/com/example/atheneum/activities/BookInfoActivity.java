@@ -10,9 +10,11 @@
 
 package com.example.atheneum.activities;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,29 +25,24 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.User;
-import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.example.atheneum.viewmodels.BookInfoViewModel;
+import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class BookInfoActivity extends AppCompatActivity {
 
     private static final int BOOK_INFO_DELETED =0;
     private static final int BOOK_INFO_EDITED = 1;
 
-
-    private User owner;
-    private Book book;
     String title;
     String author;
     long isbn;
     String desc;
     private String bookID;
+    private BookInfoViewModel bookInfoViewModel;
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -79,6 +76,22 @@ public class BookInfoActivity extends AppCompatActivity {
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
 
+        BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
+        bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
+        LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+        bookLiveData.observe(this, new Observer<Book>() {
+            @Override
+            public void onChanged(@Nullable Book book) {
+                if (book != null) {
+                    textTitle.setText(book.getTitle());
+                    textAuthor.setText(book.getAuthor());
+                    textIsbn.setText(String.valueOf(book.getIsbn()));
+                    textDesc.setText(book.getDescription());
+                    textStatus.setText(String.valueOf(book.getStatus()));
+                }
+            }
+        });
+
         deleteBtn = findViewById(R.id.buttonDelete);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,36 +101,6 @@ public class BookInfoActivity extends AppCompatActivity {
         });
         editBtn = findViewById(R.id.buttonEdit);
         //TODO: implement edit book button
-
-        retrieveBookInfo();
-
-    }
-
-    public void retrieveBookInfo(){
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        if(firebaseUser != null){
-            DatabaseReference ref = db.getReference().child("ownerCollection").child(firebaseUser.getUid()).
-                child(bookID);
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Book book = dataSnapshot.getValue(Book.class);
-                    textTitle.setText(book.getTitle());
-                    textAuthor.setText(book.getAuthor());
-                    textIsbn.setText(String.valueOf(book.getIsbn()));
-                    textDesc.setText(book.getDescription());
-                    textStatus.setText(String.valueOf(book.getStatus()));
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-            });
-
-        }
-
     }
 
 
@@ -126,18 +109,10 @@ public class BookInfoActivity extends AppCompatActivity {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        if(firebaseUser != null) {
-            DatabaseReference ref = db.getReference().child("ownerCollection"). child(firebaseUser.getUid());
-            ref.child(bookID).removeValue();
+        if (firebaseUser != null) {
+            bookInfoViewModel.deleteBook(firebaseUser.getUid());
+            finish();
         }
-        //int position = Integer.valueOf(getIntent().getStringExtra("position"));
-        //Intent intent = new Intent();
-        //intent.putExtra(OwnerBooksAdapter.REQUEST_DELETE_ENTRY, BOOK_INFO_CHANGED);
-        //setResult(OwnerBooksAdapter.REQUEST_DELETE_ENTRY);
-
-
-
-
     }
 
 }
