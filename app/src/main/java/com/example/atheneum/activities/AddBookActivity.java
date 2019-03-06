@@ -10,50 +10,45 @@
 
 package com.example.atheneum.activities;
 
-import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.atheneum.R;
-import com.example.atheneum.fragments.AddBookFragment;
-import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.ConnectionChecker;
 import com.example.atheneum.utils.EditTextWithValidator;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.NonEmptyTextValidator;
 import com.example.atheneum.viewmodels.AddBookViewModel;
 import com.example.atheneum.viewmodels.AddBookViewModelFactory;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
-import com.example.atheneum.viewmodels.UserViewModel;
-import com.example.atheneum.viewmodels.UserViewModelFactory;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class AddBookActivity extends AppCompatActivity {
 
     private Context context;
+
     String title;
     String author;
     long isbn;
@@ -68,9 +63,10 @@ public class AddBookActivity extends AppCompatActivity {
 
     private FloatingActionButton saveBtn;
     private Button scanIsbnBtn;
-    private Button autoPopulateByIsgnBtn;
+    private Button autoPopulateByIsbnBtn;
 
     private static final String TAG = "AddBook";
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +84,7 @@ public class AddBookActivity extends AppCompatActivity {
 //            }
 //        });
 
+        this.view = findViewById(android.R.id.content);
 
         // bind editText references to UI elements
         titleEditText = findViewById(R.id.bookTitleEditText);
@@ -117,8 +114,8 @@ public class AddBookActivity extends AppCompatActivity {
                 scanIsbn();
             }
         });
-        autoPopulateByIsgnBtn = findViewById(R.id.populateFromIsbnBtn);
-        autoPopulateByIsgnBtn.setOnClickListener(new View.OnClickListener() {
+        autoPopulateByIsbnBtn = findViewById(R.id.populateFromIsbnBtn);
+        autoPopulateByIsbnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 populateFieldsByIsbn();
@@ -134,15 +131,79 @@ public class AddBookActivity extends AppCompatActivity {
     public void populateFieldsByIsbn() {
         // TODO: FINISH
 
+        // Check internet connection
+        if (!(new ConnectionChecker(this)).isNetworkConnected()){ // no internet connection
+            Toast.makeText(this, "Error, no Internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         Log.i(TAG, "AddBook*** Auto-populate requested");
         this.isbn = Book.INVALILD_ISBN;
         if (!TextUtils.isEmpty(isbnEditText.getText())) {
-            isbn = Integer.parseInt(isbnEditText.getText().toString());
+            String isbn_str = isbnEditText.getText().toString();
+            // auto populate with Google Books API
+            String apiUrlString = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn_str;
+
+            // need final instances of these EditTexts to be usable inside the lambda below
+            final EditText titleEditText = this.view.findViewById(R.id.bookTitleEditText);
+            final EditText authorEditText = this.view.findViewById(R.id.authorEditText);
+            final EditText descEditText = this.view.findViewById(R.id.descEditText);
+
+            final Context ctx = this;
+
+            // taken from https://developer.android.com/training/volley/request.html
+            // Request a JSON response from the provided URL.
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, apiUrlString, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // check if at least one item exists with that isbn
+                            try {
+                                if (response.getInt("totalItems") > 0) {
+                                    JSONObject firstBookInfo = response.getJSONArray("items").getJSONObject(0).getJSONObject("volumeInfo");
+
+                                    titleEditText.setText(firstBookInfo.getString("title"));
+                                    JSONArray authorArr = firstBookInfo.getJSONArray("authors");
+                                    String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
+//
+                                    for (int i = 1; i < authorArr.length(); i++) {
+                                        authorListString += ", " + authorArr.getString(i);
+                                    }
+                                    authorEditText.setText(authorListString);
+
+                                    descEditText.setText(firstBookInfo.getString("description"));
+                                }
+                                else{
+                                    Toast.makeText(ctx, "No books found for given ISBN", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch(Exception e) {
+                                Log.e(TAG, "AddBook *** JSONObject error");
+                                Toast.makeText(ctx, "Error - Couldn't populate fields", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO: Handle error
+                            Log.e(TAG, "AddBook *** VolleyError");
+                            Toast.makeText(ctx, "Error - Volley couldn't access API", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
+
+            // Add the request to the RequestQueue.
+            SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
+
 
         } else {
-            Log.i(TAG, "AddBook*** No ISBN ");
-            // TODO: Print error message
-
+            Log.i(TAG, "AddBook*** No ISBN, can't autofill ");
+            Toast.makeText(this, "Cannot autofill without ISBN", Toast.LENGTH_SHORT).show();
         }
 
     }
