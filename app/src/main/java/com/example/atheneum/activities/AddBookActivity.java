@@ -34,6 +34,7 @@ import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.ConnectionChecker;
 import com.example.atheneum.utils.EditTextWithValidator;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.NonEmptyTextValidator;
@@ -130,6 +131,13 @@ public class AddBookActivity extends AppCompatActivity {
     public void populateFieldsByIsbn() {
         // TODO: FINISH
 
+        // Check internet connection
+        if (!(new ConnectionChecker(this)).isNetworkConnected()){ // no internet connection
+            Toast.makeText(this, "Error, no Internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         Log.i(TAG, "AddBook*** Auto-populate requested");
         this.isbn = Book.INVALILD_ISBN;
         if (!TextUtils.isEmpty(isbnEditText.getText())) {
@@ -141,6 +149,8 @@ public class AddBookActivity extends AppCompatActivity {
             final EditText titleEditText = this.view.findViewById(R.id.bookTitleEditText);
             final EditText authorEditText = this.view.findViewById(R.id.authorEditText);
             final EditText descEditText = this.view.findViewById(R.id.descEditText);
+
+            final Context ctx = this;
 
             // taken from https://developer.android.com/training/volley/request.html
             // Request a JSON response from the provided URL.
@@ -165,9 +175,13 @@ public class AddBookActivity extends AppCompatActivity {
 
                                     descEditText.setText(firstBookInfo.getString("description"));
                                 }
+                                else{
+                                    Toast.makeText(ctx, "No books found for given ISBN", Toast.LENGTH_SHORT).show();
+                                }
                             }
                             catch(Exception e) {
                                 Log.e(TAG, "AddBook *** JSONObject error");
+                                Toast.makeText(ctx, "Error - Couldn't populate fields", Toast.LENGTH_SHORT).show();
                             }
 
                         }
@@ -177,6 +191,8 @@ public class AddBookActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             // TODO: Handle error
                             Log.e(TAG, "AddBook *** VolleyError");
+                            Toast.makeText(ctx, "Error - Volley couldn't access API", Toast.LENGTH_SHORT).show();
+
                         }
                     });
 
@@ -186,9 +202,8 @@ public class AddBookActivity extends AppCompatActivity {
 
 
         } else {
-            Log.i(TAG, "AddBook*** No ISBN ");
-            // TODO: Print error message
-
+            Log.i(TAG, "AddBook*** No ISBN, can't autofill ");
+            Toast.makeText(this, "Cannot autofill without ISBN", Toast.LENGTH_SHORT).show();
         }
 
     }
