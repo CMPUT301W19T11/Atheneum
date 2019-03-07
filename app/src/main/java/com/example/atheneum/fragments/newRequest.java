@@ -16,6 +16,7 @@ import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -64,7 +65,8 @@ public class newRequest extends Fragment {
             public void onClick(View v) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 final FirebaseDatabase db = FirebaseDatabase.getInstance();
-                DatabaseReference ref = db.getReference().child(getString(R.string.db_users)).child(currentUser.getUid());
+                DatabaseReference ref = db.getReference()
+                        .child(getString(R.string.db_users)).child(currentUser.getUid());
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -74,14 +76,21 @@ public class newRequest extends Fragment {
                             Request newRequest = new Request(requester, bookID);
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
-                            DatabaseReference requestColref = db.getReference().child(getString(R.string.db_requestCollection)).child(newRequest.getRequester().getUserID());
-                            requestColref.child(newRequest.getBookID()).setValue(newRequest);
+
+//                            DatabaseReference requestColref = db.getReference()
+//                                    .child(getString(R.string.db_requestCollection)).child(newRequest.getRequesterID());
+//                            requestColref.child(newRequest.getBookID()).setValue(newRequest);
+
+                            DatabaseWriteHelper.makeRequest(newRequest);
+
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
 
-                            getActivity().getSupportFragmentManager().beginTransaction().remove(newRequest.this).commit();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .remove(newRequest.this).commit();
 
                             // return to owner page fragment
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).commit();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.content_frame, new BorrowerPageFragment()).commit();
 
                         }
                     }
