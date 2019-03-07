@@ -74,7 +74,8 @@ public class BorrowerPageFragment extends Fragment {
          */
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection)).child(currentUser.getUid());
+        DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
+                .child(currentUser.getUid());
 
         /**
          * Get the request list
