@@ -76,7 +76,7 @@ public class Request {
      *
      * @param requester the requester
      */
-    public void setRequester(User requester) {
+    public void setRequesterID(User requester) {
         this.requesterID = requester.getUserID();
     }
 
