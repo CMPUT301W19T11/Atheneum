@@ -132,27 +132,34 @@ public class BookInfoActivity extends AppCompatActivity {
 
         // get list of requesters
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
+            Log.v(TAG, "USER IS AUTHENTICATESD AHSDHFSAHDFHSHFSDAH F");
 
-            FirebaseRecyclerOptions<User> options =
-                    new FirebaseRecyclerOptions.Builder<User>()
-                            .setQuery(query, new SnapshotParser<User>() {
-                                @NonNull
-                                @Override
-                                public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                    Log.v(TAG, "PARSE SNAPSHOT METHOD IS BEING CALLED");
-                                    return new User();
-                                }
-                            })
+//            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
+
+//            FirebaseRecyclerOptions<String> options =
+//                    new FirebaseRecyclerOptions.Builder<String>()
+//                            .setQuery(query, String.class)
+//                            .build();
+
+
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            Query keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid());
+            DatabaseReference dataRef = BooksRefUtils.BOOKS_REF;
+
+            FirebaseRecyclerOptions<Book> options =
+                    new FirebaseRecyclerOptions.Builder<Book>()
+                            .setIndexedQuery(keyQuery, dataRef, Book.class)
                             .build();
 
-            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<User, BookRequestViewHolder>(options) {
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookRequestViewHolder>(options) {
                 @Override
-                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final User requester) {
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final Book requester) {
                     //Bind Book object to BookViewHolder
-                    holder.requesterNameTextView.setText(
-                            requester.getUserName());
+//                    holder.requesterNameTextView.setText(
+//                            requester.getUserName());
+                    Log.v(TAG, "BIND VIEW HOLDER ASLFKLDSJFKLJADSKLFDSKLFJ LDSJFLKADS");
+                    holder.requesterNameTextView.setText("ajsdlfadsjfs");
+
 //                    holder.bookItem.setOnClickListener(new View.OnClickListener() {
 //
 //                        @Override
