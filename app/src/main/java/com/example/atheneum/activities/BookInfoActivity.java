@@ -177,34 +177,25 @@ public class BookInfoActivity extends AppCompatActivity {
                     // ...
                     Log.i(TAG, e.getMessage());
                 }
-
-
             };
 
-            ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
-            ownerBooksRecyclerView.setHasFixedSize(true);
-            ownerBooksLayoutManager = new LinearLayoutManager(this.context);
-            ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
-            ownerBooksRecyclerView.setAdapter(firebaseRecyclerAdapter);
-            ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
+            requestsRecyclerView = (RecyclerView) findViewById(R.id.book_requests_recycler_view);
+            requestsRecyclerView.setHasFixedSize(true);
+            requestsLayoutManager = new LinearLayoutManager(this);
+            requestsRecyclerView.setLayoutManager(requestsLayoutManager);
+            requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+            requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
                     DividerItemDecoration.VERTICAL));
-
-            FloatingActionButton fab = (FloatingActionButton) this.view.findViewById(R.id.add_book);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), AddBookActivity.class);
-                    startActivity(intent);
-                }
-            });
-            deleteBtn = findViewById(R.id.buttonDelete);
-            deleteBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteBook();
-                }
-            });
         }
+
+        deleteBtn = findViewById(R.id.buttonDelete);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteBook();
+            }
+        });
+
         editBtn = findViewById(R.id.buttonEdit);
         //TODO: implement edit book button
     }
