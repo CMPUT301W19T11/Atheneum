@@ -12,8 +12,10 @@ package com.example.atheneum.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -40,14 +42,17 @@ import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.NonEmptyTextValidator;
 import com.example.atheneum.viewmodels.AddBookViewModel;
 import com.example.atheneum.viewmodels.AddBookViewModelFactory;
+import com.example.atheneum.viewmodels.BookInfoViewModel;
+import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class AddBookActivity extends AppCompatActivity {
+public class AddEditBookActivity extends AppCompatActivity {
 
     private Context context;
+    private BookInfoViewModel bookInfoViewModel;
 
     String title;
     String author;
@@ -65,7 +70,7 @@ public class AddBookActivity extends AppCompatActivity {
     private Button scanIsbnBtn;
     private Button autoPopulateByIsbnBtn;
 
-    private static final String TAG = "AddBook";
+    private static final String TAG = "AddEditBook";
     private View view;
 
     @Override
@@ -84,6 +89,7 @@ public class AddBookActivity extends AppCompatActivity {
 //            }
 //        });
 
+
         this.view = findViewById(android.R.id.content);
 
         // bind editText references to UI elements
@@ -91,6 +97,26 @@ public class AddBookActivity extends AppCompatActivity {
         authorEditText = findViewById(R.id.authorEditText);
         isbnEditText = findViewById(R.id.isbnEditText);
         descEditText = findViewById(R.id.descEditText);
+
+        final String bookID = getIntent().getStringExtra("BookID");
+        if( bookID != ""){
+            Log.i("got intent extra bookid", bookID);
+
+            BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
+            bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
+            LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+            bookLiveData.observe(this, new Observer<Book>() {
+                @Override
+                public void onChanged(@Nullable Book book) {
+                    if (book != null) {
+                        titleEditText.setText(book.getTitle());
+                        authorEditText.setText(book.getAuthor());
+                        isbnEditText.setText(String.valueOf(book.getIsbn()));
+                        descEditText.setText(book.getDescription());
+                    }
+                }
+            });
+        }
 
         // Setup all edit texts with their validators
         editTextWithValidatorArray = new EditTextWithValidator[]{
@@ -100,11 +126,18 @@ public class AddBookActivity extends AppCompatActivity {
                 new EditTextWithValidator(descEditText, new NonEmptyTextValidator(descEditText)),
         };
 
+
+
         saveBtn = findViewById(R.id.saveBookBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNewBook();
+                if(bookID != "") {
+                    updateBook();
+                }
+                else{
+                    saveNewBook();
+                }
             }
         });
         scanIsbnBtn = findViewById(R.id.scanIsbnButton);
@@ -217,6 +250,41 @@ public class AddBookActivity extends AppCompatActivity {
         return allFilled;
     }
 
+    public void updateBook(){
+        Log.i(TAG, "UpdateBook*** Save Button Pressed");
+
+        if (!allFieldsFilled()) {
+            // TODO : Display Error Prompt
+            Log.w(TAG, "AddBook*** Error fields unfilled");
+            Toast.makeText(context, "Cannot save with unfilled fields!", Toast.LENGTH_SHORT).show();
+
+            // call all input validations to show error prompts
+            for (EditTextWithValidator editTextVal : editTextWithValidatorArray) {
+                editTextVal.validator.validate(editTextVal.editText);
+            }
+            return;
+        }
+        Log.i(TAG, "UpdateBook*** Fields checked, all filled");
+
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            BookInfoViewModelFactory factory = new BookInfoViewModelFactory(firebaseUser.getUid());
+            final BookInfoViewModel bookInfoViewModel = ViewModelProviders.of(AddEditBookActivity.this, factory).get(BookInfoViewModel.class);
+            //LiveData<Book>  bookLiveData = bookInfoViewModel.getBookLiveData();
+            if(bookInfoViewModel != null){
+                Book book = bookInfoViewModel.getBookLiveData().getValue();
+                book.setTitle(titleEditText.getText().toString());
+                book.setAuthor(authorEditText.getText().toString());
+                book.setIsbn(Long.parseLong(isbnEditText.getText().toString()));
+                book.setDescription(descEditText.getText().toString());
+
+                bookInfoViewModel.setBook(book);
+
+            }
+            finish();
+        }
+    }
+
     public void saveNewBook() {
         Log.i(TAG, "AddBook*** Save Button Pressed");
 
@@ -242,9 +310,9 @@ public class AddBookActivity extends AppCompatActivity {
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
             AddBookViewModelFactory factory = new AddBookViewModelFactory(firebaseUser.getUid());
-            final AddBookViewModel addBookViewModel = ViewModelProviders.of(AddBookActivity.this, factory).get(AddBookViewModel.class);
+            final AddBookViewModel addBookViewModel = ViewModelProviders.of(AddEditBookActivity.this, factory).get(AddBookViewModel.class);
             LiveData<User> userLiveData = addBookViewModel.getOwnerLiveData();
-            userLiveData.observe(AddBookActivity.this, new Observer<User>() {
+            userLiveData.observe(AddEditBookActivity.this, new Observer<User>() {
                 @Override
                 public void onChanged(@Nullable User owner) {
                     if (owner != null) {

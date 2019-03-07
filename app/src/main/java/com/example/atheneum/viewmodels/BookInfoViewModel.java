@@ -34,6 +34,8 @@ public class BookInfoViewModel extends ViewModel {
         DatabaseWriteHelper.deleteBook(ownerUserID, this.bookID);
     }
 
+    public void setBook(Book book){ bookRef.setValue(book);}
+
     /**
      * Converts the DataSnapshot retrieved from the Firebase Query into a User object
      */
