@@ -96,7 +96,7 @@ public class BorrowerPageFragment extends Fragment {
                     requestItem.setBookID(bookID);
 
                     User requester = item.child(getString(R.string.db_book_requester)).getValue(User.class);
-                    requestItem.setRequester(requester);
+                    requestItem.setRequesterID(requester);
 
                     Request.Status status = item.child(getString(R.string.db_book_request_status)).getValue(Request.Status.class);
                     requestItem.setrStatus(status);
