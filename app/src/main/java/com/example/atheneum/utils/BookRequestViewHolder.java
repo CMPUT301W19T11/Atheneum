@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.atheneum.R;
 import com.example.atheneum.activities.BookInfoActivity;
 
 /**
@@ -19,6 +20,7 @@ public class BookRequestViewHolder extends RecyclerView.ViewHolder {
 
     public BookRequestViewHolder(@NonNull View bookView) {
         super(bookView);
-        requestItem = (LinearLayout) bookView.findViewById(R.id.request_card);
+        requestItem = (LinearLayout) bookView.findViewById(R.id.request_on_book_card);
+        requesterNameTextView = (TextView) bookView.findViewById(R.id.requester_name);
     }
 }

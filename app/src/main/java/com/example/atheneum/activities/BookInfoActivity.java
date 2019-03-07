@@ -33,6 +33,8 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.User;
+import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.BookViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
@@ -113,27 +115,23 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
-        //
+        // get list of requesters
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            Query keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid());
+            Query keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(bookID);
             DatabaseReference dataRef = BooksRefUtils.BOOKS_REF;
 
-            FirebaseRecyclerOptions<Book> options =
-                    new FirebaseRecyclerOptions.Builder<Book>()
+            FirebaseRecyclerOptions<User> options =
+                    new FirebaseRecyclerOptions.Builder<User>()
                             .setIndexedQuery(keyQuery, dataRef, Book.class)
                             .build();
 
-            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<User, BookRequestViewHolder>(options) {
                 @Override
-                protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final User requester) {
                     //Bind Book object to BookViewHolder
-                    holder.titleTextView.setText(
-                            book.getTitle());
-                    holder.authorTextView.setText(
-                            book.getAuthor());
-                    holder.statusTextView.setText(
-                            book.getStatus().toString());
+                    holder.requesterNameTextView.setText(
+                            requester.getUserName());
 //                    holder.bookItem.setOnClickListener(new View.OnClickListener() {
 //
 //                        @Override
@@ -152,13 +150,13 @@ public class BookInfoActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                public BookRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                     // Create a new instance of the ViewHolder, in this case we are using a custom
                     // layout called R.layout.message for each item
                     // create a new view
                     LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.book_card, parent, false);
-                    final BookViewHolder vh = new BookViewHolder(v);
+                            .inflate(R.layout.request_on_book_card, parent, false);
+                    final BookRequestViewHolder vh = new BookRequestViewHolder(v);
 
                     return vh;
                 }
