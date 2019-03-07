@@ -2,6 +2,7 @@
     <string name="app_name">Atheneum</string>
     <string name="title_activity_main">Home</string>
     <string name="title_activity_complete_registration">Complete Registration</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -38,6 +39,7 @@
 
     <!--Strings for profile page-->
     <string name="profile_title">Profile</string>
+    <string name="title_activity_view_profile">View Profile</string>
     <!--End of Strings for profile page-->
 
     <!--Strings for EditProfileFragment-->

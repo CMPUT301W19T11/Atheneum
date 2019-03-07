@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
         } else if (id == R.id.nav_profile) {
 
+            final Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
+
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbRef = db.getReference("users").child(firebaseUser.getUid());
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User thisUser = dataSnapshot.getValue(User.class);
-                    getIntent().putExtra("user", thisUser);
+                    view_profile_intent.putExtra("user", thisUser);
                 }
 
                 @Override
@@ -151,7 +153,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
+//            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
+            startActivity(view_profile_intent);
 
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
