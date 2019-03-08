@@ -53,6 +53,7 @@ public class AddEditBookActivity extends AppCompatActivity {
 
     private Context context;
     private BookInfoViewModel bookInfoViewModel;
+    LiveData<Book> bookLiveData
 
     String title;
     String author;
@@ -104,7 +105,7 @@ public class AddEditBookActivity extends AppCompatActivity {
 
             BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
             bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
-            LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+            bookLiveData = bookInfoViewModel.getBookLiveData();
             bookLiveData.observe(this, new Observer<Book>() {
                 @Override
                 public void onChanged(@Nullable Book book) {
@@ -114,6 +115,7 @@ public class AddEditBookActivity extends AppCompatActivity {
                         isbnEditText.setText(String.valueOf(book.getIsbn()));
                         descEditText.setText(book.getDescription());
                     }
+                    bookLiveData.removeObserver(this);
                 }
             });
         }
