@@ -71,8 +71,7 @@ public class requestAdapter extends ArrayAdapter {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag();
         }
-//        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-//        viewHolder.show_date.setText(dateFormat.format(measurement.getDate()));
+
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference ref_owner = db.getReference("users").child(book.getOwnerID());
         Log.d(TAG, "find owner " + book.getOwnerID());
