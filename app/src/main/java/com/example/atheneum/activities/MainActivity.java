@@ -97,9 +97,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    //See: https://stackoverflow.com/questions/7992216/android-fragment-handle-back-button-press
-    //See: https://stackoverflow.com/questions/14460109/android-fragmenttransaction-addtobackstack-confusion
-    //See: https://stackoverflow.com/questions/41431546/android-peek-backstack-without-popping
+
+    /**
+     * On back press for main activity method
+     *  See: https://stackoverflow.com/questions/7992216/android-fragment-handle-back-button-press
+     *  See: https://stackoverflow.com/questions/14460109/android-fragmenttransaction-addtobackstack-confusion
+     *  See: https://stackoverflow.com/questions/41431546/android-peek-backstack-without-popping
+     */
     @Override
     public void onBackPressed() {
         int count = getSupportFragmentManager().getBackStackEntryCount();
@@ -154,8 +158,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
-//            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
-
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
@@ -181,8 +183,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    // allows for setting title of action bar from different fragmenets
-    // taken from https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+    /**
+     * allows for setting title of action bar from different fragments
+     * @param title
+     *
+     * See: https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+     */
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
@@ -196,9 +202,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
         view_profile_intent.putExtra("user", user);
         startActivity(view_profile_intent);
-//        getIntent().putExtra("user", user);
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
     }
 
 }
