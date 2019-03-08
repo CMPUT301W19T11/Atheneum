@@ -12,6 +12,8 @@ import com.example.atheneum.models.User;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +32,7 @@ import java.util.List;
  *
  * Leverages Firebase UI Auth library to dynamically generate the sign-in activity.
  * Entry point to the app.
+ *
  */
 public class FirebaseUIAuthActivity extends AppCompatActivity {
     final static String TAG = FirebaseUIAuthActivity.class.getSimpleName();
@@ -53,7 +58,51 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     *
+     * See: https://www.androidauthority.com/android-push-notifications-with-firebase-cloud-messaging-925075/
+     */
     private void postSignInTransition() {
+        //store user's device token in datbase
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference().child("userDeviceTokens")
+            .child(firebaseUser.getUid());
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Add user information to user table if the user doesn't exist in
+                // our database
+                User newUser = new User(firebaseUser.getUid(), firebaseUser.getEmail());
+                final DatabaseReference userTokensRef = db.getReference().child("userDeviceTokens")
+                        .child(newUser.getUserID());
+
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Log.i(TAG, "cannot store user device token?!");
+                                    return;
+                                }
+
+                                String token = task.getResult().getToken();
+                                Log.d(TAG, token);
+
+                                //Store user's instanceID token in firebase
+                                userTokensRef.setValue(token);
+                                Log.i(TAG, "User device token stored in database");
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.i(TAG, "user device token cannot be stored??");
+            }
+        });
+
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         finish();
@@ -84,6 +133,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                 if (firebaseUser != null) {
                     // User is signed in
                     final FirebaseDatabase db = FirebaseDatabase.getInstance();
+
                     DatabaseReference ref = db.getReference().child(getString(R.string.db_users)).child(firebaseUser.getUid());
                     // Check if the user's information exists in the database
                     ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -109,6 +159,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                             postSignInTransition();
                         }
                     });
+
                 } else {
                     // No user is signed in
                     Snackbar sb = Snackbar.make(findViewById(R.id.firebase_ui_auth_constraint_layout), R.string.no_user_signed_in, Snackbar.LENGTH_INDEFINITE);

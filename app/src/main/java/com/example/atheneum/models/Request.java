@@ -4,7 +4,7 @@ package com.example.atheneum.models;
  * The Request class for requests made of owner books by borrowers.
  */
 public class Request {
-    private User requester;
+    private String requesterID;
     private String bookID;
     private Status rStatus;
 
@@ -39,18 +39,18 @@ public class Request {
      * @param requester the requester
      */
     public Request(User requester, String bookID) {
-        this.requester = requester;
+        this.requesterID = requester.getUserID();
         this.bookID = bookID;
         this.rStatus = Status.PENDING;
     }
 
     /**
-     * Gets the requester User.
+     * Gets the requester UserID.
      *
-     * @return the requester User
+     * @return the requester UserID
      */
-    public User getRequester() {
-        return this.requester;
+    public String getRequesterID() {
+        return this.requesterID;
     }
 
     /**
@@ -72,12 +72,12 @@ public class Request {
     }
 
     /**
-     * Sets the requester User.
+     * Sets the requester UserID.
      *
      * @param requester the requester
      */
-    public void setRequester(User requester) {
-        this.requester = requester;
+    public void setRequesterID(User requester) {
+        this.requesterID = requester.getUserID();
     }
 
     /**

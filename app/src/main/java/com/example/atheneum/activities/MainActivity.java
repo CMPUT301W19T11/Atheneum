@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.BorrowerPageFragment;
@@ -41,14 +42,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 
+/**
+ * The Main activity.
+ *
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -136,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
         } else if (id == R.id.nav_profile) {
-
             final Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
 
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
@@ -197,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Method for search user fragment to pass data to view profile fragment.
      * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
      * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
+     *
+     * @param user the user
      */
     public void passDataToViewProfileActivity(User user) {
         Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
