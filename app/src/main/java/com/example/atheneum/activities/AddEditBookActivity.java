@@ -267,10 +267,6 @@ public class AddEditBookActivity extends AppCompatActivity {
         Log.i(TAG, "UpdateBook*** Fields checked, all filled");
 
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
-            BookInfoViewModelFactory factory = new BookInfoViewModelFactory(firebaseUser.getUid());
-            final BookInfoViewModel bookInfoViewModel = ViewModelProviders.of(AddEditBookActivity.this, factory).get(BookInfoViewModel.class);
-            //LiveData<Book>  bookLiveData = bookInfoViewModel.getBookLiveData();
             if(bookInfoViewModel != null){
                 Book book = bookInfoViewModel.getBookLiveData().getValue();
                 book.setTitle(titleEditText.getText().toString());
