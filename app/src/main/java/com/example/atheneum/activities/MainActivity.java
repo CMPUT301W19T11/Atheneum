@@ -27,7 +27,6 @@ import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
-import com.example.atheneum.fragments.ViewProfileFragment;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
@@ -193,10 +192,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
      * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
      */
-    public void passDatatoFragment(User user) {
-        getIntent().putExtra("user", user);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+    public void passDataToViewProfileActivity(User user) {
+        Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
+        view_profile_intent.putExtra("user", user);
+        startActivity(view_profile_intent);
+//        getIntent().putExtra("user", user);
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
     }
 
 }

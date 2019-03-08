@@ -92,7 +92,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                User selectedUser = (User) parent.getAdapter().getItem(position);
                 User selectedUser = userList.get(position);
-                ((MainActivity)getActivity()).passDatatoFragment(selectedUser);
+                ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
             }
         });
 
