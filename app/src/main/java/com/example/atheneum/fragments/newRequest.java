@@ -61,6 +61,9 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     DatabaseReference ref;
     ListView availableBookList;
 
+    String currentUserID;
+
+
     private static ArrayList<Book> availableBook = new ArrayList<Book>();
     private static ArrayList<Book> defaultAvailableBook = new ArrayList<Book>();
     private static ArrayList<Book> searchAvailableBook = new ArrayList<Book>();
@@ -87,36 +90,10 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
 
         }
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUserID = currentUser.getUid();
 
-        db = FirebaseDatabase.getInstance();
-        ref = db.getReference("books");
-        availableBookList = (ListView) this.view.findViewById(R.id.AvailableBookList);
-
-        availableBook = new ArrayList<Book>();
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "On Data Change was Called");
-                availableBook.clear();
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Book book = child.getValue(Book.class);
-                    if(book.getStatus() == Book.Status.AVAILABLE || book.getStatus() == Book.Status.REQUESTED) {
-                        availableBook.add(book);
-                    }
-                    defaultAvailableBook = availableBook;
-
-                }
-
-                availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, availableBook);
-                availableBookList.setAdapter(availableAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+        retriveBook();
 
         availableBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -265,6 +242,43 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
         return false;
     }
 
+    public void retriveBook(){
+        db = FirebaseDatabase.getInstance();
+        ref = db.getReference("books");
+        availableBookList = (ListView) this.view.findViewById(R.id.AvailableBookList);
+
+        availableBook = new ArrayList<Book>();
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "On Data Change was Called");
+                availableBook.clear();
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+//                    String aa = child.getValue(String.class);
+//                    Log.d(TAG, "TEST STRING "+ aa);
+                    Book book = child.getValue(Book.class);
+                    if(book.getStatus() == Book.Status.AVAILABLE || book.getStatus() == Book.Status.REQUESTED) {
+                        if(!book.getOwnerID().equals(currentUserID)){
+                            availableBook.add(book);
+                        }
+                    }
+                    defaultAvailableBook = availableBook;
+
+                }
+
+                availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, availableBook);
+                availableBookList.setAdapter(availableAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+    }
+
     /**
      * search an availabel book by title/author/description
      * @param book
@@ -272,14 +286,31 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
      * @return
      */
     public boolean searchCheck(Book book, String query){
-        Log.d(TAG1, "Get Query "+query+query.length());
+        Log.d(TAG, "Get Query "+query+query.length());
+
+        ArrayList<String> queryList = new ArrayList<String>(Arrays.asList(query.toLowerCase().split(" ")));
+
+        ArrayList<String> descriptionList = new ArrayList<String>(Arrays.asList(book.getDescription().toLowerCase().split(" ")));
+
+
+        for (int i = 0; i<queryList.size(); i++){
+            Log.d(TAG, "QUERY LIST IS "+ queryList);
+            if(!descriptionList.contains(queryList.get(i))){
+                return false;
+            }
+            else if(descriptionList.contains(queryList.get(i))){
+                if(i==queryList.size()-1){
+                    return true;
+                }
+            }
+
+        }
         query = query.toLowerCase();
         if(query.length() == 0){return true;}
-        Pattern r = Pattern.compile(query);
-        Matcher m = r.matcher(book.getDescription().toLowerCase());
         if(book.getTitle().toLowerCase().equals(query)){ return true;}
         else if(book.getAuthor().toLowerCase().equals(query)){return true;}
-        else if(m.find()){ return  true;}
+
+
         return false;
     }
 
