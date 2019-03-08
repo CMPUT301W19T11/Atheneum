@@ -1,11 +1,16 @@
 package com.example.atheneum.fragments;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -28,8 +33,11 @@ import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.OwnerCollectionRefUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -61,6 +69,8 @@ public class OwnerPageFragment extends Fragment {
     private RecyclerView ownerBooksRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager ownerBooksLayoutManager;
+
+    private UserViewModel userViewModel;
 
     private static final String TAG = OwnerPageFragment.class.getSimpleName();
 
@@ -109,6 +119,8 @@ public class OwnerPageFragment extends Fragment {
                             .setIndexedQuery(keyQuery, dataRef, Book.class)
                             .build();
 
+            final Fragment thisFragment = this;
+
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
                 @Override
                 protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
@@ -119,6 +131,31 @@ public class OwnerPageFragment extends Fragment {
                             book.getAuthor());
                     holder.statusTextView.setText(
                             book.getStatus().toString());
+
+                    // retrieve the User's email
+                    if (!(book.getBorrowerID() == null || book.getBorrowerID().equals(""))) {
+                        // retrieve email
+
+                        UserViewModelFactory userViewModelFactory = new UserViewModelFactory(book.getBorrowerID());
+                        userViewModel = ViewModelProviders.of(thisFragment, userViewModelFactory).get(UserViewModel.class);
+                        final LiveData<User> userLiveData = userViewModel.getUserLiveData();
+
+                        userLiveData.observe(thisFragment, new Observer<User>() {
+                            @Override
+                            public void onChanged(@Nullable User user) {
+                                Log.i(TAG, "in Observer!");
+                                // update borrower email
+                                holder.setBorrowerEmail(user.getUserName());
+                                // Remove the observer after update
+                                userLiveData.removeObserver(this);
+                            }
+                        });
+                    }
+                    else { // no borrower;
+                        holder.setBorrowerEmail("None");
+                    }
+
+
                     holder.bookItem.setOnClickListener(new View.OnClickListener() {
 
                         @Override
