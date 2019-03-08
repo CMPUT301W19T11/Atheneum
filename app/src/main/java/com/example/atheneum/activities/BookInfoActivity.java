@@ -34,9 +34,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class BookInfoActivity extends AppCompatActivity {
 
-    private static final int BOOK_INFO_DELETED =0;
-    private static final int BOOK_INFO_EDITED = 1;
-
     String title;
     String author;
     long isbn;
@@ -100,9 +97,23 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
         editBtn = findViewById(R.id.buttonEdit);
-        //TODO: implement edit book button
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editBook();
+            }
+        });
     }
 
+    public void editBook(){
+        Log.i(TAG, "Edit book button pressed");
+        Intent intent = new Intent(this, AddEditBookActivity.class);
+//        intent.putExtra("ADD_EDIT_BOOK_MODE", EDIT_BOOK);
+        intent.putExtra("BookID", bookID);
+        startActivity(intent);
+        finish();
+
+    }
 
     public void deleteBook(){
         Log.i(TAG, "Delete book button pressed");
