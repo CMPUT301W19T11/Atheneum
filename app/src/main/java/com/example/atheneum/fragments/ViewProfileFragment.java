@@ -102,6 +102,7 @@ public class ViewProfileFragment extends Fragment {
                                         .getSupportFragmentManager()
                                         .beginTransaction()
                                         .replace(R.id.content_frame, new ViewProfileFragment())
+                                        .addToBackStack("ViewProfile")
                                         .commit();
                             }
 
@@ -115,7 +116,7 @@ public class ViewProfileFragment extends Fragment {
                                 startViewProfileFragment(fragment);
                             }
                         });
-                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, editProfileFragment).commit();
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, editProfileFragment).addToBackStack("EditProfile").commit();
                     }
                 }
             });
