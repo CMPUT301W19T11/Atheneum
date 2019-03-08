@@ -62,7 +62,11 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     ListView availableBookList;
 
     private static ArrayList<Book> availableBook = new ArrayList<Book>();
+    private static ArrayList<Book> defaultAvailableBook = new ArrayList<Book>();
+    private static ArrayList<Book> searchAvailableBook = new ArrayList<Book>();
     private requestAdapter availableAdapter;
+    private String searchToken = "Search book by author/title/description";
+//    private String searchToken = " ";
 
     /**
      * required empty constructor
@@ -102,6 +106,7 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                     if(book.getStatus() == Book.Status.AVAILABLE || book.getStatus() == Book.Status.REQUESTED) {
                         availableBook.add(book);
                     }
+                    defaultAvailableBook = availableBook;
 
                 }
 
@@ -191,15 +196,16 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "menu item collapse");
-//                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, defaultUserNameList);
-//                userListView.setAdapter(adapter);
-                availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, availableBook);
+                availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, defaultAvailableBook);
                 availableBookList.setAdapter(availableAdapter);
                 return true;
             }
         });
 
         SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
+        //
+        sv.setQuery(searchToken, false);
+        sv.clearFocus();
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, sv);
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -209,25 +215,22 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                 db = FirebaseDatabase.getInstance();
                 ref = db.getReference("books");
 
-                /**
-                 * 0307 2019 Jiahao
-                 */
+
                 ref.orderByChild("books").addListenerForSingleValueEvent(new ValueEventListener() {
-                    final ArrayList<String> userNameList = new ArrayList<>();
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        availableBook.clear();
+                        searchAvailableBook.clear();
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Book book = child.getValue(Book.class);
                             if(searchCheck(book, query)){
-                                availableBook.add(book);
+                                searchAvailableBook.add(book);
                             }
 
                         }
-                        if (availableBook.isEmpty()) {
+                        if (searchAvailableBook.isEmpty()) {
                             Toast.makeText(getActivity(), "No exact matches found for search query", Toast.LENGTH_SHORT).show();
                         }
-                        availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, availableBook);
+                        availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, searchAvailableBook);
                         availableBookList.setAdapter(availableAdapter);
                     }
 
@@ -263,15 +266,22 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "onQueryTextChange"+newText);
         return false;
     }
 
+    /**
+     * search an availabel book by title/author/description
+     * @param book
+     * @param query
+     * @return
+     */
     public boolean searchCheck(Book book, String query){
         Log.d(TAG1, "Get Query "+query+query.length());
         query = query.toLowerCase();
         if(query.length() == 0){return true;}
         Pattern r = Pattern.compile(query);
-        Matcher m = r.matcher(book.getDescription());
+        Matcher m = r.matcher(book.getDescription().toLowerCase());
         if(book.getTitle().toLowerCase().equals(query)){ return true;}
         else if(book.getAuthor().toLowerCase().equals(query)){return true;}
         else if(m.find()){ return  true;}
