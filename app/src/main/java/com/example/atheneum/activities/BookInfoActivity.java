@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,14 +34,11 @@ import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
-import com.example.atheneum.utils.BookViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.OwnerCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -53,6 +49,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class BookInfoActivity extends AppCompatActivity {
 
@@ -130,51 +127,42 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
+        Log.v(TAG, bookID);
+
         // get list of requesters
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            Log.v(TAG, "USER IS AUTHENTICATESD AHSDHFSAHDFHSHFSDAH F");
+            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
 
-//            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
+            FirebaseRecyclerOptions<String> options =
+                    new FirebaseRecyclerOptions.Builder<String>()
+                            .setQuery(query, new SnapshotParser<String>() {
+                                //@Nonnull is removed, it doesn't work when introduced for some reason
+                                @Override
+                                public String parseSnapshot(DataSnapshot snapshot) {
+                                    return snapshot.getKey();
+                                }
+                            }).build();
 
-//            FirebaseRecyclerOptions<String> options =
-//                    new FirebaseRecyclerOptions.Builder<String>()
-//                            .setQuery(query, String.class)
-//                            .build();
-
-
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            Query keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid());
-            DatabaseReference dataRef = BooksRefUtils.BOOKS_REF;
-
-            FirebaseRecyclerOptions<Book> options =
-                    new FirebaseRecyclerOptions.Builder<Book>()
-                            .setIndexedQuery(keyQuery, dataRef, Book.class)
-                            .build();
-
-            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookRequestViewHolder>(options) {
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
                 @Override
-                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final Book requester) {
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final String requesterID) {
                     //Bind Book object to BookViewHolder
-//                    holder.requesterNameTextView.setText(
-//                            requester.getUserName());
-                    Log.v(TAG, "BIND VIEW HOLDER ASLFKLDSJFKLJADSKLFDSKLFJ LDSJFLKADS");
-                    holder.requesterNameTextView.setText("ajsdlfadsjfs");
+                    Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
 
-//                    holder.bookItem.setOnClickListener(new View.OnClickListener() {
-//
-//                        @Override
-//                        public void onClick(View v) {
-//                            //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
-//                            Log.i("OwnerBook", "clicked on a book");
-//                            String sBookId = book.getBookID();
-//                            Intent intent = new Intent(context, BookInfoActivity.class);
-//                            intent.putExtra("bookID", sBookId);
-//                            intent.putExtra("position", holder.getAdapterPosition());
-//
-//                            mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
-//
-//                        }
-//                    });
+                    //get user object from requesterID
+                    DatabaseReference requesterRef = UsersRefUtils.getUsersRef(requesterID);
+                    requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            User requester = dataSnapshot.getValue(User.class);
+                            holder.requesterNameTextView.setText(requester.getUserName());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
 
                 @Override
