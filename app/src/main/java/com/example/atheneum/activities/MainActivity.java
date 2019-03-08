@@ -145,6 +145,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User thisUser = dataSnapshot.getValue(User.class);
                     view_profile_intent.putExtra("user", thisUser);
+                    startActivity(view_profile_intent);
+
                 }
 
                 @Override
@@ -154,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
 
 //            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
-            startActivity(view_profile_intent);
 
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
