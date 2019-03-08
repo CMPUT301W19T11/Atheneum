@@ -77,10 +77,6 @@ public class newRequest extends Fragment {
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
-//                            DatabaseReference requestColref = db.getReference()
-//                                    .child(getString(R.string.db_requestCollection)).child(newRequest.getRequesterID());
-//                            requestColref.child(newRequest.getBookID()).setValue(newRequest);
-
                             DatabaseWriteHelper.makeRequest(newRequest);
 
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
