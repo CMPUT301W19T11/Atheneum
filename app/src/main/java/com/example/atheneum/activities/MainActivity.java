@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (tag == "Home") {
+        } else if (tag.equals("Home")) {
             Log.d(TAG, "Prevented removing home frag");
             return;
         } else if (count > 0) {
