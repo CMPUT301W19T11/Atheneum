@@ -74,6 +74,8 @@ public class DatabaseWriteHelper {
 
         final String requesterRef = String.format("requestCollection/%s/%s", request.getRequesterID(), request.getBookID());
         final String bookRequestRef = String.format("bookRequests/%s/%s", request.getBookID(), request.getRequesterID());
+        //TODO: write to notifications table here
+        jarsjdafjflksdjlk
 
         updates.put(requesterRef, request);
         updates.put(bookRequestRef, true);

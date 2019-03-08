@@ -1,11 +1,32 @@
 package com.example.atheneum.models;
 
+import java.util.UUID;
+
 /**
  * Represents the data contained in a push notification sent to a user.
  */
 public class Notification {
-    private String username;
+    private String notificationID;
+    private String requesterID;
+    private String ownerID;
+    private String noticationReceiverID;
+    private String bookID;
+    private NotificationType rNotificationType;
     private String message;
+
+    /**
+     * The enum Notification type.
+     */
+    public enum NotificationType {
+        /**
+         * Accept notification type.
+         */
+        ACCEPT,
+        /**
+         * Request notification type.
+         */
+        REQUEST
+    }
 
     /**
      * Creates a new Notification object with default values.
@@ -13,46 +34,153 @@ public class Notification {
      * Needed for Firebase. Do not use in application code.
      */
     public Notification() {
-        username = "";
-        message = "";
+        notificationID = UUID.randomUUID().toString();;
+        requesterID = "";
+        ownerID = "";
+        bookID = "";
     }
 
     /**
-     * Create a new Notification object using specified values for attributes.
+     * Instantiates a new Notification.
      *
-     * @param username Username of user to send notification to.
-     * @param message  Message contained within the notification.
+     * @param notificationID    the notification id
+     * @param requesterID       the requester id
+     * @param ownerID           the owner id
+     * @param bookID            the book id
+     * @param rNotificationType the r notification type
+     * @param message           the message
      */
-    public Notification(String username, String message) {
-        this.username = username;
+    public Notification(String notificationID, String requesterID, String ownerID, String bookID,
+                        NotificationType rNotificationType, String message) {
+        this.notificationID = notificationID;
+        this.requesterID = requesterID;
+        this.ownerID = ownerID;
+        this.bookID = bookID;
+        this.rNotificationType = rNotificationType;
         this.message = message;
     }
 
     /**
-     * @return Username of user to send message to
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Updates username of the notification
+     * Gets notification id.
      *
-     * @param username New value of username
+     * @return the notification id
      */
-    public void setUsername(String username) {
-        this.username = username;
+    public String getNotificationID() {
+        return notificationID;
     }
 
     /**
-     * @return Message contained within the notification
+     * Sets notification id.
+     *
+     * @param notificationID the notification id
+     */
+    public void setNotificationID(String notificationID) {
+        this.notificationID = notificationID;
+    }
+
+    /**
+     * Gets requester id.
+     *
+     * @return the requester id
+     */
+    public String getRequesterID() {
+        return requesterID;
+    }
+
+    /**
+     * Sets requester id.
+     *
+     * @param requesterID the requester id
+     */
+    public void setRequesterID(String requesterID) {
+        this.requesterID = requesterID;
+    }
+
+    /**
+     * Gets owner id.
+     *
+     * @return the owner id
+     */
+    public String getOwnerID() {
+        return ownerID;
+    }
+
+    /**
+     * Sets owner id.
+     *
+     * @param ownerID the owner id
+     */
+    public void setOwnerID(String ownerID) {
+        this.ownerID = ownerID;
+    }
+
+    /**
+     * Gets notication receiver id.
+     *
+     * @return the notication receiver id
+     */
+    public String getNoticationReceiverID() {
+        return noticationReceiverID;
+    }
+
+    /**
+     * Sets notication receiver id.
+     *
+     * @param noticationReceiverID the notication receiver id
+     */
+    public void setNoticationReceiverID(String noticationReceiverID) {
+        this.noticationReceiverID = noticationReceiverID;
+    }
+
+    /**
+     * Gets book id.
+     *
+     * @return the book id
+     */
+    public String getBookID() {
+        return bookID;
+    }
+
+    /**
+     * Sets book id.
+     *
+     * @param bookID the book id
+     */
+    public void setBookID(String bookID) {
+        this.bookID = bookID;
+    }
+
+    /**
+     * Gets notification type.
+     *
+     * @return the notification type
+     */
+    public NotificationType getrNotificationType() {
+        return rNotificationType;
+    }
+
+    /**
+     * Sets notification type.
+     *
+     * @param rNotificationType the r notification type
+     */
+    public void setrNotificationType(NotificationType rNotificationType) {
+        this.rNotificationType = rNotificationType;
+    }
+
+    /**
+     * Construct and returns message.
+     *
+     * @return the message
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * @param message New value of message to update notification to
+     * Sets message.
+     *
+     * @param message the message
      */
     public void setMessage(String message) {
         this.message = message;
