@@ -65,18 +65,24 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private static final String TAG = "Search";
 
-    //See: https://stackoverflow.com/questions/27425547/cannot-resolve-method-getsupportfragmentmanager-inside-fragment
-    //See: https://stackoverflow.com/questions/7645880/listview-with-onitemclicklistener-android
+    /**
+     * Override onCreateView method of fragment to load search layout
+     * @param inflater LayoutInflater to display layout of fragment
+     * @param container ViewGroup base class for layout and view container
+     * @param savedInstanceState Bundle environment data
+     * @return this the View object for this fragment
+     *
+     * See: https://stackoverflow.com/questions/27425547/cannot-resolve-method-getsupportfragmentmanager-inside-fragment
+     * See: https://stackoverflow.com/questions/7645880/listview-with-onitemclicklistener-android
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_search, container, false);
 
         this.context = getContext();
 
         if (getActivity() instanceof MainActivity) {
             mainActivity = (MainActivity) getActivity();
-            // set action bar title
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.search_page_title));
         }
 
@@ -85,12 +91,20 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
         userListView = (ListView) this.view.findViewById(R.id.userListView);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            //See: https://stackoverflow.com/questions/7073577/how-to-get-object-from-listview-in-setonitemclicklistener-in-android
-            //See: https://stackoverflow.com/questions/2139134/how-to-send-an-object-from-one-android-activity-to-another-using-intents
-            //See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+            /**
+             * Override onItemClick method for ListView items
+             * to send user data to view profile activity
+             * @param parent AdapterView
+             * @param view View
+             * @param position int
+             * @param id long
+             *
+             * See: https://stackoverflow.com/questions/7073577/how-to-get-object-from-listview-in-setonitemclicklistener-in-android
+             * See: https://stackoverflow.com/questions/2139134/how-to-send-an-object-from-one-android-activity-to-another-using-intents
+             * See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+             */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                User selectedUser = (User) parent.getAdapter().getItem(position);
                 User selectedUser = userList.get(position);
                 ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
             }
@@ -102,7 +116,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "On Data Change was Called");
+                Log.d(TAG, "On Data Change was Called");
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     User aUser = child.getValue(User.class);
                     userList.add(aUser);
@@ -131,9 +145,17 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
     }
 
 
-    //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
-    //See: https://developer.android.com/reference/android/widget/SearchView
-    //See: https://www.youtube.com/watch?v=_7B5iuyhIFk
+
+
+    /**
+     * Override onCreateOptionsMenu method to create search menu
+     * @param menu Menu search menu object
+     * @param inflater MenuInflater to display search menu
+     *
+     * See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
+     * See: https://developer.android.com/reference/android/widget/SearchView
+     * See: https://www.youtube.com/watch?v=_7B5iuyhIFk
+     */
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
 
@@ -200,7 +222,6 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         sv.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.d(TAG, "On CLICKC was Called");
             }
         });
 
