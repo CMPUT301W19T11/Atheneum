@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -140,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
         } else if (id == R.id.nav_profile) {
-
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbRef = db.getReference("users").child(firebaseUser.getUid());
