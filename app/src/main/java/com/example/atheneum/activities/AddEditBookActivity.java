@@ -12,8 +12,12 @@ package com.example.atheneum.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Picture;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +35,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.atheneum.R;
+import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
@@ -40,14 +45,20 @@ import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.NonEmptyTextValidator;
 import com.example.atheneum.viewmodels.AddBookViewModel;
 import com.example.atheneum.viewmodels.AddBookViewModelFactory;
+import com.example.atheneum.viewmodels.BookInfoViewModel;
+import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.internal.service.Common;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class AddBookActivity extends AppCompatActivity {
+public class AddEditBookActivity extends AppCompatActivity {
 
     private Context context;
+    private BookInfoViewModel bookInfoViewModel;
 
     String title;
     String author;
@@ -65,8 +76,11 @@ public class AddBookActivity extends AppCompatActivity {
     private Button scanIsbnBtn;
     private Button autoPopulateByIsbnBtn;
 
-    private static final String TAG = "AddBook";
+    private String bookID;
+
+    private static final String TAG = AddEditBookActivity.class.getSimpleName();
     private View view;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +89,6 @@ public class AddBookActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         this.view = findViewById(android.R.id.content);
 
@@ -92,6 +98,26 @@ public class AddBookActivity extends AppCompatActivity {
         isbnEditText = findViewById(R.id.isbnEditText);
         descEditText = findViewById(R.id.descEditText);
 
+        bookID = getIntent().getStringExtra("BookID");
+        if( !bookID.equals("")){
+
+            BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
+            bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
+            final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+            bookLiveData.observe(this, new Observer<Book>() {
+                @Override
+                public void onChanged(@Nullable Book book) {
+                    if (book != null) {
+                        titleEditText.setText(book.getTitle());
+                        authorEditText.setText(book.getAuthor());
+                        isbnEditText.setText(String.valueOf(book.getIsbn()));
+                        descEditText.setText(book.getDescription());
+                    }
+                    bookLiveData.removeObserver(this);
+                }
+            });
+        }
+
         // Setup all edit texts with their validators
         editTextWithValidatorArray = new EditTextWithValidator[]{
                 new EditTextWithValidator(titleEditText, new NonEmptyTextValidator(titleEditText)),
@@ -100,18 +126,25 @@ public class AddBookActivity extends AppCompatActivity {
                 new EditTextWithValidator(descEditText, new NonEmptyTextValidator(descEditText)),
         };
 
+
+
         saveBtn = findViewById(R.id.saveBookBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNewBook();
+                if(!bookID.equals("")) {
+                    updateBook();
+                }
+                else{
+                    saveNewBook();
+                }
             }
         });
         scanIsbnBtn = findViewById(R.id.scanIsbnButton);
         scanIsbnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scanIsbn();
+                scanIsbn(v);
             }
         });
         autoPopulateByIsbnBtn = findViewById(R.id.populateFromIsbnBtn);
@@ -123,9 +156,9 @@ public class AddBookActivity extends AppCompatActivity {
         });
     }
 
-    public void scanIsbn() {
+    public void scanIsbn(View v) {
         Log.i(TAG, "AddBook*** ISBN scan requested");
-        // TODO
+        //TODO
     }
 
     public void populateFieldsByIsbn() {
@@ -217,9 +250,49 @@ public class AddBookActivity extends AppCompatActivity {
         return allFilled;
     }
 
-    public void saveNewBook() {
-        Log.i(TAG, "AddBook*** Save Button Pressed");
+    public void updateBook(){
+        Log.i(TAG, "UpdateBook*** Save Button Pressed");
 
+        if (!allFieldsFilled()) {
+            // TODO : Display Error Prompt
+            Log.w(TAG, "AddBook*** Error fields unfilled");
+            Toast.makeText(context, "Cannot save with unfilled fields!", Toast.LENGTH_SHORT).show();
+
+            // call all input validations to show error prompts
+            for (EditTextWithValidator editTextVal : editTextWithValidatorArray) {
+                editTextVal.validator.validate(editTextVal.editText);
+            }
+            return;
+        }
+        Log.i(TAG, "UpdateBook*** Fields checked, all filled");
+
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
+            bookInfoViewModel = ViewModelProviders.of(AddEditBookActivity.this, factory).get(BookInfoViewModel.class);
+            final LiveData<Book>  bookLiveData = bookInfoViewModel.getBookLiveData();
+            bookLiveData.observe(this, new Observer<Book>() {
+                @Override
+                public void onChanged(@Nullable Book book) {
+                    if (book != null) {
+                        Log.i(TAG, "updateBook(): got book" + book.toString());
+                        book.setTitle(titleEditText.getText().toString());
+                        book.setAuthor(authorEditText.getText().toString());
+                        book.setIsbn(Long.parseLong(isbnEditText.getText().toString()));
+                        book.setDescription(descEditText.getText().toString());
+                        bookInfoViewModel.updateBook(book);
+                    }
+                    bookLiveData.removeObserver(this);
+                    finish();
+                }
+            });
+        }
+    }
+
+    public void saveNewBook() {
+//        Log.i(TAG, "AddBook*** Save Button Pressed");
+
+        Log.i(TAG, "save new book!");
         if (!allFieldsFilled()) {
             // TODO : Display Error Prompt
             Log.w(TAG, "AddBook*** Error fields unfilled");
@@ -241,12 +314,14 @@ public class AddBookActivity extends AppCompatActivity {
 
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            Log.i(TAG, "owner authenticated: " + firebaseUser.getUid());
             AddBookViewModelFactory factory = new AddBookViewModelFactory(firebaseUser.getUid());
-            final AddBookViewModel addBookViewModel = ViewModelProviders.of(AddBookActivity.this, factory).get(AddBookViewModel.class);
-            LiveData<User> userLiveData = addBookViewModel.getOwnerLiveData();
-            userLiveData.observe(AddBookActivity.this, new Observer<User>() {
+            final AddBookViewModel addBookViewModel = ViewModelProviders.of(AddEditBookActivity.this, factory).get(AddBookViewModel.class);
+            final LiveData<User> userLiveData = addBookViewModel.getOwnerLiveData();
+            userLiveData.observe(AddEditBookActivity.this, new Observer<User>() {
                 @Override
                 public void onChanged(@Nullable User owner) {
+                    Log.i(TAG, "In saveNewBook onChanged()!");
                     if (owner != null) {
                         Log.i(TAG, "Got owner "+ owner.toString());
                         Book newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
@@ -255,6 +330,7 @@ public class AddBookActivity extends AppCompatActivity {
                     } else {
                         Log.i(TAG, "owner is null!");
                     }
+                    userLiveData.removeObserver(this);
                     finish();
                 }
             });

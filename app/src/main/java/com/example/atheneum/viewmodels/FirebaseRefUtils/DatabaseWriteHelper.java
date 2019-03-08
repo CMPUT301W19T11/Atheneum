@@ -119,7 +119,8 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void deleteRequest() {
-        //TODO
+    public static void updateBook(Book book) {
+        BooksRefUtils.getBookRef(book).setValue(book);
     }
+
 }
