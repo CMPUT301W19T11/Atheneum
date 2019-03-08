@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
@@ -28,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 
@@ -37,7 +40,7 @@ import java.util.ArrayList;
  * See: https://stackoverflow.com/questions/9343241/passing-data-between-a-fragment-and-its-container-activity
  * See: https://www.youtube.com/watch?v=jJYSm_yrT7I
  */
-public class SearchFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class SearchFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
@@ -102,11 +105,32 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
              * See: https://stackoverflow.com/questions/7073577/how-to-get-object-from-listview-in-setonitemclicklistener-in-android
              * See: https://stackoverflow.com/questions/2139134/how-to-send-an-object-from-one-android-activity-to-another-using-intents
              * See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+             * See: https://stackoverflow.com/questions/14891026/get-clicked-item-from-listview
              */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User selectedUser = userList.get(position);
-                ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
+                String username = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+                Log.d(TAG, username + " was selected");
+
+                db = FirebaseDatabase.getInstance();
+                dbRef = db.getReference("users");
+                dbRef.orderByChild("userName").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+                            User selectedUser = child.getValue(User.class);
+                            ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
+                        }
+//                        User selectedUser = dataSnapshot.getChildren().getValue(User.class);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+//                User selectedUser = userList.get(position);
+//                ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
             }
         });
 
@@ -138,14 +162,15 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         return this.view;
     }
 
+    /**
+     * Create the search menu when activity is loaded
+     * @param savedInstanceState Bundle environment data
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
-
-
 
     /**
      * Override onCreateOptionsMenu method to create search menu
@@ -228,15 +253,5 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         super.onCreateOptionsMenu(menu,inflater);
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        Log.d(TAG, "OUTER ONQueryTextSubmit Called");
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
 }
 
