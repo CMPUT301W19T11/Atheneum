@@ -111,7 +111,7 @@ public class BookInfoActivity extends AppCompatActivity {
 //        intent.putExtra("ADD_EDIT_BOOK_MODE", EDIT_BOOK);
         intent.putExtra("BookID", bookID);
         startActivity(intent);
-
+        finish();
     }
 
     public void deleteBook(){
