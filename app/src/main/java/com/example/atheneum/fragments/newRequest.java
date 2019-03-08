@@ -65,8 +65,6 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     private static ArrayList<Book> defaultAvailableBook = new ArrayList<Book>();
     private static ArrayList<Book> searchAvailableBook = new ArrayList<Book>();
     private requestAdapter availableAdapter;
-    private String searchToken = "Search book by author/title/description";
-//    private String searchToken = " ";
 
     /**
      * required empty constructor
@@ -203,9 +201,6 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
         });
 
         SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
-        //
-        sv.setQuery(searchToken, false);
-        sv.clearFocus();
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, sv);
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
