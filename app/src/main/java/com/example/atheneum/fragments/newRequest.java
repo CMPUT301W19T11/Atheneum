@@ -78,13 +78,15 @@ public class newRequest extends Fragment {
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
+                            //TODO: query userID from bookID
                             //TEST FOR NOW SINCE THIS CLASS IS EXPECTING CHANGE
+                            //THIS SHOULD BE userID OF BOOK OWNER
                             String ownerID = "a8ILOIyWDmcHlTAVAUw5fwV6weo1";
 
                             Notification notification = new Notification(
                                     requester.getUserID(),
-                                    "ownerID",
-                                    "ownerID",
+                                    ownerID,
+                                    ownerID,
                                     bookID,
                                     Notification.NotificationType.REQUEST,
                                     "");
