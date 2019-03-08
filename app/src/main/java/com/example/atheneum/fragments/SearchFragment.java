@@ -121,7 +121,6 @@ public class SearchFragment extends Fragment {
                             User selectedUser = child.getValue(User.class);
                             ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
                         }
-//                        User selectedUser = dataSnapshot.getChildren().getValue(User.class);
                     }
 
                     @Override
@@ -129,8 +128,6 @@ public class SearchFragment extends Fragment {
 
                     }
                 });
-//                User selectedUser = userList.get(position);
-//                ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
             }
         });
 

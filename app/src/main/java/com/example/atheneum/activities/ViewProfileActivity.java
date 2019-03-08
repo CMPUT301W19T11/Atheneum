@@ -1,30 +1,41 @@
 package com.example.atheneum.activities;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
-import com.example.atheneum.fragments.EditProfileFragment;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
 
 /**
  * The activity for users to view their own profiles
+ * and other profiles
  */
 public class ViewProfileActivity extends AppCompatActivity {
     private static final String TAG = "View Profile Activity";
 
+    /**
+     * Override onCreate method to produce layout for individual user profiles
+     * @param savedInstanceState Bundle environment data
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,25 +48,41 @@ public class ViewProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra("user");
 
-        ImageView profilePicture = findViewById(R.id.user_profile_pic);
-        try {
-            String userPic = user.getPhotos().get(0);
-            Bitmap bitmapPhoto = StringToBitMap(userPic);
-            profilePicture.setImageBitmap(bitmapPhoto);
-        } catch (Exception ignore) {
+        final ImageView profilePicture = findViewById(R.id.user_profile_pic);
+//        try {
+//            String userPic = user.getPhotos().get(0);
+//            Bitmap bitmapPhoto = StringToBitMap(userPic);
+//            profilePicture.setImageBitmap(bitmapPhoto);
+//        } catch (Exception ignore) {
+//
+//        }
 
-        }
+        final TextView username = findViewById(R.id.username);
+        final TextView phone = findViewById(R.id.phone);
+        final TextView borrower_rating = findViewById(R.id.borrower);
+        final TextView owner_rating = findViewById(R.id.owner);
 
-        TextView username = findViewById(R.id.username);
-        TextView phone = findViewById(R.id.phone);
-        TextView borrower_rating = findViewById(R.id.borrower);
-        TextView owner_rating = findViewById(R.id.owner);
+        UserViewModelFactory factory = new UserViewModelFactory(user.getUserID());
+        UserViewModel userViewModel = ViewModelProviders.of(this, factory).get(UserViewModel.class);
+        LiveData<User> userLiveData = userViewModel.getUserLiveData();
+        userLiveData.observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(@Nullable User user) {
+                if (user != null) {
+                    username.setText(user.getUserName());
+                    phone.setText(user.getPhoneNumber());
+                    borrower_rating.setText(Double.toString(user.getBorrowerRate()));
+                    owner_rating.setText(Double.toString(user.getOwnerRate()));
+                    ArrayList<String> photos = user.getPhotos();
+                    if (!photos.isEmpty()) {
+                        String userPic = user.getPhotos().get(0);
+                        Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                        profilePicture.setImageBitmap(bitmapPhoto);
+                    }
 
-        username.setText(user.getUserName());
-        phone.setText(user.getPhoneNumber());
-
-        borrower_rating.setText(Double.toString(user.getBorrowerRate()));
-        owner_rating.setText(Double.toString(user.getOwnerRate()));
+                }
+            }
+        });
 
         FirebaseUser currUser = FirebaseAuthUtils.getCurrentUser();
         FloatingActionButton triggerEditUserProfile = findViewById(R.id.trigger_edit_user_profile);
@@ -66,39 +93,23 @@ public class ViewProfileActivity extends AppCompatActivity {
             triggerEditUserProfile.hide();
         } else {
             triggerEditUserProfile.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * Go to edit profile activity when floating action button is clicked
+                 * @param v View of FAB
+                 */
                 @Override
                 public void onClick(View v) {
-
-                    EditProfileFragment editProfileFragment = new EditProfileFragment();
-                    editProfileFragment.setEditProfileCompleteListener(new EditProfileFragment.OnEditProfileCompleteListener() {
-                        @Override
-                        public void onSuccess(EditProfileFragment fragment) {
-                            onBackPressed();
-                        }
-
-                        @Override
-                        public void onFailure(EditProfileFragment fragment) {
-                            onBackPressed();
-                        }
-                    });
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, editProfileFragment).addToBackStack("EditProfile").commit();
-
+                    Intent edit_profile_intent = new Intent(ViewProfileActivity.this, EditProfileActivity.class);
+                    startActivity(edit_profile_intent);
                 }
             });
         }
     }
 
-    public Bitmap StringToBitMap(String encodedString) {
-        try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
-
+    /**
+     * Set the action bar title
+     * @param title string to set action bar title
+     */
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
