@@ -9,7 +9,7 @@ public class Notification {
     private String notificationID;
     private String requesterID;
     private String ownerID;
-    private String noticationReceiverID;
+    private String notificationReceiverID;
     private String bookID;
     private NotificationType rNotificationType;
     private String message;
@@ -43,18 +43,19 @@ public class Notification {
     /**
      * Instantiates a new Notification.
      *
-     * @param notificationID    the notification id
      * @param requesterID       the requester id
      * @param ownerID           the owner id
      * @param bookID            the book id
      * @param rNotificationType the r notification type
      * @param message           the message
      */
-    public Notification(String notificationID, String requesterID, String ownerID, String bookID,
+    public Notification(String requesterID, String ownerID,
+                        String notificationReceiverID, String bookID,
                         NotificationType rNotificationType, String message) {
-        this.notificationID = notificationID;
+        this.notificationID = UUID.randomUUID().toString();
         this.requesterID = requesterID;
         this.ownerID = ownerID;
+        this.notificationReceiverID = notificationReceiverID;
         this.bookID = bookID;
         this.rNotificationType = rNotificationType;
         this.message = message;
@@ -115,21 +116,21 @@ public class Notification {
     }
 
     /**
-     * Gets notication receiver id.
+     * Gets notification receiver id.
      *
-     * @return the notication receiver id
+     * @return the notification receiver id
      */
-    public String getNoticationReceiverID() {
-        return noticationReceiverID;
+    public String getNotificationReceiverID() {
+        return notificationReceiverID;
     }
 
     /**
-     * Sets notication receiver id.
+     * Sets notification receiver id.
      *
-     * @param noticationReceiverID the notication receiver id
+     * @param notificationReceiverID the notication receiver id
      */
-    public void setNoticationReceiverID(String noticationReceiverID) {
-        this.noticationReceiverID = noticationReceiverID;
+    public void setNotificationReceiverID(String notificationReceiverID) {
+        this.notificationReceiverID = notificationReceiverID;
     }
 
     /**

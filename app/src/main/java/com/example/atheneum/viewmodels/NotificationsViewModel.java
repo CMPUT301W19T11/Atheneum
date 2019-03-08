@@ -31,7 +31,8 @@ public class NotificationsViewModel extends ViewModel {
     public NotificationsViewModel(String userID) {
         notificationsRef = UsersRefUtils.getUsersRef(userID);
         queryLiveData = new FirebaseQueryLiveData(notificationsRef);
-        notificationLiveData = Transformations.map(queryLiveData, new NotificationsViewModel.Deserializer());
+        notificationLiveData = Transformations.map(queryLiveData,
+                new NotificationsViewModel.Deserializer());
     }
 
     /**
@@ -44,8 +45,16 @@ public class NotificationsViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Removes notification from Firebase
+     *
+     * @param notification
+     */
     public void deleteNotification(Notification notification) {
-        notificationsRef.child(notification.get);
+        notificationsRef
+                .child(notification.getNotificationReceiverID())
+                .child(notification.getNotificationID())
+                .removeValue();
     }
 
     /**

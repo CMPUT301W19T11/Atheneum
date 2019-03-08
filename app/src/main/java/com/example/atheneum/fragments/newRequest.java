@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
@@ -77,7 +78,17 @@ public class newRequest extends Fragment {
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
-                            DatabaseWriteHelper.makeRequest(newRequest);
+                            //TEST FOR NOW SINCE THIS CLASS IS EXPECTING CHANGE
+                            String ownerID = "a8ILOIyWDmcHlTAVAUw5fwV6weo1";
+
+                            Notification notification = new Notification(
+                                    requester.getUserID(),
+                                    "ownerID",
+                                    "ownerID",
+                                    bookID,
+                                    Notification.NotificationType.REQUEST,
+                                    "");
+                            DatabaseWriteHelper.makeRequest(newRequest, notification);
 
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
 
