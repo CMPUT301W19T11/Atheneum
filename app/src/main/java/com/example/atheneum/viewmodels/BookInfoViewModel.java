@@ -6,6 +6,7 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.atheneum.models.Book;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
@@ -15,6 +16,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 public class BookInfoViewModel extends ViewModel {
+    private static final String TAG = BookInfoViewModel.class.getSimpleName();
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
@@ -25,6 +27,7 @@ public class BookInfoViewModel extends ViewModel {
 
     public BookInfoViewModel(String bookID) {
         this.bookID = bookID;
+
         bookRef = BooksRefUtils.getBookRef(bookID);
         queryLiveData = new FirebaseQueryLiveData(bookRef);
         bookLiveData = Transformations.map(queryLiveData, new Deserializer());

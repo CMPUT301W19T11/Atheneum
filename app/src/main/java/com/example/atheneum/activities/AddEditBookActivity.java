@@ -50,6 +50,8 @@ import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.internal.service.Common;
+import com.google.android.gms.vision.barcode.Barcode;
+
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
@@ -158,7 +160,35 @@ public class AddEditBookActivity extends AppCompatActivity {
 
     public void scanIsbn(View v) {
         Log.i(TAG, "AddBook*** ISBN scan requested");
-        //TODO
+
+        Intent intent = new Intent(this, ScanBarcodeActivity.class);
+
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        Log.i(TAG, "Return from scan ISBN");
+        if(requestCode == 0){
+            if(resultCode == CommonStatusCodes.SUCCESS){
+                if(data != null){
+                    Barcode barcode = data.getParcelableExtra("Barcode");
+                    isbnEditText.setText(String.valueOf(barcode.displayValue));
+                    populateFieldsByIsbn();
+                }
+                else{
+                    Toast.makeText(this, "Error: Barcode not found",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+        else{
+            Log.i(TAG, "in else");
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        Log.i(TAG, "leaving onActivityResult");
+
     }
 
     public void populateFieldsByIsbn() {
