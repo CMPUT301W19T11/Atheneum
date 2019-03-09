@@ -49,13 +49,6 @@ public class ViewProfileActivity extends AppCompatActivity {
         User user = (User) intent.getSerializableExtra("user");
 
         final ImageView profilePicture = findViewById(R.id.user_profile_pic);
-//        try {
-//            String userPic = user.getPhotos().get(0);
-//            Bitmap bitmapPhoto = StringToBitMap(userPic);
-//            profilePicture.setImageBitmap(bitmapPhoto);
-//        } catch (Exception ignore) {
-//
-//        }
 
         final TextView username = findViewById(R.id.username);
         final TextView phone = findViewById(R.id.phone);
@@ -75,34 +68,42 @@ public class ViewProfileActivity extends AppCompatActivity {
                     owner_rating.setText(Double.toString(user.getOwnerRate()));
                     ArrayList<String> photos = user.getPhotos();
                     if (!photos.isEmpty()) {
-                        String userPic = user.getPhotos().get(0);
-                        Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
-                        profilePicture.setImageBitmap(bitmapPhoto);
+                        try {
+                            String userPic = user.getPhotos().get(0);
+                            Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                            profilePicture.setImageBitmap(bitmapPhoto);
+                        } catch (Exception ignore) {
+
+                        }
                     }
 
                 }
             }
         });
 
-        FirebaseUser currUser = FirebaseAuthUtils.getCurrentUser();
-        FloatingActionButton triggerEditUserProfile = findViewById(R.id.trigger_edit_user_profile);
-        Log.d(TAG, "curr user UID is " + currUser.getUid());
-        Log.d(TAG, "selected user USERID is " + user.getUserID());
-        if (!currUser.getUid().equals(user.getUserID())) {
-            Log.d(TAG, "hiding the FAB");
-            triggerEditUserProfile.hide();
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser currUser = FirebaseAuthUtils.getCurrentUser();
+            FloatingActionButton triggerEditUserProfile = findViewById(R.id.trigger_edit_user_profile);
+            Log.d(TAG, "curr user UID is " + currUser.getUid());
+            Log.d(TAG, "selected user USERID is " + user.getUserID());
+            if (!currUser.getUid().equals(user.getUserID())) {
+                Log.d(TAG, "hiding the FAB");
+                triggerEditUserProfile.hide();
+            } else {
+                triggerEditUserProfile.setOnClickListener(new View.OnClickListener() {
+                    /**
+                     * Go to edit profile activity when floating action button is clicked
+                     * @param v View of FAB
+                     */
+                    @Override
+                    public void onClick(View v) {
+                        Intent edit_profile_intent = new Intent(ViewProfileActivity.this, EditProfileActivity.class);
+                        startActivity(edit_profile_intent);
+                    }
+                });
+            }
         } else {
-            triggerEditUserProfile.setOnClickListener(new View.OnClickListener() {
-                /**
-                 * Go to edit profile activity when floating action button is clicked
-                 * @param v View of FAB
-                 */
-                @Override
-                public void onClick(View v) {
-                    Intent edit_profile_intent = new Intent(ViewProfileActivity.this, EditProfileActivity.class);
-                    startActivity(edit_profile_intent);
-                }
-            });
+            Log.d(TAG, "current user is not authenticated");
         }
     }
 
