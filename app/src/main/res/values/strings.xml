@@ -2,6 +2,7 @@
     <string name="app_name">Atheneum</string>
     <string name="title_activity_main">Home</string>
     <string name="title_activity_complete_registration">Complete Registration</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -38,16 +39,18 @@
 
     <!--Strings for profile page-->
     <string name="profile_title">Profile</string>
+    <string name="title_activity_view_profile">View Profile</string>
     <!--End of Strings for profile page-->
 
-    <!--Strings for EditProfileFragment-->
+    <!--Strings for edit profile-->
+    <string name="title_activity_edit_profile">Edit Profile</string>
     <string name="hint_email">E-mail</string>
     <string name="hint_phone_number">Phone Number</string>
     <string name="prompt_email">E-mail</string>
     <string name="user_email_prompt">E-mail</string>
     <string name="prompt_user_phone">Phone Number</string>
     <string name="user_profile_picture_prompt">Profile Picture (click image to change)</string>
-    <!--End of Strings for EditProfileFragment-->
+    <!--End of Strings for edit profile-->
 
     <!-- Strings for adding/editing books -->
     <string name="add_book_prompt">Add a Book</string>
