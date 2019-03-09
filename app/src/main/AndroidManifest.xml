@@ -1,11 +1,12 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.atheneum">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name="com.example.atheneum.AtheneumFirebaseApp"
@@ -16,7 +17,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity
+            android:name=".activities.EditProfileActivity"
+            android:label="@string/title_activity_edit_profile"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
         <activity
             android:name=".activities.CompleteRegistrationActivity"
@@ -47,31 +51,21 @@
         <activity
             android:name=".activities.BookInfoActivity"
             android:label="@string/title_activity_book_info"
-            android:theme="@style/AppTheme" />
-
+            android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".activities.ViewProfileActivity"
+            android:label="@string/title_activity_view_profile"
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".activities.AddEditBookActivity"
-
             android:label="@string/title_activity_add_book"
-            android:theme="@style/AppTheme" >
-
-        </activity>
-
-        <activity android:name=".activities.ScanBarcodeActivity"
+            android:theme="@style/AppTheme"></activity>
+      
+        <activity 
+            android:name=".activities.ScanBarcodeActivity"
             android:label="@string/title_activity_scan_barcode"
-            android:theme="@style/AppTheme">
-
-        </activity>
-
-
-        <!-- add mobile vision dependencies and version to metadata-->
-        <meta-data
-            android:name= "com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
-        <meta-data
-            android:name= "com.google.android.gms.vision.DEPENDENCIES"
-            android:value="barcode"/>
+            android:theme="@style/AppTheme"></activity>
+      
     </application>
 
 </manifest>
