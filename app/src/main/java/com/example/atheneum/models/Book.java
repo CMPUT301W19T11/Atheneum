@@ -22,6 +22,20 @@ public class Book {
     private String bookID;
     private ArrayList<String> photos = new ArrayList<String>();
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "isbn=" + isbn +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", author='" + author + '\'' +
+                ", ownerID='" + ownerID + '\'' +
+                ", borrowerID='" + borrowerID + '\'' +
+                ", status=" + status +
+                ", bookID='" + bookID + '\'' +
+                '}';
+    }
+
     /**
      * The enum Status to show the global status of the book.
      */

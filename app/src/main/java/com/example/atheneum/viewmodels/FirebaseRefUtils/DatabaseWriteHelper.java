@@ -1,6 +1,5 @@
 package com.example.atheneum.viewmodels.FirebaseRefUtils;
 
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;

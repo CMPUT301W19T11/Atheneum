@@ -4,22 +4,15 @@ package com.example.atheneum.fragments;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,30 +21,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.atheneum.R;
-import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.User;
-import com.example.atheneum.utils.EmailValidator;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.ByteArrayOutputStream;
-import java.net.ConnectException;
 import java.util.ArrayList;
-
-import static android.app.Activity.RESULT_OK;
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 /**
  * A simple {@link Fragment} subclass.
