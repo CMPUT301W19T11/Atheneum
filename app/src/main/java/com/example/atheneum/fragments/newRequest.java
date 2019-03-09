@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -257,11 +258,17 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 //                    String aa = child.getValue(String.class);
 //                    Log.d(TAG, "TEST STRING "+ aa);
-                    Book book = child.getValue(Book.class);
-                    if(book.getStatus() == Book.Status.AVAILABLE || book.getStatus() == Book.Status.REQUESTED) {
-                        if(!book.getOwnerID().equals(currentUserID)){
-                            availableBook.add(book);
+                    try {
+                        Book book = child.getValue(Book.class);
+                        if(book.getStatus().equals(Book.Status.AVAILABLE) || book.getStatus().equals(Book.Status.REQUESTED)) {
+                            if(!book.getOwnerID().equals(currentUserID)){
+                                availableBook.add(book);
+                            }
                         }
+                    } catch (DatabaseException e) {
+                        // TODO: Figure out why this exception even happens in the first place
+                        Log.w(TAG, "child ref: " + child.getRef().toString());
+                        Log.w(TAG, e.toString());
                     }
                     defaultAvailableBook = availableBook;
 
