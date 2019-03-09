@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.BorrowerPageFragment;
@@ -29,9 +28,17 @@ import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
 import com.example.atheneum.fragments.ViewProfileFragment;
+import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
+import com.example.atheneum.viewmodels.UserNotificationsViewModel;
+import com.example.atheneum.viewmodels.UserNotificationsViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
@@ -43,8 +50,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 
@@ -55,7 +60,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
 
-    @Override
+//    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -78,6 +83,73 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
+
+        // TODO: Make this app wide instead of just in the MainActivity
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+            UserNotificationsViewModelFactory factory = new UserNotificationsViewModelFactory(firebaseUser.getUid());
+            UserNotificationsViewModel userNotificationsViewModel =
+                    ViewModelProviders.of(this, factory).get(UserNotificationsViewModel.class);
+            LiveData<Notification> userNotificationsLiveData = userNotificationsViewModel.getNotificationLiveData();
+            userNotificationsLiveData.observe(this, new Observer<Notification>() {
+                @Override
+                public void onChanged(@Nullable final Notification notification) {
+                    if (notification == null) {
+                        Log.i(TAG, "notification is null");
+                    } else {
+                        String notificationBookID = notification.getBookID();
+
+                        //get book name
+                        DatabaseReference notificationsBookRef = BooksRefUtils
+                                .getBookRef(notificationBookID);
+                        notificationsBookRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Book notificationBook = dataSnapshot.getValue(Book.class);
+                                final String notificationBookName = notificationBook.getTitle();
+
+                                if (notification.getrNotificationType() ==
+                                        Notification.NotificationType.REQUEST) {
+                                    // get requester user object
+                                    String requesterID = notification.getRequesterID();
+
+                                    DatabaseReference notificationsReqRef = UsersRefUtils
+                                            .getUsersRef(requesterID);
+                                    notificationsReqRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            User requester = dataSnapshot.getValue(User.class);
+                                            String requesterName = requester.getUserName();
+
+                                            String notificationMessage =
+                                                    requesterName + " has requested for "
+                                                            + notificationBookName;
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            Log.i(TAG, databaseError.getMessage());
+                                        }
+                                    });
+                                }
+                                else if (notification.getrNotificationType() ==
+                                        Notification.NotificationType.ACCEPT) {
+                                    // get owner user object
+                                    //TODO
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.i(TAG, databaseError.getMessage());
+                            }
+                        });
+                    }
+                }
+            });
+        } else {
+            Log.w(TAG, "Shouldn't happen!");
+        }
 
         // Update user information in the navbar
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {

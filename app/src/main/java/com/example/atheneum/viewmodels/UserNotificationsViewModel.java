@@ -5,21 +5,23 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.atheneum.models.Notification;
-import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
-public class NotificationsViewModel extends ViewModel {
+public class UserNotificationsViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
     private final LiveData<Notification> notificationLiveData;
     // Reference to user in Firebase
     private final DatabaseReference notificationsRef;
+
+    private final String TAG = UserNotificationsViewModel.class.getSimpleName();
 
     /**
      * Creates an instance of UserViewModel that watches for changes to data held in a Firebase
@@ -28,11 +30,11 @@ public class NotificationsViewModel extends ViewModel {
      *
      * @param userID User ID of user queried in the database
      */
-    public NotificationsViewModel(String userID) {
+    public UserNotificationsViewModel(String userID) {
         notificationsRef = UsersRefUtils.getUsersRef(userID);
         queryLiveData = new FirebaseQueryLiveData(notificationsRef);
         notificationLiveData = Transformations.map(queryLiveData,
-                new NotificationsViewModel.Deserializer());
+                new UserNotificationsViewModel.Deserializer());
     }
 
     /**
@@ -63,6 +65,7 @@ public class NotificationsViewModel extends ViewModel {
      */
     @NonNull
     public LiveData<Notification> getNotificationLiveData() {
+        Log.i(TAG, "where what when bhhbuh");
         return notificationLiveData;
     }
 }
