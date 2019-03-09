@@ -305,10 +305,10 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
             }
 
         }
-        query = query.toLowerCase();
-        if(query.length() == 0){return true;}
-        if(book.getTitle().toLowerCase().equals(query)){ return true;}
-        else if(book.getAuthor().toLowerCase().equals(query)){return true;}
+//        query = query.toLowerCase();
+//        if(query.length() == 0){return true;}
+//        if(book.getTitle().toLowerCase().equals(query)){ return true;}
+//        else if(book.getAuthor().toLowerCase().equals(query)){return true;}
 
 
         return false;
