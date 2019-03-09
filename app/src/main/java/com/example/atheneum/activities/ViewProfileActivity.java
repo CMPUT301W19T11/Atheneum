@@ -73,7 +73,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                             Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
                             profilePicture.setImageBitmap(bitmapPhoto);
                         } catch (Exception ignore) {
-
+                            Log.w(TAG, ignore.toString());
                         }
                     }
 
@@ -103,7 +103,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 });
             }
         } else {
-            Log.d(TAG, "current user is not authenticated");
+            Log.w(TAG, "current user is not authenticated");
         }
     }
 
