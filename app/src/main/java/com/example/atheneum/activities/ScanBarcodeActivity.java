@@ -47,26 +47,20 @@ public class ScanBarcodeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_barcode);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-////        setSupportActionBar(toolbar);
-        Log.i(TAG, "in on create");
         cameraPreview = (SurfaceView) findViewById(R.id.cameraPreview);
         createCameraSource();
     }
 
-    //Below function was taken from https://www.youtube.com/watch?v=czmEC5akcos on Mar 7, 2019
+    //Parts of below was taken from https://www.youtube.com/watch?v=czmEC5akcos on Mar 7, 2019
     private void createCameraSource() {
         Log.i(TAG, "in createCameraSource");
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(this).build();
-        Log.i(TAG, "after barcodeDetector");
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
                 .setAutoFocusEnabled(true).setRequestedPreviewSize(1600, 1024)
                 .build();
-        Log.i(TAG, "after cameraSource");
         if (ContextCompat.checkSelfPermission(ScanBarcodeActivity.this,
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "showing request");
             ActivityCompat.requestPermissions(ScanBarcodeActivity.this,
                     new String[]{Manifest.permission.CAMERA},
                     MY_PERMISSIONS_REQUEST_CAMERA);
@@ -113,7 +107,6 @@ public class ScanBarcodeActivity extends AppCompatActivity {
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
-                Log.i(TAG, "in receivedDetections");
                 final SparseArray<Barcode> barcode = detections.getDetectedItems();
                 if(barcode.size() != 0){
                     Intent intent = new Intent();
@@ -129,16 +122,11 @@ public class ScanBarcodeActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_CAMERA: {
-                Log.i(TAG, "in onRequestPermissionResult");
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                        Log.i(TAG, "in onRequestPermissionResult, has permission");
                         try {
-                            Log.i(TAG, "in onRequestPermissionResult, start camera");
                             cameraSource.start(cameraPreview.getHolder());
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -147,15 +135,12 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    Log.i(TAG, "Permission denied");
                     finish();
                 }
                 return;
             }
 
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 
