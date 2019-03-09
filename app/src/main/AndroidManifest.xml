@@ -49,7 +49,9 @@
             android:label="@string/title_activity_book_info"
             android:theme="@style/AppTheme" />
 
-        <activity android:name=".activities.AddEditBookActivity"
+        <activity
+            android:name=".activities.AddEditBookActivity"
+
             android:label="@string/title_activity_add_book"
             android:theme="@style/AppTheme" >
 

@@ -51,6 +51,7 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.vision.barcode.Barcode;
+
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
