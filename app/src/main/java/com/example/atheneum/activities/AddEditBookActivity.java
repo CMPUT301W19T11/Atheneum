@@ -174,6 +174,7 @@ public class AddEditBookActivity extends AppCompatActivity {
                 if(data != null){
                     Barcode barcode = data.getParcelableExtra("Barcode");
                     isbnEditText.setText(String.valueOf(barcode.displayValue));
+                    populateFieldsByIsbn();
                 }
                 else{
                     Toast.makeText(this, "Error: Barcode not found",
