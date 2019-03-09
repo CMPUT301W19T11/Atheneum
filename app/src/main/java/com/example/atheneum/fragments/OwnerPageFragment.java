@@ -110,8 +110,6 @@ public class OwnerPageFragment extends Fragment {
                             .setIndexedQuery(keyQuery, dataRef, Book.class)
                             .build();
 
-            final Fragment thisFragment = this;
-
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
                 @Override
                 protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
@@ -128,10 +126,10 @@ public class OwnerPageFragment extends Fragment {
                         // retrieve email
 
                         UserViewModelFactory userViewModelFactory = new UserViewModelFactory(book.getBorrowerID());
-                        userViewModel = ViewModelProviders.of(thisFragment, userViewModelFactory).get(UserViewModel.class);
+                        userViewModel = ViewModelProviders.of(OwnerPageFragment.this, userViewModelFactory).get(UserViewModel.class);
                         final LiveData<User> userLiveData = userViewModel.getUserLiveData();
 
-                        userLiveData.observe(thisFragment, new Observer<User>() {
+                        userLiveData.observe(OwnerPageFragment.this, new Observer<User>() {
                             @Override
                             public void onChanged(@Nullable User user) {
                                 Log.i(TAG, "in Observer!");

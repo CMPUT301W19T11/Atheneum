@@ -10,10 +10,12 @@
 
 package com.example.atheneum.activities;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,10 +38,13 @@ import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -58,7 +64,9 @@ public class BookInfoActivity extends AppCompatActivity {
     long isbn;
     String desc;
     private String bookID;
+    private String borrowerID;
     private BookInfoViewModel bookInfoViewModel;
+    private UserViewModel userViewModel;
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -99,7 +107,6 @@ public class BookInfoActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         bookID = getIntent().getStringExtra("bookID");
         Log.i("bookid value: ", bookID);
         textTitle = (TextView) findViewById(R.id.bookTitle);
@@ -120,9 +127,47 @@ public class BookInfoActivity extends AppCompatActivity {
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
+                    borrowerID = book.getBorrowerID();
+
+                    // using borrowerID, show borrower email and profile image, or "None"
+                    final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
+                    final ImageView borrowerPicture = (ImageView) findViewById(R.id.borrower_profile_pic);
+                    // retrieve the User's email
+                    if (!(borrowerID == null || borrowerID.equals(""))) {
+                        Log.i(TAG, "Valid borrowerID");
+
+                        // retrieve email
+                        UserViewModelFactory userViewModelFactory = new UserViewModelFactory(borrowerID);
+                        userViewModel = ViewModelProviders.of(BookInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
+                        final LiveData<User> userLiveData = userViewModel.getUserLiveData();
+
+                        userLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+                            @Override
+                            public void onChanged(@Nullable User user) {
+                                Log.i(TAG, "in Observer!");
+                                // update borrower email
+                                borrowerEmailTextView.setText(user.getUserName());
+                                Log.i(TAG, "User email*** " + user.getUserName());
+
+                                String userPic = user.getPhotos().get(0);
+                                Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                                borrowerPicture.setImageBitmap(bitmapPhoto);
+                                borrowerPicture.setVisibility(View.VISIBLE);
+                                // show image
+                                // Remove the observer after update
+                                userLiveData.removeObserver(this);
+                            }
+                        });
+                    }
+                    else { // no borrower;
+                        Log.i(TAG, "No borrower");
+                        borrowerEmailTextView.setText("None");
+                        borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
+                    }
                 }
             }
         });
+
 
         Log.v(TAG, bookID);
 
