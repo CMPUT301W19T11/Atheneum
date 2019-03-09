@@ -148,10 +148,14 @@ public class BookInfoActivity extends AppCompatActivity {
                                 // update borrower email
                                 borrowerEmailTextView.setText(user.getUserName());
                                 Log.i(TAG, "User email*** " + user.getUserName());
-
-                                String userPic = user.getPhotos().get(0);
-                                Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
-                                borrowerPicture.setImageBitmap(bitmapPhoto);
+                                if (user.getPhotos().size() > 0) {
+                                    String userPic = user.getPhotos().get(0);
+                                    Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                                    borrowerPicture.setImageBitmap(bitmapPhoto);
+                                }
+                                else {
+                                    borrowerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
+                                }
                                 borrowerPicture.setVisibility(View.VISIBLE);
                                 // show image
                                 // Remove the observer after update
