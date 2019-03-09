@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity
+            android:name=".activities.EditProfileActivity"
+            android:label="@string/title_activity_edit_profile"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
         <activity
             android:name=".activities.CompleteRegistrationActivity"
@@ -24,6 +27,7 @@
         <activity android:name=".activities.FirebaseUIAuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -45,7 +49,11 @@
         <activity
             android:name=".activities.BookInfoActivity"
             android:label="@string/title_activity_book_info"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".activities.ViewProfileActivity"
+            android:label="@string/title_activity_view_profile"
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".activities.AddEditBookActivity"
             android:label="@string/title_activity_add_book"

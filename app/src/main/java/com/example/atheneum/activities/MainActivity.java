@@ -28,7 +28,6 @@ import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
-import com.example.atheneum.fragments.ViewProfileFragment;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
@@ -106,9 +105,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    //See: https://stackoverflow.com/questions/7992216/android-fragment-handle-back-button-press
-    //See: https://stackoverflow.com/questions/14460109/android-fragmenttransaction-addtobackstack-confusion
-    //See: https://stackoverflow.com/questions/41431546/android-peek-backstack-without-popping
+
+    /**
+     * On back press for main activity method
+     *  See: https://stackoverflow.com/questions/7992216/android-fragment-handle-back-button-press
+     *  See: https://stackoverflow.com/questions/14460109/android-fragmenttransaction-addtobackstack-confusion
+     *  See: https://stackoverflow.com/questions/41431546/android-peek-backstack-without-popping
+     */
     @Override
     public void onBackPressed() {
         int count = getSupportFragmentManager().getBackStackEntryCount();
@@ -119,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (tag == "Home") {
+        } else if (tag.equals("Home")) {
             Log.d(TAG, "Prevented removing home frag");
             return;
         } else if (count > 0) {
@@ -141,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
         } else if (id == R.id.nav_profile) {
+            final Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
+
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbRef = db.getReference("users").child(firebaseUser.getUid());
@@ -149,7 +154,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User thisUser = dataSnapshot.getValue(User.class);
-                    getIntent().putExtra("user", thisUser);
+                    view_profile_intent.putExtra("user", thisUser);
+                    startActivity(view_profile_intent);
+
                 }
 
                 @Override
@@ -158,14 +165,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).addToBackStack("ViewProfile").commit();
-
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).addToBackStack("BorrowerPage").commit();
         } else if (id == R.id.nav_search) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
 
         } else if (id == R.id.nav_logout) {
             // Sign out of account and go back to authentication screen
@@ -186,12 +191,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
-     * Sets action bar title.
+     * allows for setting title of action bar from different fragments
+     * @param title
      *
-     * @param title the title
+     * See: https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
      */
-// allows for setting title of action bar from different fragmenets
-    // taken from https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
@@ -203,10 +207,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      *
      * @param user the user
      */
-    public void passDatatoFragment(User user) {
-        getIntent().putExtra("user", user);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new ViewProfileFragment()).commit();
+    public void passDataToViewProfileActivity(User user) {
+        Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
+        view_profile_intent.putExtra("user", user);
+        startActivity(view_profile_intent);
     }
 
 }
