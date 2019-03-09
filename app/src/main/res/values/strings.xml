@@ -81,5 +81,6 @@
 
     <!--Strings for search page-->
     <string name="search_page_title">Search</string>
+    <string name="title_activity_scan_barcode">ScanBarcodeActivity</string>
     <!--End of Strings for search page-->
 </resources>

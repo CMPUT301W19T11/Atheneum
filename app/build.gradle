@@ -29,6 +29,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.google.firebase:firebase-database:16.0.6'
     implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
     implementation 'com.android.support:support-annotations:28.0.0'
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:4.3.1'
@@ -45,6 +46,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     // required for API calls
     implementation 'com.android.volley:volley:1.1.1'
+    // Google Play services for Barcode API
+    implementation 'com.google.android.gms:play-services-vision:17.0.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

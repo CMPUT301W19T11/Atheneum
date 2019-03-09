@@ -67,4 +67,9 @@ public class DatabaseWriteHelper {
     public static void deleteBook(User owner, Book book) {
         deleteBook(owner.getUserID(), book.getBookID());
     }
+
+    public static void updateBook(Book book) {
+        BooksRefUtils.getBookRef(book).setValue(book);
+    }
+
 }
