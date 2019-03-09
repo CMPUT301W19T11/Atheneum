@@ -39,9 +39,12 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * The Owner page fragment that can be navigated to using the hamburger menu on the main pages
@@ -113,6 +116,8 @@ public class OwnerPageFragment extends Fragment {
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
                 @Override
                 protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
+                    Log.i(TAG, "in onBind!");
+
                     //Bind Book object to BookViewHolder
                     holder.titleTextView.setText(
                             book.getTitle());
@@ -123,27 +128,32 @@ public class OwnerPageFragment extends Fragment {
 
                     // retrieve the User's email
                     if (!(book.getBorrowerID() == null || book.getBorrowerID().equals(""))) {
-                        // retrieve email
-
-                        UserViewModelFactory userViewModelFactory = new UserViewModelFactory(book.getBorrowerID());
-                        userViewModel = ViewModelProviders.of(OwnerPageFragment.this, userViewModelFactory).get(UserViewModel.class);
-                        final LiveData<User> userLiveData = userViewModel.getUserLiveData();
-
-                        userLiveData.observe(OwnerPageFragment.this, new Observer<User>() {
+                        Log.i(TAG, "Borrower exists : " + book.getBorrowerID());
+                        // retrieve email with direct call to firebase
+                        final FirebaseDatabase db = FirebaseDatabase.getInstance();
+                        DatabaseReference borrowerRef = db.getReference().child(getString(R.string.db_users)).child(book.getBorrowerID());
+                        borrowerRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onChanged(@Nullable User user) {
-                                Log.i(TAG, "in Observer!");
-                                // update borrower email
-                                holder.setBorrowerEmail(user.getUserName());
-                                // Remove the observer after update
-                                userLiveData.removeObserver(this);
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    User borrower = dataSnapshot.getValue(User.class);
+                                    holder.borrowerNameTextView.setText(borrower.getUserName());
+                                }
+                                else {
+                                    Log.e(TAG, "nonexistent user error, shouldn't be here");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.w(TAG, "User listener was cancelled");
                             }
                         });
+                        
                     }
                     else { // no borrower;
-                        holder.setBorrowerEmail("None");
+                        holder.borrowerNameTextView.setText("None");
                     }
-
 
                     holder.bookItem.setOnClickListener(new View.OnClickListener() {
 
