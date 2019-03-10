@@ -5,7 +5,6 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -38,7 +37,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -161,7 +159,7 @@ public class AddBookTest {
         }
 
         ViewInteraction textView = onView(
-                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE), withText(appRes.getString(R.string.newbooktest_title)),
+                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
@@ -171,7 +169,7 @@ public class AddBookTest {
         textView.check(matches(withText(appRes.getString(R.string.newbooktest_title))));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(R.id.book_author), withText(appRes.getString(R.string.newbooktest_author)),
+                allOf(withId(R.id.book_author),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
@@ -181,7 +179,7 @@ public class AddBookTest {
         textView2.check(matches(withText(appRes.getString(R.string.newbooktest_author))));
 
         ViewInteraction textView3 = onView(
-                allOf(withId(R.id.bookcard_borrowername), withText("None"),
+                allOf(withId(R.id.bookcard_borrowername),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.book_card),
@@ -191,7 +189,7 @@ public class AddBookTest {
         textView3.check(matches(withText("None")));
 
         ViewInteraction textView4 = onView(
-                allOf(withId(R.id.book_status), withText("AVAILABLE"),
+                allOf(withId(R.id.book_status),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.book_card),

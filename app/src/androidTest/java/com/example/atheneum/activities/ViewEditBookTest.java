@@ -5,7 +5,6 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -38,7 +37,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -106,7 +104,7 @@ public class ViewEditBookTest {
 
         // validate the data in book info
         ViewInteraction textView = onView(
-                allOf(withId(R.id.bookTitle), withText(appRes.getString(R.string.newbooktest_title)),
+                allOf(withId(R.id.bookTitle),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
@@ -116,7 +114,7 @@ public class ViewEditBookTest {
         textView.check(matches(withText(appRes.getString(R.string.newbooktest_title))));
 
         ViewInteraction textView1 = onView(
-                allOf(withId(R.id.bookAuthor), withText(appRes.getString(R.string.newbooktest_author)),
+                allOf(withId(R.id.bookAuthor),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
@@ -126,7 +124,7 @@ public class ViewEditBookTest {
         textView1.check(matches(withText(appRes.getString(R.string.newbooktest_author))));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(R.id.bookISBN), withText(appRes.getString(R.string.newbooktest_isbn)),
+                allOf(withId(R.id.bookISBN),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
@@ -136,7 +134,7 @@ public class ViewEditBookTest {
         textView2.check(matches(withText(appRes.getString(R.string.newbooktest_isbn))));
 
         ViewInteraction textView3 = onView(
-                allOf(withId(R.id.bookStatus), withText("AVAILABLE"),
+                allOf(withId(R.id.bookStatus),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
@@ -157,7 +155,7 @@ public class ViewEditBookTest {
         textView4.check(matches(withText("None")));
 
         ViewInteraction textView5 = onView(
-                allOf(withId(R.id.bookDescription), withText(appRes.getString(R.string.newbooktest_desc)),
+                allOf(withId(R.id.bookDescription),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
@@ -187,7 +185,7 @@ public class ViewEditBookTest {
 
         // edit the title
         ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.bookTitleEditText), withText(appRes.getString(R.string.newbooktest_title)),
+                allOf(withId(R.id.bookTitleEditText),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
@@ -207,7 +205,7 @@ public class ViewEditBookTest {
 
         // edit the description
         ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.descEditText), withText(appRes.getString(R.string.newbooktest_desc)),
+                allOf(withId(R.id.descEditText),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
@@ -246,7 +244,7 @@ public class ViewEditBookTest {
 
         // check title change
         ViewInteraction textView6 = onView(
-                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE), withText(appRes.getString(R.string.editbooktest_newtitle)),
+                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
@@ -273,7 +271,7 @@ public class ViewEditBookTest {
         }
 
         ViewInteraction textView11 = onView(
-                allOf(withId(R.id.bookTitle), withText(appRes.getString(R.string.editbooktest_newtitle)),
+                allOf(withId(R.id.bookTitle),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
@@ -283,7 +281,7 @@ public class ViewEditBookTest {
         textView11.check(matches(withText(appRes.getString(R.string.editbooktest_newtitle))));
 
         ViewInteraction textView12 = onView(
-                allOf(withId(R.id.bookDescription), withText(appRes.getString(R.string.editbooktest_newdesc)),
+                allOf(withId(R.id.bookDescription),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
