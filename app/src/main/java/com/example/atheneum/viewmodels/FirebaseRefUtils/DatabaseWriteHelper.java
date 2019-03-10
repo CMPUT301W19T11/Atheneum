@@ -69,14 +69,12 @@ public class DatabaseWriteHelper {
         deleteBook(owner.getUserID(), book.getBookID());
     }
 
+
     public static void makeRequest(Request request) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
-
-
         final String requesterRef = String.format("requestCollection/%s/%s", request.getRequesterID(), request.getBookID());
         final String bookRequestRef = String.format("bookRequests/%s/%s", request.getBookID(), request.getRequesterID());
-
 
         updates.put(requesterRef, request);
         updates.put(bookRequestRef, true);
@@ -122,7 +120,9 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void deleteRequest() {
-        //TODO
+
+    public static void updateBook(Book book) {
+        BooksRefUtils.getBookRef(book).setValue(book);
     }
+
 }
