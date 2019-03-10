@@ -101,7 +101,7 @@ public class AddEditBookActivity extends AppCompatActivity {
         descEditText = findViewById(R.id.descEditText);
 
         bookID = getIntent().getStringExtra("BookID");
-        if( !bookID.equals("")){
+        if(bookID != null && !bookID.equals("")){
 
             BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
             bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
