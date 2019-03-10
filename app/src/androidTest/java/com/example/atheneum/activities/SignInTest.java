@@ -40,14 +40,17 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class FirebaseUIAuthActivitySignInTest {
+/**
+ * Tests login functionality. Requires that the user is signed out and that internet is on.
+ */
+public class SignInTest {
+    private static long DELAY_MS = 500;
 
     @Rule
     public ActivityTestRule<FirebaseUIAuthActivity> mActivityTestRule = new ActivityTestRule<>(FirebaseUIAuthActivity.class);
 
     @Test
-    public void firebaseUIAuthActivitySignInTest() {
-
+    public void signInTest() {
         assertFalse("Sign out of the app before trying to run this test!", FirebaseAuthUtils.isCurrentUserAuthenticated());
 
         ConnectionChecker connectionChecker = new ConnectionChecker(getContext());
@@ -57,7 +60,7 @@ public class FirebaseUIAuthActivitySignInTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(500);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -73,15 +76,6 @@ public class FirebaseUIAuthActivitySignInTest {
                         isDisplayed()));
         textView.check(matches(withText("Sign in")));
 
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         ViewInteraction textInputEditText = onView(
                 allOf(withId(R.id.email),
                         childAtPosition(
@@ -89,16 +83,7 @@ public class FirebaseUIAuthActivitySignInTest {
                                         withId(R.id.email_layout),
                                         0),
                                 0)));
-        textInputEditText.perform(scrollTo(), click());
-
-        ViewInteraction textInputEditText2 = onView(
-                allOf(withId(R.id.email),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.email_layout),
-                                        0),
-                                0)));
-        textInputEditText2.perform(scrollTo(), replaceText("logintester@firebase.com"), closeSoftKeyboard());
+        textInputEditText.perform(scrollTo(), replaceText("logintester@firebase.com"), closeSoftKeyboard());
 
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.button_next), withText("Next"),
@@ -114,7 +99,7 @@ public class FirebaseUIAuthActivitySignInTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(500);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -140,23 +125,14 @@ public class FirebaseUIAuthActivitySignInTest {
                         isDisplayed()));
         textView3.check(matches(withText("Welcome back!")));
 
-        ViewInteraction textInputEditText3 = onView(
+        ViewInteraction textInputEditText2 = onView(
                 allOf(withId(R.id.password),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.password_layout),
                                         0),
                                 0)));
-        textInputEditText3.perform(scrollTo(), click());
-
-        ViewInteraction textInputEditText4 = onView(
-                allOf(withId(R.id.password),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.password_layout),
-                                        0),
-                                0)));
-        textInputEditText4.perform(scrollTo(), replaceText("logintester1"), closeSoftKeyboard());
+        textInputEditText2.perform(scrollTo(), replaceText("logintester1"), closeSoftKeyboard());
 
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.button_done), withText("Sign in"),
@@ -171,7 +147,7 @@ public class FirebaseUIAuthActivitySignInTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(500);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -187,7 +163,7 @@ public class FirebaseUIAuthActivitySignInTest {
                         isDisplayed()));
         appCompatImageButton.perform(click());
 
-        ViewInteraction textView5 = onView(
+        ViewInteraction textView4 = onView(
                 allOf(withId(R.id.nav_user_name), withText("logintester@firebase.com"),
                         childAtPosition(
                                 childAtPosition(
@@ -195,37 +171,7 @@ public class FirebaseUIAuthActivitySignInTest {
                                         0),
                                 1),
                         isDisplayed()));
-        textView5.check(matches(withText("logintester@firebase.com")));
-
-        ViewInteraction navigationMenuItemView = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.design_navigation_view),
-                                childAtPosition(
-                                        withId(R.id.nav_view),
-                                        0)),
-                        6),
-                        isDisplayed()));
-        navigationMenuItemView.perform(click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction textView6 = onView(
-                allOf(withText("Sign in"),
-                        childAtPosition(
-                                allOf(withId(R.id.action_bar),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_container),
-                                                0)),
-                                0),
-                        isDisplayed()));
-        textView6.check(matches(withText("Sign in")));
+        textView4.check(matches(withText("logintester@firebase.com")));
     }
 
     private static Matcher<View> childAtPosition(
