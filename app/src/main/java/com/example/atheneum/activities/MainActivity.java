@@ -282,34 +282,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (user != null) {
                         nav_username.setText(user.getUserName());
 
-
-                        //TODO: query userID from bookID
-                        //TEST AREA FOR TESTING RECEIVING NOTIFICATIONS
-//                        String ownerID = user.getUserID();
-//                        String bookID = "00aa49fa-38c2-4394-992f-a77aea529735";
-//
-//                        Request request = new Request(user, bookID);
-//                        Notification notification = new Notification(
-//                                ownerID,
-//                                ownerID,
-//                                ownerID,
-//                                bookID,
-//                                Notification.NotificationType.REQUEST,
-//                                "");
-//                        DatabaseWriteHelper.makeRequest(request, notification);
-//
-//                        bookID = "03120431-a340-4c77-b6a5-321a543b965d";
-//                        request = new Request(user, bookID);
-//                        notification = new Notification(
-//                                ownerID,
-//                                ownerID,
-//                                ownerID,
-//                                bookID,
-//                                Notification.NotificationType.REQUEST,
-//                                "");
-//                        DatabaseWriteHelper.makeRequest(request, notification);
-
-
                         ArrayList<String> photos = user.getPhotos();
                         if (!photos.isEmpty()) {
                             Bitmap profilePic = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
