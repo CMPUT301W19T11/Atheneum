@@ -58,7 +58,7 @@ public class ViewEditProfileActivityTest {
 
     @Test
     public void viewProfileActivityTest() {
-        // Added a sleep statement to match the app's execution delay.
+// Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
@@ -123,7 +123,7 @@ public class ViewEditProfileActivityTest {
             e.printStackTrace();
         }
 
-        appCompatEditText.perform(replaceText("1 780-123-4567"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("1 780-000-0000"), closeSoftKeyboard());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
@@ -154,6 +154,31 @@ public class ViewEditProfileActivityTest {
 
         ViewInteraction textview2 = onView(
                 allOf(withId(R.id.phone), isDisplayed()));
+        textview2.check(matches(withText("1 780-000-0000")));
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(DELAY_MS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        floatingActionButton.perform(click());
+
+        appCompatEditText.perform(replaceText("1 780-123-4567"), closeSoftKeyboard());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(DELAY_MS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        floatingActionButton2.perform(click());
+        textView1.check(matches(withText("logintester@firebase.com")));
         textview2.check(matches(withText("1 780-123-4567")));
 
         // Added a sleep statement to match the app's execution delay.
@@ -164,6 +189,7 @@ public class ViewEditProfileActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
 
         Espresso.pressBack();
     }
