@@ -57,6 +57,10 @@ import com.google.firebase.auth.FirebaseUser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Activity for adding and editing a book. Provides the UI fields and buttons for inputting
+ * attribute values of a new book.
+ */
 public class AddEditBookActivity extends AppCompatActivity {
 
     private Context context;
@@ -101,8 +105,8 @@ public class AddEditBookActivity extends AppCompatActivity {
         descEditText = findViewById(R.id.descEditText);
 
         bookID = getIntent().getStringExtra("BookID");
-        if( !bookID.equals("")){
-
+        if(bookID != null && !bookID.equals("")){
+            // populate fields with existing book info if activity was entered for editing
             BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
             bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
             final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
@@ -128,16 +132,14 @@ public class AddEditBookActivity extends AppCompatActivity {
                 new EditTextWithValidator(descEditText, new NonEmptyTextValidator(descEditText)),
         };
 
-
-
         saveBtn = findViewById(R.id.saveBookBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!bookID.equals("")) {
+                if(bookID != null && !bookID.equals("")) { // not null bookID implies existing book(edit)
                     updateBook();
                 }
-                else{
+                else{ // create new book
                     saveNewBook();
                 }
             }
@@ -158,6 +160,11 @@ public class AddEditBookActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Start activity for scanning the ISBN barcode
+     *
+     * @param v the current view
+     */
     public void scanIsbn(View v) {
         Log.i(TAG, "AddBook*** ISBN scan requested");
 
@@ -166,6 +173,15 @@ public class AddEditBookActivity extends AppCompatActivity {
         startActivityForResult(intent, 0);
     }
 
+    /**
+     * Overridden activity result handler.
+     * For now should only be used to check ScanBarcodeActivity results, in which case it attempts
+     * to populate the ISBN field and call the API request to autofill the rest of the fields
+     *
+     * @param requestCode the request code of the started activity
+     * @param resultCode result code of the finished activity
+     * @param data intent data of the finished activity
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         Log.i(TAG, "Return from scan ISBN");
@@ -191,15 +207,17 @@ public class AddEditBookActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Populate all input fields using a given ISBN and a call to the Google Books API
+     * Reads the ISBN from the input field. Will not populate if there is not internet connection,
+     * or the ISBN is invalid or doesn't exist in Google Books.
+     */
     public void populateFieldsByIsbn() {
-        // TODO: FINISH
-
         // Check internet connection
         if (!(new ConnectionChecker(this)).isNetworkConnected()){ // no internet connection
             Toast.makeText(this, "Error, no Internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         Log.i(TAG, "AddBook*** Auto-populate requested");
         this.isbn = Book.INVALILD_ISBN;
@@ -260,7 +278,7 @@ public class AddEditBookActivity extends AppCompatActivity {
                     });
 
 
-            // Add the request to the RequestQueue.
+            // Add the request to the RequestQueue. This is part of an app-wide singleton
             SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
 
 
@@ -271,6 +289,10 @@ public class AddEditBookActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Checks whether all inputs have been filled
+     * @return whether or not all required inputs were filled
+     */
     public boolean allFieldsFilled() {
         boolean allFilled = !TextUtils.isEmpty(titleEditText.getText()) &&
                 !TextUtils.isEmpty(authorEditText.getText()) &&
@@ -280,11 +302,14 @@ public class AddEditBookActivity extends AppCompatActivity {
         return allFilled;
     }
 
+    /**
+     * Update the firebase data of an existing book. Used when this activity is spawned for
+     * editing.
+     */
     public void updateBook(){
         Log.i(TAG, "UpdateBook*** Save Button Pressed");
 
         if (!allFieldsFilled()) {
-            // TODO : Display Error Prompt
             Log.w(TAG, "AddBook*** Error fields unfilled");
             Toast.makeText(context, "Cannot save with unfilled fields!", Toast.LENGTH_SHORT).show();
 
@@ -319,6 +344,11 @@ public class AddEditBookActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Save a new book to firebase, attached to the owner that created it, using the provided
+     * data in the input fields.
+     * If the fields were not correctly filled, no book is saved and an error is shown.
+     */
     public void saveNewBook() {
 //        Log.i(TAG, "AddBook*** Save Button Pressed");
 
