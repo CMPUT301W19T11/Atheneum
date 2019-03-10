@@ -34,20 +34,24 @@ public class Notification {
      * Needed for Firebase. Do not use in application code.
      */
     public Notification() {
-        notificationID = UUID.randomUUID().toString();;
-        requesterID = "";
-        ownerID = "";
-        bookID = "";
+        this.notificationID = UUID.randomUUID().toString();;
+        this.requesterID = "";
+        this.ownerID = "";
+        this.notificationReceiverID = "";
+        this.bookID = "";
+        this.rNotificationType = null;
+        this.message = "";
     }
 
     /**
      * Instantiates a new Notification.
      *
-     * @param requesterID       the requester id
-     * @param ownerID           the owner id
-     * @param bookID            the book id
-     * @param rNotificationType the r notification type
-     * @param message           the message
+     * @param requesterID            book requester id
+     * @param ownerID                book owner id
+     * @param notificationReceiverID notification receiver id
+     * @param bookID                 book id
+     * @param rNotificationType      notification type
+     * @param message                message
      */
     public Notification(String requesterID, String ownerID,
                         String notificationReceiverID, String bookID,
