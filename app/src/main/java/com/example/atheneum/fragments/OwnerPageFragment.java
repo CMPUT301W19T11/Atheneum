@@ -1,9 +1,15 @@
 package com.example.atheneum.fragments;
 
+import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,17 +26,25 @@ import com.example.atheneum.activities.AddEditBookActivity;
 import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.OwnerBooksAdapter;
+import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.OwnerCollectionRefUtils;
+import com.example.atheneum.viewmodels.UserViewModel;
+import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * The Owner page fragment that can be navigated to using the hamburger menu on the main pages
@@ -48,6 +62,8 @@ public class OwnerPageFragment extends Fragment {
     private RecyclerView ownerBooksRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager ownerBooksLayoutManager;
+
+    private UserViewModel userViewModel;
 
     private static final String TAG = OwnerPageFragment.class.getSimpleName();
 
@@ -100,6 +116,8 @@ public class OwnerPageFragment extends Fragment {
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options) {
                 @Override
                 protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
+                    Log.i(TAG, "in onBind!");
+
                     //Bind Book object to BookViewHolder
                     holder.titleTextView.setText(
                             book.getTitle());
@@ -107,6 +125,36 @@ public class OwnerPageFragment extends Fragment {
                             book.getAuthor());
                     holder.statusTextView.setText(
                             book.getStatus().toString());
+
+                    // retrieve the User's email
+                    if (!(book.getBorrowerID() == null || book.getBorrowerID().equals(""))) {
+                        Log.i(TAG, "Borrower exists : " + book.getBorrowerID());
+                        // retrieve email with direct call to firebase
+                        final FirebaseDatabase db = FirebaseDatabase.getInstance();
+                        DatabaseReference borrowerRef = db.getReference().child(getString(R.string.db_users)).child(book.getBorrowerID());
+                        borrowerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    User borrower = dataSnapshot.getValue(User.class);
+                                    holder.borrowerNameTextView.setText(borrower.getUserName());
+                                }
+                                else {
+                                    Log.e(TAG, "nonexistent user error, shouldn't be here");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.w(TAG, "User listener was cancelled");
+                            }
+                        });
+                        
+                    }
+                    else { // no borrower;
+                        holder.borrowerNameTextView.setText("None");
+                    }
+
                     holder.bookItem.setOnClickListener(new View.OnClickListener() {
 
                         @Override
