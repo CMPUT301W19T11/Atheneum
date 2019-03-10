@@ -347,7 +347,7 @@ public class AddEditBookActivity extends AppCompatActivity {
     /**
      * Save a new book to firebase, attached to the owner that created it, using the provided
      * data in the input fields.
-     * If the fields were not correctly filled, no book is saved and an error is shown. 
+     * If the fields were not correctly filled, no book is saved and an error is shown.
      */
     public void saveNewBook() {
 //        Log.i(TAG, "AddBook*** Save Button Pressed");
