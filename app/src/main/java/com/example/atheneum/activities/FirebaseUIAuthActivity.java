@@ -115,7 +115,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
-//                                        .setIsSmartLockEnabled(false) // Disabled for testing, used for password-less login
+                        .setIsSmartLockEnabled(false) // Used for password-less login, disabled to make UI tests easy
                         .build(),
                 AUTH_RC_CODE);
     }
