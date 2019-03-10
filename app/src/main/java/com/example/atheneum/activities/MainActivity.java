@@ -2,7 +2,6 @@ package com.example.atheneum.activities;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -37,18 +36,13 @@ import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
-import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
-import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
-import com.example.atheneum.utils.RequestFirebaseMessagingService;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
-import com.example.atheneum.viewmodels.UserNotificationsViewModel;
-import com.example.atheneum.viewmodels.UserNotificationsViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
@@ -63,8 +57,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * The Main activity.
