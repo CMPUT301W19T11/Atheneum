@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
  * <p>
@@ -16,12 +17,14 @@
 
 package com.example.atheneum.utils;
 
+
 import android.util.Log;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -31,6 +34,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+
+import android.util.Log;
+
+import com.example.atheneum.R;
+import com.example.atheneum.activities.MainActivity;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
 
 
 /**

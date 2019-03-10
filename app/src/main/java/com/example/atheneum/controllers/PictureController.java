@@ -91,6 +91,7 @@ public class PictureController<T> {
                 fragment.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         } else if (fragmentOrActivity instanceof Activity) {
+            Log.i(TAG, "here");
             Activity activity = (Activity) fragmentOrActivity;
             if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -122,6 +123,7 @@ public class PictureController<T> {
      * @param data Data obtained from the request
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult");
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
