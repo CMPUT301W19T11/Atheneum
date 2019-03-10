@@ -26,7 +26,7 @@ public class ConnectionChecker {
 
     /**
      * Checks if the device is connected to the Internet using the ConnectivityManager initialized
-     * in the constructor. 
+     * in the constructor.
      *
      * @return whether or not the device is connected to the Internet.
      */
