@@ -81,7 +81,7 @@ public class newRequest extends Fragment {
                             //TODO: query userID from bookID
                             //TEST FOR NOW SINCE THIS CLASS IS EXPECTING CHANGE
                             //THIS SHOULD BE userID OF BOOK OWNER
-                            String ownerID = "a8ILOIyWDmcHlTAVAUw5fwV6weo1";
+                            String ownerID = requester.getUserID();
 
                             Notification notification = new Notification(
                                     requester.getUserID(),
