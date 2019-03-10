@@ -11,11 +11,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,9 +30,12 @@ import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
+import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.TestAggregateViewModel;
+import com.example.atheneum.viewmodels.TestAggregateViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
@@ -103,6 +108,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
+
+        TestAggregateViewModelFactory factory = new TestAggregateViewModelFactory("sKrmipPG5KdImGQGk62efprGeWK2", "c27f0c04-ae7a-432b-9b88-5fd9b44585b0");
+        TestAggregateViewModel viewModel = ViewModelProviders.of(this, factory).get(TestAggregateViewModel.class);
+        LiveData<Pair<User, Book>> pairLiveData = viewModel.getBorrowerBookPairLiveData();
+        pairLiveData.observe(this, new Observer<Pair<User, Book>>() {
+            @Override
+            public void onChanged(@Nullable Pair<User, Book> userBookPair) {
+                if ((userBookPair != null) && (userBookPair.first != null) && (userBookPair.second != null)) {
+                    Log.i(TAG, "Got data!");
+                    Log.i(TAG, "borrower: " + userBookPair.first.toString());
+                    Log.i(TAG, "book: " + userBookPair.second.toString());
+                }
+            }
+        });
+
     }
 
 

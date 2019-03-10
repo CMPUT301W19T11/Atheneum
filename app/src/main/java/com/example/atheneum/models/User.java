@@ -143,4 +143,15 @@ public class User implements Serializable {
      * @param photo
      */
     public void deletePhotos(String photo){this.photos.remove(photo);}
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID='" + userID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", ownerRate=" + ownerRate +
+                ", borrowerRate=" + borrowerRate +
+                '}';
+    }
 }
