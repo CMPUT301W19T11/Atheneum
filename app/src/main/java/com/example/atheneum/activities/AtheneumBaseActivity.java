@@ -29,27 +29,27 @@ public class AtheneumBaseActivity extends AppCompatActivity {
 
 //    @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        Log.i("Base Activity", "in oncreate");
-        // Update user information in the navbar
-        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
-            UserNotificationsViewModelFactory factory = new UserNotificationsViewModelFactory(firebaseUser.getUid());
-            UserNotificationsViewModel userNotificationsViewModel =
-                    ViewModelProviders.of(this, factory).get(UserNotificationsViewModel.class);
-            LiveData<Notification> userNotificationsLiveData = userNotificationsViewModel.getNotificationLiveData();
-            userNotificationsLiveData.observe(this, new Observer<Notification>() {
-                @Override
-                public void onChanged(@Nullable Notification notification) {
-                    if (notification == null) {
-                        Log.i("Base Activity", "notification is null");
-                    } else {
-                        Log.i("Base Activity", "notification is not null");
-                    }
-                }
-            });
-        } else {
-            Log.w("Base Activity", "Shouldn't happen!");
-        }
+//        super.onCreate(savedInstanceState, persistentState);
+//        Log.i("Base Activity", "in oncreate");
+//        // Update user information in the navbar
+//        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+//            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+//            UserNotificationsViewModelFactory factory = new UserNotificationsViewModelFactory(firebaseUser.getUid());
+//            UserNotificationsViewModel userNotificationsViewModel =
+//                    ViewModelProviders.of(this, factory).get(UserNotificationsViewModel.class);
+//            LiveData<Notification> userNotificationsLiveData = userNotificationsViewModel.getNotificationLiveData();
+//            userNotificationsLiveData.observe(this, new Observer<Notification>() {
+//                @Override
+//                public void onChanged(@Nullable Notification notification) {
+//                    if (notification == null) {
+//                        Log.i("Base Activity", "notification is null");
+//                    } else {
+//                        Log.i("Base Activity", "notification is not null");
+//                    }
+//                }
+//            });
+//        } else {
+//            Log.w("Base Activity", "Shouldn't happen!");
+//        }
     }
 }

@@ -69,6 +69,10 @@ public class DatabaseWriteHelper {
         deleteBook(owner.getUserID(), book.getBookID());
     }
 
+    public static void updateBook(Book book) {
+        BooksRefUtils.getBookRef(book).setValue(book);
+    }
+
     public static void makeRequest(Request request, Notification notification) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
@@ -128,8 +132,28 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void updateBook(Book book) {
-        BooksRefUtils.getBookRef(book).setValue(book);
+    public static void deleteNotification(User notificationReceiver, Notification notification) {
+        deleteNotification(notificationReceiver.getUserID(), notification.getNotificationID());
     }
 
+    public static void deleteNotification(String notificationReceiverID, String notificationID) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+
+        final String notificationsRef = String.format("notifications/%s/%s",
+                notificationReceiverID, notificationID);
+
+        updates.put(notificationsRef, null);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef.toString());
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
 }

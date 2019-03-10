@@ -12,12 +12,15 @@ import com.example.atheneum.utils.FirebaseQueryLiveData;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.GenericTypeIndicator;
+
+import java.util.HashMap;
 
 public class UserNotificationsViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
-    private final LiveData<Notification> notificationLiveData;
+    private final LiveData<String> notificationLiveData;
     // Reference to user in Firebase
     private final DatabaseReference notificationsRef;
 
@@ -39,11 +42,13 @@ public class UserNotificationsViewModel extends ViewModel {
 
     /**
      * Converts the DataSnapshot retrieved from the Firebase Query into a Notification object
+     *
+     * See: https://stackoverflow.com/questions/30744224/how-to-retrieve-a-list-object-from-the-firebase-in-android
      */
-    private class Deserializer implements Function<DataSnapshot, Notification> {
+    private class Deserializer implements Function<DataSnapshot, String> {
         @Override
-        public Notification apply(DataSnapshot dataSnapshot) {
-            return dataSnapshot.getValue(Notification.class);
+        public String apply(DataSnapshot dataSnapshot) {
+            return dataSnapshot.getValue(String.class);
         }
     }
 
@@ -64,7 +69,7 @@ public class UserNotificationsViewModel extends ViewModel {
      * @return Observable User data from Firebase
      */
     @NonNull
-    public LiveData<Notification> getNotificationLiveData() {
+    public LiveData<String> getNotificationLiveData() {
         Log.i(TAG, "where what when bhhbuh");
         return notificationLiveData;
     }
