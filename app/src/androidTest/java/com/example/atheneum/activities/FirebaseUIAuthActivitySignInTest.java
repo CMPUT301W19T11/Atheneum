@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.example.atheneum.R;
+import com.example.atheneum.utils.ConnectionChecker;
+import com.example.atheneum.utils.FirebaseAuthUtils;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -19,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.InstrumentationRegistry.getContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -30,6 +33,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
@@ -42,6 +47,12 @@ public class FirebaseUIAuthActivitySignInTest {
 
     @Test
     public void firebaseUIAuthActivitySignInTest() {
+
+        assertFalse("Sign out of the app before trying to run this test!", FirebaseAuthUtils.isCurrentUserAuthenticated());
+
+        ConnectionChecker connectionChecker = new ConnectionChecker(getContext());
+        assertTrue("Sign-in tests requires network connectivity!", connectionChecker.isNetworkConnected());
+
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
