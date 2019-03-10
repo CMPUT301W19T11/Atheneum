@@ -1,5 +1,6 @@
 package com.example.atheneum.activities;
 
+import android.content.res.Resources;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -61,6 +62,9 @@ public class AddBookTest {
             e.printStackTrace();
         }
 
+        // used for string resources
+        Resources appRes = mActivityTestRule.getActivity().getResources();
+
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -108,7 +112,7 @@ public class AddBookTest {
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 2)));
-        appCompatEditText.perform(scrollTo(), replaceText("Testbook"), closeSoftKeyboard());
+        appCompatEditText.perform(scrollTo(), replaceText(appRes.getString(R.string.newbooktest_title)), closeSoftKeyboard());
 
         ViewInteraction appCompatEditText2 = onView(
                 allOf(withId(R.id.authorEditText),
@@ -117,7 +121,7 @@ public class AddBookTest {
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 4)));
-        appCompatEditText2.perform(scrollTo(), replaceText("logintester"), closeSoftKeyboard());
+        appCompatEditText2.perform(scrollTo(), replaceText(appRes.getString(R.string.newbooktest_author)), closeSoftKeyboard());
 
         ViewInteraction appCompatEditText3 = onView(
                 allOf(withId(R.id.isbnEditText),
@@ -126,7 +130,7 @@ public class AddBookTest {
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 7)));
-        appCompatEditText3.perform(scrollTo(), replaceText("111"), closeSoftKeyboard());
+        appCompatEditText3.perform(scrollTo(), replaceText(appRes.getString(R.string.newbooktest_isbn)), closeSoftKeyboard());
 
         ViewInteraction appCompatEditText4 = onView(
                 allOf(withId(R.id.descEditText),
@@ -135,7 +139,7 @@ public class AddBookTest {
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 10)));
-        appCompatEditText4.perform(scrollTo(), replaceText("Lorem ipsum"), closeSoftKeyboard());
+        appCompatEditText4.perform(scrollTo(), replaceText(appRes.getString(R.string.newbooktest_desc)), closeSoftKeyboard());
 
         ViewInteraction floatingActionButton2 = onView(
                 allOf(withId(R.id.saveBookBtn),
@@ -157,24 +161,24 @@ public class AddBookTest {
         }
 
         ViewInteraction textView = onView(
-                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE), withText("Testbook"),
+                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE), withText(appRes.getString(R.string.newbooktest_title)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
                                         0),
                                 0),
                         isDisplayed()));
-        textView.check(matches(withText("Testbook")));
+        textView.check(matches(withText(appRes.getString(R.string.newbooktest_title))));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(R.id.book_author), withText("logintester"),
+                allOf(withId(R.id.book_author), withText(appRes.getString(R.string.newbooktest_author)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
                                         0),
                                 1),
                         isDisplayed()));
-        textView2.check(matches(withText("logintester")));
+        textView2.check(matches(withText(appRes.getString(R.string.newbooktest_author))));
 
         ViewInteraction textView3 = onView(
                 allOf(withId(R.id.bookcard_borrowername), withText("None"),

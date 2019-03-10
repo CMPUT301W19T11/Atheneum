@@ -1,5 +1,6 @@
 package com.example.atheneum.activities;
 
+import android.content.res.Resources;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -60,6 +61,9 @@ public class DeleteBookTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // used for string resources
+        Resources appRes = mActivityTestRule.getActivity().getResources();
 
         // navigate to the owner page
         // Navigate to owner page
@@ -126,7 +130,7 @@ public class DeleteBookTest {
                         childAtPosition(
                                 withClassName(is("android.widget.LinearLayout")),
                                 0)));
-        recyclerView1.check(matches(not(withText("New Title"))));
+        recyclerView1.check(matches(not(withText(appRes.getString(R.string.editbooktest_newtitle)))));
     }
 
     private static Matcher<View> childAtPosition(

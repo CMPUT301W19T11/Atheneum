@@ -1,5 +1,6 @@
 package com.example.atheneum.activities;
 
+import android.content.res.Resources;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -61,6 +62,9 @@ public class ViewEditBookTest {
             e.printStackTrace();
         }
 
+        // used for string resources
+        Resources appRes = mActivityTestRule.getActivity().getResources();
+
         // Navigate to owner page
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
@@ -102,34 +106,34 @@ public class ViewEditBookTest {
 
         // validate the data in book info
         ViewInteraction textView = onView(
-                allOf(withId(R.id.bookTitle), withText("Testbook"),
+                allOf(withId(R.id.bookTitle), withText(appRes.getString(R.string.newbooktest_title)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
                                         0),
                                 2),
                         isDisplayed()));
-        textView.check(matches(withText("Testbook")));
+        textView.check(matches(withText(appRes.getString(R.string.newbooktest_title))));
 
         ViewInteraction textView1 = onView(
-                allOf(withId(R.id.bookAuthor), withText("logintester"),
+                allOf(withId(R.id.bookAuthor), withText(appRes.getString(R.string.newbooktest_author)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
                                         0),
                                 4),
                         isDisplayed()));
-        textView1.check(matches(withText("logintester")));
+        textView1.check(matches(withText(appRes.getString(R.string.newbooktest_author))));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(R.id.bookISBN), withText("111"),
+                allOf(withId(R.id.bookISBN), withText(appRes.getString(R.string.newbooktest_isbn)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
                                         0),
                                 6),
                         isDisplayed()));
-        textView2.check(matches(withText("111")));
+        textView2.check(matches(withText(appRes.getString(R.string.newbooktest_isbn))));
 
         ViewInteraction textView3 = onView(
                 allOf(withId(R.id.bookStatus), withText("AVAILABLE"),
@@ -153,14 +157,14 @@ public class ViewEditBookTest {
         textView4.check(matches(withText("None")));
 
         ViewInteraction textView5 = onView(
-                allOf(withId(R.id.bookDescription), withText("Lorem ipsum"),
+                allOf(withId(R.id.bookDescription), withText(appRes.getString(R.string.newbooktest_desc)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
                                         0),
                                 12),
                         isDisplayed()));
-        textView5.check(matches(withText("Lorem ipsum")));
+        textView5.check(matches(withText(appRes.getString(R.string.newbooktest_desc))));
 
         // edit the book and check the results
         ViewInteraction appCompatButton3 = onView(
@@ -183,16 +187,16 @@ public class ViewEditBookTest {
 
         // edit the title
         ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.bookTitleEditText), withText("Testbook"),
+                allOf(withId(R.id.bookTitleEditText), withText(appRes.getString(R.string.newbooktest_title)),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 2)));
-        appCompatEditText.perform(scrollTo(), replaceText("New Title"));
+        appCompatEditText.perform(scrollTo(), replaceText(appRes.getString(R.string.editbooktest_newtitle)));
 
         ViewInteraction appCompatEditText1 = onView(
-                allOf(withId(R.id.bookTitleEditText), withText("New Title"),
+                allOf(withId(R.id.bookTitleEditText), withText(appRes.getString(R.string.editbooktest_newtitle)),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
@@ -203,16 +207,16 @@ public class ViewEditBookTest {
 
         // edit the description
         ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.descEditText), withText("Lorem ipsum"),
+                allOf(withId(R.id.descEditText), withText(appRes.getString(R.string.newbooktest_desc)),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 10)));
-        appCompatEditText2.perform(scrollTo(), replaceText("Some words"));
+        appCompatEditText2.perform(scrollTo(), replaceText(appRes.getString(R.string.editbooktest_newdesc)));
 
         ViewInteraction appCompatEditText3 = onView(
-                allOf(withId(R.id.descEditText), withText("Some words"),
+                allOf(withId(R.id.descEditText), withText(appRes.getString(R.string.editbooktest_newdesc)),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
@@ -242,14 +246,14 @@ public class ViewEditBookTest {
 
         // check title change
         ViewInteraction textView6 = onView(
-                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE), withText("New Title"),
+                allOf(withId(R.id.book_title), withEffectiveVisibility(VISIBLE), withText(appRes.getString(R.string.editbooktest_newtitle)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
                                         0),
                                 0),
                         isDisplayed()));
-        textView6.check(matches(withText("New Title")));
+        textView6.check(matches(withText(appRes.getString(R.string.editbooktest_newtitle))));
 
         // open the book information again to validate description change
         ViewInteraction recyclerView2 = onView(
@@ -269,24 +273,24 @@ public class ViewEditBookTest {
         }
 
         ViewInteraction textView11 = onView(
-                allOf(withId(R.id.bookTitle), withText("New Title"),
+                allOf(withId(R.id.bookTitle), withText(appRes.getString(R.string.editbooktest_newtitle)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
                                         0),
                                 2),
                         isDisplayed()));
-        textView11.check(matches(withText("New Title")));
+        textView11.check(matches(withText(appRes.getString(R.string.editbooktest_newtitle))));
 
         ViewInteraction textView12 = onView(
-                allOf(withId(R.id.bookDescription), withText("Some words"),
+                allOf(withId(R.id.bookDescription), withText(appRes.getString(R.string.editbooktest_newdesc)),
                         childAtPosition(
                                 childAtPosition(
                                         IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class),
                                         0),
                                 12),
                         isDisplayed()));
-        textView12.check(matches(withText("Some words")));
+        textView12.check(matches(withText(appRes.getString(R.string.editbooktest_newdesc))));
     }
 
     private static Matcher<View> childAtPosition(
