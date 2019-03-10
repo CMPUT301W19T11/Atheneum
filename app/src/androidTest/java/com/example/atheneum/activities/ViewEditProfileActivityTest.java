@@ -50,9 +50,10 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 public class ViewEditProfileActivityTest {
     User user = new User();
+    private static long DELAY_MS = 500;
 
     @Rule
-    public ActivityTestRule<FirebaseUIAuthActivity> mActivityTestRule = new ActivityTestRule<>(FirebaseUIAuthActivity.class);
+    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
 
     @Test
@@ -61,71 +62,7 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction textInputEditText = onView(
-                allOf(withId(R.id.email),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.email_layout),
-                                        0),
-                                0)));
-        textInputEditText.perform(scrollTo(), click());
-
-        ViewInteraction textInputEditText2 = onView(
-                allOf(withId(R.id.email),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.email_layout),
-                                        0),
-                                0)));
-        textInputEditText2.perform(scrollTo(), replaceText("logintester@firebase.com"), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.button_next), withText("Next"),
-                        childAtPosition(
-                                allOf(withId(R.id.email_top_layout),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.ScrollView")),
-                                                0)),
-                                2)));
-        appCompatButton.perform(scrollTo(), click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction textInputEditText3 = onView(
-                allOf(withId(R.id.password),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.password_layout),
-                                        0),
-                                0)));
-        textInputEditText3.perform(scrollTo(), replaceText("logintester1"), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.button_done), withText("Sign in"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                4)));
-        appCompatButton2.perform(scrollTo(), click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -156,7 +93,7 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -170,7 +107,7 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -181,7 +118,7 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -192,7 +129,7 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -206,7 +143,7 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -223,35 +160,12 @@ public class ViewEditProfileActivityTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(2000);
+            Thread.sleep(DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         Espresso.pressBack();
-
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withContentDescription("Open navigation drawer"),
-                        childAtPosition(
-                                allOf(withId(R.id.toolbar),
-                                        childAtPosition(
-                                                withClassName(is("android.support.design.widget.AppBarLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
-
-        ViewInteraction navigationMenuItemView2 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.design_navigation_view),
-                                childAtPosition(
-                                        withId(R.id.nav_view),
-                                        0)),
-                        6),
-                        isDisplayed()));
-        navigationMenuItemView2.perform(click());
-
-
     }
 
 
