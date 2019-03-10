@@ -5,8 +5,11 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-       SignInTest.class,
-       SignOutTest.class,
+        SignInTest.class,
+        AddBookTest.class,
+        ViewEditBookTest.class,
+        DeleteBookTest.class,
+        SignOutTest.class,
 })
 /**
  * Class that runs all the UI tests in the proper order.
