@@ -104,7 +104,7 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
                             Request newRequest = new Request(requester.getUserID(), book.getBookID());
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
-                            
+
 
                             DatabaseWriteHelper.makeRequest(newRequest);
 
