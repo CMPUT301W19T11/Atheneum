@@ -105,9 +105,6 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
-//                            DatabaseReference requestColref = db.getReference()
-//                                    .child(getString(R.string.db_requestCollection)).child(newRequest.getRequesterID());
-//                            requestColref.child(newRequest.getBookID()).setValue(newRequest);
 
                             DatabaseWriteHelper.makeRequest(newRequest);
 
@@ -130,9 +127,7 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
 
     }
 
-    public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
+
 
     //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
     //See: https://developer.android.com/reference/android/widget/SearchView
@@ -182,7 +177,9 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Book book = child.getValue(Book.class);
                             if(searchCheck(book, query)){
-                                searchAvailableBook.add(book);
+                                if(!searchAvailableBook.contains(book)){
+                                    searchAvailableBook.add(book);
+                                }
                             }
 
                         }
@@ -231,6 +228,9 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
     }
 
 
+    /**
+     * getting requested books done by current user
+     */
 
     public void retriveBook(){
         db = FirebaseDatabase.getInstance();
@@ -242,16 +242,17 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "On Data Change was Called");
+
                 availableBook.clear();
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-//                    String aa = child.getValue(String.class);
-//                    Log.d(TAG, "TEST STRING "+ aa);
+
                     try {
                         Book book = child.getValue(Book.class);
                         if(book.getStatus().equals(Book.Status.AVAILABLE) || book.getStatus().equals(Book.Status.REQUESTED)) {
                             if(!book.getOwnerID().equals(currentUserID)){
-                                availableBook.add(book);
+                                if(!availableBook.contains(book)) {
+                                    availableBook.add(book);
+                                }
                             }
                         }
                     } catch (DatabaseException e) {
@@ -276,7 +277,7 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
     }
 
     /**
-     * search an availabel book by title/author/description
+     * search an availabel book by a set of key words in description
      * @param book
      * @param query
      * @return

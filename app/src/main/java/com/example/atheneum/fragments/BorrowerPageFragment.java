@@ -94,23 +94,12 @@ public class BorrowerPageFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 requestList.clear();
-//                requestAdapter.notifyDataSetChanged();
 
                 for (DataSnapshot item: dataSnapshot.getChildren()) {
-//                    Request requestItem = new Request();
+
 
                     String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
-//                    requestItem.setBookID(bookID);
-//
-//                    User requester = item.child(getString(R.string.db_book_requester)).getValue(User.class);
-//                    requestItem.setRequesterID(requester);
-//
-//                    Request.Status status = item.child(getString(R.string.db_book_request_status)).getValue(Request.Status.class);
-//                    requestItem.setrStatus(status);
 
-//                    Log.d(TAG, "find request " + requestItem.getBookID());
-
-//                    UUID bookUUID = UUID.fromString(bookID);
                     DatabaseReference ref_book = db.getReference().child("books").child(bookID);
                     ref_book.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -145,25 +134,16 @@ public class BorrowerPageFragment extends Fragment {
 
 
         Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
-//        ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);
-//        ownerBooksRecyclerView.setHasFixedSize(true);
-//        ownerBooksLayoutManager = new LinearLayoutManager(this.context);
-//        ownerBooksRecyclerView.setLayoutManager(ownerBooksLayoutManager);
-//        ownerBooksRecyclerAdapter = new OwnerBooksAdapter(ownerBooks);
-//        ownerBooksRecyclerView.setAdapter(ownerBooksRecyclerAdapter);
-//        ownerBooksRecyclerView.addItemDecoration(new DividerItemDecoration(ownerBooksRecyclerView.getContext(),
-//                DividerItemDecoration.VERTICAL));
 
 
-
+        /**
+         * go to request generation activity
+         */
         final FragmentManager fragmentManager = getFragmentManager();
         addRequest = this.view.findViewById(R.id.new_request);
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                requestList.clear();
-//                requestAdapter.notifyDataSetChanged();
-//                fragmentManager.beginTransaction().replace(R.id.content_frame, new newRequest()).addToBackStack("NewRequest").commit();
                 Intent new_request_intent = new Intent(getActivity(), NewRequest.class);
                 startActivity(new_request_intent);
             }
