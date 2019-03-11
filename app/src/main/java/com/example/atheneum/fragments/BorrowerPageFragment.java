@@ -16,7 +16,7 @@ import android.widget.ListView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
-import com.example.atheneum.activities.NewRequest;
+import com.example.atheneum.activities.NewRequestActivity;
 
 import com.example.atheneum.activities.ViewProfileActivity;
 import com.example.atheneum.models.Book;
@@ -144,7 +144,7 @@ public class BorrowerPageFragment extends Fragment {
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent new_request_intent = new Intent(getActivity(), NewRequest.class);
+                Intent new_request_intent = new Intent(getActivity(), NewRequestActivity.class);
                 startActivity(new_request_intent);
             }
         });
