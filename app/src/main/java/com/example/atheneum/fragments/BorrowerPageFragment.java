@@ -136,7 +136,9 @@ public class BorrowerPageFragment extends Fragment {
         Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
 
 
-
+        /**
+         * go to request generation activity 
+         */
         final FragmentManager fragmentManager = getFragmentManager();
         addRequest = this.view.findViewById(R.id.new_request);
         addRequest.setOnClickListener(new View.OnClickListener() {
