@@ -32,8 +32,6 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 
 /**
- * A simple {@link Fragment} subclass.
- *
  * Creates a form to edit user profile information and send it to Firebase
  */
 public class EditProfileFragment extends Fragment {

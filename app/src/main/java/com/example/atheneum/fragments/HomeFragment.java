@@ -11,7 +11,7 @@ import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass that displays the home page.
  */
 public class HomeFragment extends Fragment {
 

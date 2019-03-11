@@ -34,6 +34,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * The Borrower page fragment to list borrower's requested books.
+ */
 public class BorrowerPageFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
@@ -45,10 +48,15 @@ public class BorrowerPageFragment extends Fragment {
     private requestAdapter requestAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
+    /**
+     * The Book object borrowed.
+     */
     Book book;
 
 
-
+    /**
+     * Instantiates a new Borrower page fragment.
+     */
     public BorrowerPageFragment() {
         // required empty constructor
     }

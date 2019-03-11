@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.Request;
 import com.example.atheneum.R;
 import com.example.atheneum.models.User;
 import com.google.firebase.database.DataSnapshot;
@@ -34,14 +33,25 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 
+/**
+ * The type Request adapter handles displaying arrays.
+ */
 //refer from https://www.sitepoint.com/custom-data-layouts-with-your-own-android-arrayadapter/ on Mar 2, 2019
 public class requestAdapter extends ArrayAdapter {
-    private int resourse_id;
+    private int resource_id;
     private static User owner;
     private static final String TAG = "FindOwner";
+
+    /**
+     * Instantiates a new Request adapter.
+     *
+     * @param context  the context
+     * @param resource the resource
+     * @param objects  the objects
+     */
     public requestAdapter(Context context, int resource, List objects) {
         super(context, resource, objects);
-        resourse_id = resource;
+        resource_id = resource;
     }
 
 
@@ -60,7 +70,7 @@ public class requestAdapter extends ArrayAdapter {
         final ViewHolder viewHolder;
 
         if(convertView == null){
-            view = LayoutInflater.from(getContext()).inflate(resourse_id, null);
+            view = LayoutInflater.from(getContext()).inflate(resource_id, null);
             viewHolder = new ViewHolder();
             viewHolder.show_description = (TextView) view.findViewById(R.id.show_description);
             viewHolder.show_owner = (TextView) view.findViewById(R.id.show_owner);
