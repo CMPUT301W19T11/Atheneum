@@ -87,4 +87,13 @@
     <string name="search_page_title">Search</string>
     <string name="title_activity_scan_barcode">ScanBarcodeActivity</string>
     <!--End of Strings for search page-->
+
+    <!--Strings for Add/edit/delete book tests-->
+    <string name="newbooktest_title">Testbook</string>
+    <string name="newbooktest_author">logintester</string>
+    <string name="newbooktest_isbn">1234567890987</string>
+    <string name="newbooktest_desc">Lorem ipsum dolor sit amet</string>
+    <string name="editbooktest_newtitle">New Title</string>
+    <string name="editbooktest_newdesc">Some different text here</string>
+    <!--End of Strings for Add/edit/delete book tests-->
 </resources>
