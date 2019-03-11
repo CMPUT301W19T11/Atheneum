@@ -95,8 +95,8 @@ public class BookTest {
         Book book = new Book();
         User owner = new User();
 
-        book.setOwner(owner);
-        assertThat(book.getOwner(), is(owner));
+        book.setOwnerID(owner.getUserID());
+        assertThat(book.getOwnerID(), is(owner.getUserID()));
     }
 
     @Test
@@ -104,8 +104,8 @@ public class BookTest {
         Book book = new Book();
         User borrower = new User();
 
-        book.setBorrower(borrower);
-        assertThat(book.getBorrower(), is(borrower));
+        book.setBorrowerID(borrower.getUserID());
+        assertThat(book.getBorrowerID(), is(borrower.getUserID()));
     }
 
     @Test
