@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment())
+                .addToBackStack("Home").commit();
 
         //START NOTIFICATIONS BLOCK
         // TODO: Make this app wide instead of just in the MainActivity
