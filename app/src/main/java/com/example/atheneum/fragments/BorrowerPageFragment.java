@@ -1,6 +1,7 @@
 package com.example.atheneum.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +16,9 @@ import android.widget.ListView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
+import com.example.atheneum.activities.NewRequest;
+
+import com.example.atheneum.activities.ViewProfileActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
@@ -43,6 +47,8 @@ public class BorrowerPageFragment extends Fragment {
     private static final String TAG = "ShowRequest";
     Book book;
 
+
+
     public BorrowerPageFragment() {
         // required empty constructor
     }
@@ -58,11 +64,14 @@ public class BorrowerPageFragment extends Fragment {
 
 
 
+
+
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
             mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
+
 
         requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
         requestView.setAdapter(requestAdapter);
@@ -154,7 +163,9 @@ public class BorrowerPageFragment extends Fragment {
             public void onClick(View v) {
 //                requestList.clear();
 //                requestAdapter.notifyDataSetChanged();
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new newRequest()).addToBackStack("NewRequest").commit();
+//                fragmentManager.beginTransaction().replace(R.id.content_frame, new newRequest()).addToBackStack("NewRequest").commit();
+                Intent new_request_intent = new Intent(getActivity(), NewRequest.class);
+                startActivity(new_request_intent);
             }
         });
 

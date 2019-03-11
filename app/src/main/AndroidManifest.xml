@@ -63,6 +63,12 @@
         <activity 
             android:name=".activities.ScanBarcodeActivity"
             android:label="@string/title_activity_scan_barcode"
+            android:theme="@style/AppTheme"
+            android:id="@+id/searchView"></activity>
+
+        <activity
+            android:name=".activities.NewRequest"
+            android:label="@string/NewRequestActivity"
             android:theme="@style/AppTheme"></activity>
       
     </application>
