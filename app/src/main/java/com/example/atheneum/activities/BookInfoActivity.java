@@ -57,6 +57,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+
+/**
+ * Activity for viewing the specifics of a book.
+ * Provides the UI fields and buttons for deleting and editing a book.
+ */
 public class BookInfoActivity extends AppCompatActivity {
 
     String title;
@@ -265,6 +270,9 @@ public class BookInfoActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Start activity for editing the book
+     */
     public void editBook(){
         Log.i(TAG, "Edit book button pressed");
         Intent intent = new Intent(this, AddEditBookActivity.class);
@@ -276,6 +284,9 @@ public class BookInfoActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Start activity for deleting the book
+     */
     public void deleteBook(){
         Log.i(TAG, "Delete book button pressed");
 

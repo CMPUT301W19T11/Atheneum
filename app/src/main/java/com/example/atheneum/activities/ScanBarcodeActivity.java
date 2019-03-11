@@ -35,6 +35,10 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+/**
+ * Activity for scanning the barcode of a book. Provides the UI for camera preview.
+ */
+
 public class ScanBarcodeActivity extends AppCompatActivity {
 
     SurfaceView cameraPreview;
@@ -51,6 +55,9 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         createCameraSource();
     }
 
+    /**
+     * Function to set up the camera on the surfaceview.
+     */
     //Parts of below was taken from https://www.youtube.com/watch?v=czmEC5akcos on Mar 7, 2019
     private void createCameraSource() {
         Log.i(TAG, "in createCameraSource");
@@ -117,6 +124,14 @@ public class ScanBarcodeActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Function to handle the result of a permission request
+     *
+     * @param requestCode value of the request code
+     * @param permissions permission granted
+     * @param grantResults value of the result code
+     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
