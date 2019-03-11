@@ -22,17 +22,17 @@ public class RequestTest {
     public void setUp() throws Exception {
         requester = new User();
         bookID = UUID.randomUUID();
-        newRequest = new Request(requester, bookID);
+        newRequest = new Request(requester.getUserID(), bookID.toString());
     }
 
     @Test
     public void getRequester() {
-        Assert.assertThat(requester, is(newRequest.getRequester()));
+        Assert.assertThat(requester.getUserID(), is(newRequest.getRequesterID()));
     }
 
     @Test
     public void getBookID() {
-        Assert.assertThat(newRequest.getBookID(), is(bookID));
+        Assert.assertThat(newRequest.getBookID(), is(bookID.toString()));
     }
 
     @Test
@@ -43,15 +43,15 @@ public class RequestTest {
     @Test
     public void setRequester() {
         User newRequester = new User();
-        newRequest.setRequester(newRequester);
-        Assert.assertThat(newRequester, is(newRequest.getRequester()));
+        newRequest.setRequesterID(newRequester);
+        Assert.assertThat(newRequester.getUserID(), is(newRequest.getRequesterID()));
     }
 
     @Test
     public void setBookID() {
         UUID newID = UUID.randomUUID();
-        newRequest.setBookID(newID);
-        assertEquals(newID, newRequest.getBookID());
+        newRequest.setBookID(newID.toString());
+        assertEquals(newID.toString(), newRequest.getBookID());
     }
 
     @Test

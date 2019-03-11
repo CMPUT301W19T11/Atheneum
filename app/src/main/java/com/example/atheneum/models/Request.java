@@ -34,12 +34,12 @@ public class Request {
     }
 
     /**
-     * Instantiates a new Request with the requester User.
-     *
-     * @param requester the requester
+     * Init requester
+     * @param requesterID
+     * @param bookID
      */
-    public Request(User requester, String bookID) {
-        this.requesterID = requester.getUserID();
+    public Request(String requesterID, String bookID) {
+        this.requesterID = requesterID;
         this.bookID = bookID;
         this.rStatus = Status.PENDING;
     }

@@ -1,31 +1,31 @@
-package com.example.atheneum.fragments;
+package com.example.atheneum.activities;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
-import com.example.atheneum.activities.MainActivity;
+import com.example.atheneum.fragments.BorrowerPageFragment;
+import com.example.atheneum.fragments.newRequest;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.requestAdapter;
@@ -41,11 +41,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class newRequest extends Fragment implements SearchView.OnQueryTextListener{
+public class NewRequest extends AppCompatActivity implements SearchView.OnQueryTextListener{
+    Intent intentNewRequest;
+    Intent intentRequestList;
 
     private User requester;
     private EditText bookIDTest;
@@ -61,7 +60,6 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     FirebaseDatabase db;
     DatabaseReference ref;
     ListView availableBookList;
-
     String currentUserID;
 
 
@@ -70,27 +68,20 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     private static ArrayList<Book> searchAvailableBook = new ArrayList<Book>();
     private requestAdapter availableAdapter;
 
-    /**
-     * required empty constructor
-     */
-    public newRequest() {
-        // required empty constructor
-    }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        this.view = inflater.inflate(R.layout.new_request, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
 
-        this.context = getContext();
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.new_request);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
 
-        if (getActivity() instanceof  MainActivity) {
-            mainActivity = (MainActivity) getActivity();
-            // set action bar title
-            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
 
-        }
+        intentNewRequest = getIntent();
+        intentRequestList = new Intent(this, MainActivity.class);
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         currentUserID = currentUser.getUid();
 
@@ -115,28 +106,19 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
-                            //TODO: query userID from bookID
-                            //TEST FOR NOW SINCE THIS CLASS IS EXPECTING CHANGE
-                            //THIS SHOULD BE userID OF BOOK OWNER
-//                            String ownerID = requester.getUserID();
-//
-//                            Notification notification = new Notification(
-//                                    requester.getUserID(),
-//                                    ownerID,
-//                                    ownerID,
-//                                    bookID,
-//                                    Notification.NotificationType.REQUEST,
-//                                    "");
-//                            DatabaseWriteHelper.makeRequest(newRequest, notification);
+                            Notification notification = new Notification(
+                                    requester.getUserID(),
+                                    book.getOwnerID(),
+                                    book.getOwnerID(),
+                                    book.getBookID(),
+                                    Notification.NotificationType.REQUEST,
+                                    "");
+                            DatabaseWriteHelper.makeRequest(newRequest, notification);
+
 
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
+                            startActivity(intentRequestList);
 
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .remove(newRequest.this).commit();
-
-                            // return to owner page fragment
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.content_frame, new BorrowerPageFragment()).commit();
 
                         }
                     }
@@ -149,23 +131,22 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                 });
             }
         });
-        return this.view;
+
+
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
 
 
     //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
     //See: https://developer.android.com/reference/android/widget/SearchView
     //See: https://www.youtube.com/watch?v=_7B5iuyhIFk
     @Override
-    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-        inflater.inflate(R.menu.search_menu, menu);
+//        inflater.inflate(R.menu.search_menu, menu);
+//        MenuItem item = menu.findItem(R.id.search_menu);
+
+        getMenuInflater().inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.search_menu);
 
         db = FirebaseDatabase.getInstance();
@@ -180,13 +161,13 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "menu item collapse");
-                availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, defaultAvailableBook);
+                availableAdapter = new requestAdapter(NewRequest.this, R.layout.request_list_item, defaultAvailableBook);
                 availableBookList.setAdapter(availableAdapter);
                 return true;
             }
         });
 
-        SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
+        SearchView sv = new SearchView((getSupportActionBar().getThemedContext()));
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, sv);
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -204,14 +185,16 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Book book = child.getValue(Book.class);
                             if(searchCheck(book, query)){
-                                searchAvailableBook.add(book);
+                                if(!searchAvailableBook.contains(book)){
+                                    searchAvailableBook.add(book);
+                                }
                             }
 
                         }
                         if (searchAvailableBook.isEmpty()) {
-                            Toast.makeText(getActivity(), "No exact matches found for search query", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NewRequest.this, "No exact matches found for search query", Toast.LENGTH_SHORT).show();
                         }
-                        availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, searchAvailableBook);
+                        availableAdapter = new requestAdapter(NewRequest.this, R.layout.request_list_item, searchAvailableBook);
                         availableBookList.setAdapter(availableAdapter);
                     }
 
@@ -236,7 +219,8 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
             }
         });
 
-        super.onCreateOptionsMenu(menu,inflater);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -251,26 +235,32 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
         return false;
     }
 
+
+    /**
+     * getting requested books done by current user
+     */
+
     public void retriveBook(){
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("books");
-//        availableBookList = (ListView) this.view.findViewById(R.id.AvailableBookList);
+        availableBookList = (ListView) this.findViewById(R.id.AvailableBookList);
 
         availableBook = new ArrayList<Book>();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "On Data Change was Called");
+
                 availableBook.clear();
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-//                    String aa = child.getValue(String.class);
-//                    Log.d(TAG, "TEST STRING "+ aa);
+
                     try {
                         Book book = child.getValue(Book.class);
                         if(book.getStatus().equals(Book.Status.AVAILABLE) || book.getStatus().equals(Book.Status.REQUESTED)) {
                             if(!book.getOwnerID().equals(currentUserID)){
-                                availableBook.add(book);
+                                if(!availableBook.contains(book)) {
+                                    availableBook.add(book);
+                                }
                             }
                         }
                     } catch (DatabaseException e) {
@@ -282,7 +272,7 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
 
                 }
 
-                availableAdapter = new requestAdapter(newRequest.this.context, R.layout.request_list_item, availableBook);
+                availableAdapter = new requestAdapter(NewRequest.this, R.layout.request_list_item, availableBook);
                 availableBookList.setAdapter(availableAdapter);
             }
 
@@ -295,7 +285,7 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     }
 
     /**
-     * search an availabel book by title/author/description
+     * search an availabel book by a set of key words in description
      * @param book
      * @param query
      * @return
@@ -320,13 +310,9 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
             }
 
         }
-//        query = query.toLowerCase();
-//        if(query.length() == 0){return true;}
-//        if(book.getTitle().toLowerCase().equals(query)){ return true;}
-//        else if(book.getAuthor().toLowerCase().equals(query)){return true;}
-
 
         return false;
     }
+
 
 }
