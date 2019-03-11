@@ -25,6 +25,7 @@ import com.example.atheneum.R;
 import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.newRequest;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.requestAdapter;
@@ -105,8 +106,15 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
+                            Notification notification = new Notification(
+                                    requester.getUserID(),
+                                    book.getOwnerID(),
+                                    book.getOwnerID(),
+                                    book.getBookID(),
+                                    Notification.NotificationType.REQUEST,
+                                    "");
+                            DatabaseWriteHelper.makeRequest(newRequest, notification);
 
-                            DatabaseWriteHelper.makeRequest(newRequest);
 
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
                             startActivity(intentRequestList);

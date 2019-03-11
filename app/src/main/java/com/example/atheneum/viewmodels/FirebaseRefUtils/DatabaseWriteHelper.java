@@ -1,11 +1,11 @@
 package com.example.atheneum.viewmodels.FirebaseRefUtils;
 
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.google.firebase.database.DatabaseError;
@@ -69,15 +69,26 @@ public class DatabaseWriteHelper {
         deleteBook(owner.getUserID(), book.getBookID());
     }
 
+    public static void updateBook(Book book) {
+        BooksRefUtils.getBookRef(book).setValue(book);
+    }
 
-    public static void makeRequest(Request request) {
+    public static void makeRequest(Request request, Notification notification) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
-        final String requesterRef = String.format("requestCollection/%s/%s", request.getRequesterID(), request.getBookID());
-        final String bookRequestRef = String.format("bookRequests/%s/%s", request.getBookID(), request.getRequesterID());
+        final String requesterRef = String.format("requestCollection/%s/%s",
+                request.getRequesterID(),
+                request.getBookID());
+        final String bookRequestRef = String.format("bookRequests/%s/%s",
+                request.getBookID(),
+                request.getRequesterID());
+        final String notificationsRef = String.format("notifications/%s/%s",
+                notification.getNotificationReceiverID(),
+                notification.getNotificationID());
 
         updates.put(requesterRef, request);
         updates.put(bookRequestRef, true);
+        updates.put(notificationsRef, notification);
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -85,6 +96,7 @@ public class DatabaseWriteHelper {
                     Log.w(TAG, "Error updating data at " + databaseReference.toString());
                     Log.i(TAG, "bookRequestRef: " + bookRequestRef.toString());
                     Log.i(TAG, "requesterRef: " + requesterRef.toString());
+                    Log.i(TAG, "notificationRef: " + notificationsRef.toString());
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
                 }
@@ -120,10 +132,28 @@ public class DatabaseWriteHelper {
         });
     }
 
-
-    public static void updateBook(Book book) {
-        BooksRefUtils.getBookRef(book).setValue(book);
+    public static void deleteNotification(User notificationReceiver, Notification notification) {
+        deleteNotification(notificationReceiver.getUserID(), notification.getNotificationID());
     }
 
-}
+    public static void deleteNotification(String notificationReceiverID, String notificationID) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
 
+        final String notificationsRef = String.format("notifications/%s/%s",
+                notificationReceiverID, notificationID);
+
+        updates.put(notificationsRef, null);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef.toString());
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
+}

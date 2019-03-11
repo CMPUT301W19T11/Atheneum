@@ -1,16 +1,23 @@
 package com.example.atheneum.activities;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,29 +28,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
+import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 
@@ -53,8 +64,9 @@ import java.util.ArrayList;
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
+    private int pushNotificationID = 0;
 
-    @Override
+//    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -77,6 +89,185 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Initially show the home fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new HomeFragment()).addToBackStack("Home").commit();
+
+        //START NOTIFICATIONS BLOCK
+        // TODO: Make this app wide instead of just in the MainActivity
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+
+            DatabaseReference notiRef = NotificationsRefUtils
+                    .getNotificationsRef(firebaseUser.getUid());
+            notiRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    final Notification curNotification = dataSnapshot.getValue(Notification.class);
+                    DatabaseReference notificationsBookRef = BooksRefUtils
+                            .getBookRef(curNotification.getBookID());
+
+                    Log.i(TAG, curNotification.getNotificationID());
+
+                    //get the book object
+                    notificationsBookRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final Book notificationBook = dataSnapshot.getValue(Book.class);
+
+                            if (curNotification.getrNotificationType() ==
+                                    Notification.NotificationType.REQUEST) {
+                                final String requesterID = curNotification.getRequesterID();
+                                DatabaseReference notificationsReqRef = UsersRefUtils
+                                        .getUsersRef(requesterID);
+
+                                // get requester user object
+                                notificationsReqRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        User requester = dataSnapshot.getValue(User.class);
+                                        String requesterName = requester.getUserName();
+
+                                        String notificationMessage =
+                                                requesterName + " has requested for "
+                                                        + notificationBook.getTitle();
+
+                                        Log.i(TAG, "book title: " + notificationBook.getTitle());
+
+                                        //START NOTIFICATION BUILDER STUFF
+                                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                                        String channelId = getString(R.string.profile_title);
+                                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                        NotificationCompat.Builder notificationBuilder =
+                                                new NotificationCompat.Builder(getBaseContext(), channelId)
+                                                        .setSmallIcon(R.drawable.ic_book_black_24dp)
+                                                        .setContentTitle(getString(R.string.app_name))
+                                                        .setContentText(notificationMessage)
+                                                        .setStyle(new NotificationCompat.BigTextStyle()
+                                                                .bigText(notificationMessage))
+                                                        .setAutoCancel(true)
+                                                        .setSound(defaultSoundUri);
+
+                                        NotificationManager notificationManager =
+                                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                                        // Since android Oreo notification channel is needed.
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            NotificationChannel channel = new NotificationChannel(channelId,
+                                                    "Channel human readable title",
+                                                    NotificationManager.IMPORTANCE_DEFAULT);
+                                            notificationManager.createNotificationChannel(channel);
+                                        }
+
+                                        notificationManager.notify(pushNotificationID, notificationBuilder.build());
+                                        pushNotificationID++;
+                                        //END NOTIFICATION BUILDER STUFF
+
+                                        //delete notification
+                                        DatabaseWriteHelper.deleteNotification(requesterID,
+                                                curNotification.getNotificationID());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        Log.i(TAG, databaseError.getMessage());
+                                    }
+                                });
+                            } else if (curNotification.getrNotificationType() ==
+                                    Notification.NotificationType.ACCEPT) {
+                                // get owner user object
+                                final String ownerID = curNotification.getOwnerID();
+                                DatabaseReference notificationsOwnRef = UsersRefUtils
+                                        .getUsersRef(ownerID);
+
+                                // get requester user object
+                                notificationsOwnRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        User owner = dataSnapshot.getValue(User.class);
+                                        String ownerName = owner.getUserName();
+
+                                        String notificationMessage =
+                                                ownerName + " has requested for "
+                                                        + notificationBook.getTitle();
+
+                                        Log.i(TAG, "book title: " + notificationBook.getTitle());
+
+                                        //START NOTIFICATION BUILDER STUFF
+                                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                                        String channelId = getString(R.string.profile_title);
+                                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                        NotificationCompat.Builder notificationBuilder =
+                                                new NotificationCompat.Builder(getBaseContext(), channelId)
+                                                        .setSmallIcon(R.drawable.ic_book_black_24dp)
+                                                        .setContentTitle(getString(R.string.app_name))
+                                                        .setContentText(notificationMessage)
+                                                        .setStyle(new NotificationCompat.BigTextStyle()
+                                                                .bigText(notificationMessage))
+                                                        .setAutoCancel(true)
+                                                        .setSound(defaultSoundUri);
+
+                                        NotificationManager notificationManager =
+                                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                                        // Since android Oreo notification channel is needed.
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            NotificationChannel channel = new NotificationChannel(channelId,
+                                                    "Channel human readable title",
+                                                    NotificationManager.IMPORTANCE_DEFAULT);
+                                            notificationManager.createNotificationChannel(channel);
+                                        }
+
+                                        notificationManager.notify(pushNotificationID, notificationBuilder.build());
+                                        pushNotificationID++;
+                                        //END NOTIFICATION BUILDER STUFF
+
+                                        //delete notification
+                                        DatabaseWriteHelper.deleteNotification(ownerID,
+                                                curNotification.getNotificationID());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        Log.i(TAG, databaseError.getMessage());
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.i(TAG, databaseError.getMessage());
+                        }
+                    });
+                }
+
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.i(TAG, databaseError.getMessage());
+                }
+            });
+        } else {
+            Log.w(TAG, "Shouldn't happen!");
+        }
+        //END NOTIFICATIONS BLOCK
 
         // Update user information in the navbar
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {

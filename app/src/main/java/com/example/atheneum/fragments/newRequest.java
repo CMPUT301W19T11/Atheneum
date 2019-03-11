@@ -115,11 +115,19 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
                             // add book to the owner's collection
                             Log.i(TAG, "send added, id=" + newRequest.getBookID());
 
-//                            DatabaseReference requestColref = db.getReference()
-//                                    .child(getString(R.string.db_requestCollection)).child(newRequest.getRequesterID());
-//                            requestColref.child(newRequest.getBookID()).setValue(newRequest);
-
-                            DatabaseWriteHelper.makeRequest(newRequest);
+                            //TODO: query userID from bookID
+                            //TEST FOR NOW SINCE THIS CLASS IS EXPECTING CHANGE
+                            //THIS SHOULD BE userID OF BOOK OWNER
+//                            String ownerID = requester.getUserID();
+//
+//                            Notification notification = new Notification(
+//                                    requester.getUserID(),
+//                                    ownerID,
+//                                    ownerID,
+//                                    bookID,
+//                                    Notification.NotificationType.REQUEST,
+//                                    "");
+//                            DatabaseWriteHelper.makeRequest(newRequest, notification);
 
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
 
@@ -246,7 +254,7 @@ public class newRequest extends Fragment implements SearchView.OnQueryTextListen
     public void retriveBook(){
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("books");
-        availableBookList = (ListView) this.view.findViewById(R.id.AvailableBookList);
+//        availableBookList = (ListView) this.view.findViewById(R.id.AvailableBookList);
 
         availableBook = new ArrayList<Book>();
 
