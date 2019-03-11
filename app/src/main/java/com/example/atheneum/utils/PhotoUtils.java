@@ -6,6 +6,9 @@ import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 
+/**
+ * Does encoding and decoding for photo bitmaps
+ */
 public class PhotoUtils {
     /**
      * Encodes a photo represented as a bitmap into a Base64 encoded string

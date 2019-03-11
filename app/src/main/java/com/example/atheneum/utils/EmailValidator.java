@@ -3,6 +3,9 @@ package com.example.atheneum.utils;
 import android.text.TextUtils;
 import android.widget.TextView;
 
+/**
+ * Does checking of emails for validity
+ */
 public class EmailValidator extends TextValidator {
     /**
      * Creates a new TextValidator object.

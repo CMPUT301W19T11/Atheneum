@@ -39,6 +39,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Activity to handle new requests made by borrower of owner books
+ */
 public class NewRequestActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     Intent intentNewRequest;
     Intent intentRequestList;
@@ -133,10 +136,15 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
     }
 
 
-
-    //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
-    //See: https://developer.android.com/reference/android/widget/SearchView
-    //See: https://www.youtube.com/watch?v=_7B5iuyhIFk
+    /**
+     * Create menu for searching for books to make requests
+     * @param menu: menu object to inflate
+     * @return boolean: true if success, else false
+     *
+     * //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
+     *     //See: https://developer.android.com/reference/android/widget/SearchView
+     *     //See: https://www.youtube.com/watch?v=_7B5iuyhIFk
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -282,7 +290,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
     }
 
     /**
-     * search an availabel book by a set of key words in description
+     * search an available book by a set of key words in description
      * @param book
      * @param query
      * @return
