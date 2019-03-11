@@ -131,39 +131,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                                         Log.i(TAG, "book title: " + notificationBook.getTitle());
 
-                                        //START NOTIFICATION BUILDER STUFF
-                                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                                        String channelId = getString(R.string.profile_title);
-                                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                        NotificationCompat.Builder notificationBuilder =
-                                                new NotificationCompat.Builder(getBaseContext(), channelId)
-                                                        .setSmallIcon(R.drawable.ic_book_black_24dp)
-                                                        .setContentTitle(getString(R.string.app_name))
-                                                        .setContentText(notificationMessage)
-                                                        .setStyle(new NotificationCompat.BigTextStyle()
-                                                                .bigText(notificationMessage))
-                                                        .setAutoCancel(true)
-                                                        .setSound(defaultSoundUri);
-
-                                        NotificationManager notificationManager =
-                                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                                        // Since android Oreo notification channel is needed.
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            NotificationChannel channel = new NotificationChannel(channelId,
-                                                    "Channel human readable title",
-                                                    NotificationManager.IMPORTANCE_DEFAULT);
-                                            notificationManager.createNotificationChannel(channel);
-                                        }
-
-                                        notificationManager.notify(pushNotificationID, notificationBuilder.build());
-                                        pushNotificationID++;
-                                        //END NOTIFICATION BUILDER STUFF
+                                        sendNotification(notificationMessage);
 
                                         //delete notification
-                                        DatabaseWriteHelper.deleteNotification(requesterID,
+                                        DatabaseWriteHelper.deleteNotification(
+                                                curNotification.getNotificationReceiverID(),
                                                 curNotification.getNotificationID());
                                     }
 
@@ -174,12 +146,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 });
                             } else if (curNotification.getrNotificationType() ==
                                     Notification.NotificationType.ACCEPT) {
-                                // get owner user object
                                 final String ownerID = curNotification.getOwnerID();
                                 DatabaseReference notificationsOwnRef = UsersRefUtils
                                         .getUsersRef(ownerID);
 
-                                // get requester user object
+                                // get owner user object
                                 notificationsOwnRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -187,44 +158,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         String ownerName = owner.getUserName();
 
                                         String notificationMessage =
-                                                ownerName + " has requested for "
+                                                ownerName + " has accepted your request for "
                                                         + notificationBook.getTitle();
 
                                         Log.i(TAG, "book title: " + notificationBook.getTitle());
 
-                                        //START NOTIFICATION BUILDER STUFF
-                                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                                        String channelId = getString(R.string.profile_title);
-                                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                        NotificationCompat.Builder notificationBuilder =
-                                                new NotificationCompat.Builder(getBaseContext(), channelId)
-                                                        .setSmallIcon(R.drawable.ic_book_black_24dp)
-                                                        .setContentTitle(getString(R.string.app_name))
-                                                        .setContentText(notificationMessage)
-                                                        .setStyle(new NotificationCompat.BigTextStyle()
-                                                                .bigText(notificationMessage))
-                                                        .setAutoCancel(true)
-                                                        .setSound(defaultSoundUri);
-
-                                        NotificationManager notificationManager =
-                                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                                        // Since android Oreo notification channel is needed.
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            NotificationChannel channel = new NotificationChannel(channelId,
-                                                    "Channel human readable title",
-                                                    NotificationManager.IMPORTANCE_DEFAULT);
-                                            notificationManager.createNotificationChannel(channel);
-                                        }
-
-                                        notificationManager.notify(pushNotificationID, notificationBuilder.build());
-                                        pushNotificationID++;
-                                        //END NOTIFICATION BUILDER STUFF
+                                        sendNotification(notificationMessage);
 
                                         //delete notification
-                                        DatabaseWriteHelper.deleteNotification(ownerID,
+                                        DatabaseWriteHelper.deleteNotification(
+                                                curNotification.getNotificationReceiverID(),
                                                 curNotification.getNotificationID());
                                     }
 
@@ -404,4 +347,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(view_profile_intent);
     }
 
+    /**
+     * Construct and send notification to app. user's phone
+     * See: https://developer.android.com/guide/topics/ui/notifiers/notifications
+     * See: https://developer.android.com/training/notify-user/build-notification
+     * See: https://developer.android.com/training/notify-user/expanded
+     *
+     * @param notificationMessage
+     */
+    public void sendNotification(String notificationMessage) {
+        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        String channelId = getString(R.string.profile_title);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getBaseContext(), channelId)
+                        .setSmallIcon(R.drawable.ic_book_black_24dp)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(notificationMessage)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(notificationMessage))
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(pushNotificationID, notificationBuilder.build());
+        pushNotificationID++;
+    }
 }
