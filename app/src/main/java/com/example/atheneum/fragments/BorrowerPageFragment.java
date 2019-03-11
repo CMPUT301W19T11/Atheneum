@@ -137,7 +137,7 @@ public class BorrowerPageFragment extends Fragment {
 
 
         /**
-         * go to request generation activity 
+         * go to request generation activity
          */
         final FragmentManager fragmentManager = getFragmentManager();
         addRequest = this.view.findViewById(R.id.new_request);

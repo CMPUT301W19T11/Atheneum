@@ -177,7 +177,9 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Book book = child.getValue(Book.class);
                             if(searchCheck(book, query)){
-                                searchAvailableBook.add(book);
+                                if(!searchAvailableBook.contains(book)){
+                                    searchAvailableBook.add(book);
+                                }
                             }
 
                         }
@@ -248,7 +250,9 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
                         Book book = child.getValue(Book.class);
                         if(book.getStatus().equals(Book.Status.AVAILABLE) || book.getStatus().equals(Book.Status.REQUESTED)) {
                             if(!book.getOwnerID().equals(currentUserID)){
-                                availableBook.add(book);
+                                if(!availableBook.contains(book)) {
+                                    availableBook.add(book);
+                                }
                             }
                         }
                     } catch (DatabaseException e) {
