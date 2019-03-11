@@ -285,7 +285,7 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     /**
-     * Start activity for deleting the book
+     * Triggers bookInfoViewModel to delete book
      */
     public void deleteBook(){
         Log.i(TAG, "Delete book button pressed");
