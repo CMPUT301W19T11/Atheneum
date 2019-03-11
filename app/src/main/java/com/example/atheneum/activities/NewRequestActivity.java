@@ -12,7 +12,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,8 +21,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
-import com.example.atheneum.fragments.BorrowerPageFragment;
-import com.example.atheneum.fragments.newRequest;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
@@ -42,7 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class NewRequest extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class NewRequestActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     Intent intentNewRequest;
     Intent intentRequestList;
 
@@ -161,7 +158,7 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "menu item collapse");
-                availableAdapter = new requestAdapter(NewRequest.this, R.layout.request_list_item, defaultAvailableBook);
+                availableAdapter = new requestAdapter(NewRequestActivity.this, R.layout.request_list_item, defaultAvailableBook);
                 availableBookList.setAdapter(availableAdapter);
                 return true;
             }
@@ -192,9 +189,9 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
 
                         }
                         if (searchAvailableBook.isEmpty()) {
-                            Toast.makeText(NewRequest.this, "No exact matches found for search query", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NewRequestActivity.this, "No exact matches found for search query", Toast.LENGTH_SHORT).show();
                         }
-                        availableAdapter = new requestAdapter(NewRequest.this, R.layout.request_list_item, searchAvailableBook);
+                        availableAdapter = new requestAdapter(NewRequestActivity.this, R.layout.request_list_item, searchAvailableBook);
                         availableBookList.setAdapter(availableAdapter);
                     }
 
@@ -272,7 +269,7 @@ public class NewRequest extends AppCompatActivity implements SearchView.OnQueryT
 
                 }
 
-                availableAdapter = new requestAdapter(NewRequest.this, R.layout.request_list_item, availableBook);
+                availableAdapter = new requestAdapter(NewRequestActivity.this, R.layout.request_list_item, availableBook);
                 availableBookList.setAdapter(availableAdapter);
             }
 

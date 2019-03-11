@@ -62,7 +62,7 @@
             android:id="@+id/searchView"></activity>
 
         <activity
-            android:name=".activities.NewRequest"
+            android:name=".activities.NewRequestActivity"
             android:label="@string/NewRequestActivity"
             android:theme="@style/AppTheme"></activity>
       
