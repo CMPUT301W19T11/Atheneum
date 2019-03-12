@@ -1,8 +1,10 @@
 package com.example.atheneum.fragments;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -23,16 +25,12 @@ import android.widget.Toast;
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.atheneum.viewmodels.SearchUsersViewModel;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 /**
  * The fragment for Searching.
@@ -43,7 +41,7 @@ import java.util.ArrayList;
 public class SearchFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
-    private Context context;
+    private SearchUsersViewModel searchUsersViewModel;
 
     /**
      * The User list view.
@@ -52,21 +50,9 @@ public class SearchFragment extends Fragment {
     /**
      * The User list.
      */
-    ArrayList<User> userList;
-    /**
-     * The default user list with all user names
-     */
-    ArrayList<String> defaultUserNameList = new ArrayList<>();
-    /**
-     * The Database object for Firebase
-     */
-    FirebaseDatabase db;
-    /**
-     * The reference to the Firebase Database object.
-     */
-    DatabaseReference dbRef;
+    List<User> userList;
 
-    private static final String TAG = "Search";
+    private static final String TAG = SearchFragment.class.getSimpleName();
 
     /**
      * Override onCreateView method of fragment to load search layout
@@ -82,15 +68,30 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        this.context = getContext();
-
         if (getActivity() instanceof MainActivity) {
             mainActivity = (MainActivity) getActivity();
-            mainActivity.setActionBarTitle(context.getResources().getString(R.string.search_page_title));
+            // set action bar title
+            mainActivity.setActionBarTitle(getContext().getResources().getString(R.string.search_page_title));
         }
 
-        db = FirebaseDatabase.getInstance();
-        dbRef = db.getReference("users");
+        searchUsersViewModel = ViewModelProviders.of(getActivity()).get(SearchUsersViewModel.class);
+        LiveData<List<User>> userListLiveData = searchUsersViewModel.getUserListLiveData();
+        userListLiveData.observe(getActivity(), new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable List<User> users) {
+                Log.i(TAG, "in Observer!");
+                if (users != null) {
+                    Log.i(TAG, "Observer not null!");
+                    userList = users;
+                    List<String> userNameList = new ArrayList<String>();
+                    for (User user : users) {
+                        userNameList.add(user.getUserName());
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
+                    userListView.setAdapter(adapter);
+                }
+            }
+        });
 
         userListView = (ListView) this.view.findViewById(R.id.userListView);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -112,6 +113,8 @@ public class SearchFragment extends Fragment {
                 String username = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
                 Log.d(TAG, username + " was selected");
 
+                // TODO: Refactor to make the adapter use an array of users and
+                // then display only their user names
                 db = FirebaseDatabase.getInstance();
                 dbRef = db.getReference("users");
                 dbRef.orderByChild("userName").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -130,31 +133,6 @@ public class SearchFragment extends Fragment {
                 });
             }
         });
-
-        userList = new ArrayList<>();
-        final ArrayList<String> userNameList = new ArrayList<>();
-
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "On Data Change was Called");
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    User aUser = child.getValue(User.class);
-                    userList.add(aUser);
-                    userNameList.add(aUser.getUserName());
-                }
-                defaultUserNameList = userNameList;
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
-                userListView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-
 
         return this.view;
     }
@@ -184,9 +162,6 @@ public class SearchFragment extends Fragment {
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.search_menu);
 
-        db = FirebaseDatabase.getInstance();
-        dbRef = db.getReference("users");
-
         item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
@@ -195,9 +170,6 @@ public class SearchFragment extends Fragment {
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                Log.d(TAG, "menu item collapse");
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, defaultUserNameList);
-                userListView.setAdapter(adapter);
                 return true;
             }
         });
@@ -209,34 +181,13 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "On Query Text Submit was Called");
-                db = FirebaseDatabase.getInstance();
-                dbRef = db.getReference("users");
-                dbRef.orderByChild("userName").equalTo(query).addListenerForSingleValueEvent(new ValueEventListener() {
-                    final ArrayList<String> userNameList = new ArrayList<>();
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            User aUser = child.getValue(User.class);
-                            userList.add(aUser);
-                            userNameList.add(aUser.getUserName());
-                        }
-                        if (userNameList.isEmpty()) {
-                            Toast.makeText(getActivity(), "No exact matches found for search query", Toast.LENGTH_SHORT).show();
-                        }
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
-                        userListView.setAdapter(adapter);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d(TAG, "On Cancelled of Options Menu");
-                    }
-                });
+                searchUsersViewModel.setUserNameQuery(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
+                searchUsersViewModel.setUserNameQuery(s);
                 return false;
             }
         });
@@ -249,6 +200,5 @@ public class SearchFragment extends Fragment {
 
         super.onCreateOptionsMenu(menu,inflater);
     }
-
 }
 
