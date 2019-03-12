@@ -106,6 +106,7 @@
                 android:ems="10"
                 android:hint="@string/bookisbn_prompt"
                 android:inputType="number"
+                android:maxLength="13"
                 app:layout_constraintEnd_toStartOf="@+id/scanIsbnButton"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
