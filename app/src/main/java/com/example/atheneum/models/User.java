@@ -14,6 +14,7 @@ import android.app.Notification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class User implements Serializable {
     private String userID = "";
@@ -143,4 +144,43 @@ public class User implements Serializable {
      * @param photo
      */
     public void deletePhotos(String photo){this.photos.remove(photo);}
+
+    /**
+     * @param o Other object
+     * @return true if other object is equal to this object, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Double.compare(user.getOwnerRate(), getOwnerRate()) == 0 &&
+                Double.compare(user.getBorrowerRate(), getBorrowerRate()) == 0 &&
+                Objects.equals(getUserID(), user.getUserID()) &&
+                Objects.equals(getUserName(), user.getUserName()) &&
+                Objects.equals(getPhoneNumber(), user.getPhoneNumber()) &&
+                Objects.equals(getPhotos(), user.getPhotos());
+    }
+
+    /**
+     * @return Hash of the User object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUserID(), getUserName(), getPhoneNumber(), getOwnerRate(), getBorrowerRate(), getPhotos());
+    }
+
+    /**
+     *
+     * @return String representation of the User object for debugging.
+     */
+    public String print() {
+        return "User{" +
+                "userID='" + userID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", ownerRate=" + ownerRate +
+                ", borrowerRate=" + borrowerRate +
+                '}';
+    }
 }
