@@ -66,7 +66,7 @@ import java.util.ArrayList;
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private LiveData<Notification> notificationLiveData;
-    private Observer<Notification> notificationObserver
+    private final Observer<Notification> notificationObserver
             = new Observer<Notification>() {
         @Override
         public void onChanged(@Nullable Notification notification) {
