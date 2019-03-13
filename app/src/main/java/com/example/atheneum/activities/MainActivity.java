@@ -43,6 +43,8 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
+import com.example.atheneum.viewmodels.UserNotificationsViewModel;
+import com.example.atheneum.viewmodels.UserNotificationsViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
@@ -93,124 +95,124 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //START NOTIFICATIONS BLOCK
         // TODO: Make this app wide instead of just in the MainActivity
-        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
-
-            DatabaseReference notiRef = NotificationsRefUtils
-                    .getNotificationsRef(firebaseUser.getUid());
-            notiRef.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    final Notification curNotification = dataSnapshot.getValue(Notification.class);
-                    DatabaseReference notificationsBookRef = BooksRefUtils
-                            .getBookRef(curNotification.getBookID());
-
-                    Log.i(TAG, curNotification.getNotificationID());
-
-                    //get the book object
-                    notificationsBookRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            final Book notificationBook = dataSnapshot.getValue(Book.class);
-
-                            if (curNotification.getrNotificationType() ==
-                                    Notification.NotificationType.REQUEST) {
-                                final String requesterID = curNotification.getRequesterID();
-                                DatabaseReference notificationsReqRef = UsersRefUtils
-                                        .getUsersRef(requesterID);
-
-                                // get requester user object
-                                notificationsReqRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        User requester = dataSnapshot.getValue(User.class);
-                                        String requesterName = requester.getUserName();
-
-                                        String notificationMessage =
-                                                requesterName + " has requested for "
-                                                        + notificationBook.getTitle();
-
-                                        Log.i(TAG, "book title: " + notificationBook.getTitle());
-
-                                        sendNotification(notificationMessage);
-
-                                        //delete notification
-                                        DatabaseWriteHelper.deleteNotification(
-                                                curNotification.getNotificationReceiverID(),
-                                                curNotification.getNotificationID());
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        Log.i(TAG, databaseError.getMessage());
-                                    }
-                                });
-                            } else if (curNotification.getrNotificationType() ==
-                                    Notification.NotificationType.ACCEPT) {
-                                final String ownerID = curNotification.getOwnerID();
-                                DatabaseReference notificationsOwnRef = UsersRefUtils
-                                        .getUsersRef(ownerID);
-
-                                // get owner user object
-                                notificationsOwnRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        User owner = dataSnapshot.getValue(User.class);
-                                        String ownerName = owner.getUserName();
-
-                                        String notificationMessage =
-                                                ownerName + " has accepted your request for "
-                                                        + notificationBook.getTitle();
-
-                                        Log.i(TAG, "book title: " + notificationBook.getTitle());
-
-                                        sendNotification(notificationMessage);
-
-                                        //delete notification
-                                        DatabaseWriteHelper.deleteNotification(
-                                                curNotification.getNotificationReceiverID(),
-                                                curNotification.getNotificationID());
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        Log.i(TAG, databaseError.getMessage());
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.i(TAG, databaseError.getMessage());
-                        }
-                    });
-                }
-
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.i(TAG, databaseError.getMessage());
-                }
-            });
-        } else {
-            Log.w(TAG, "Shouldn't happen!");
-        }
+//        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+//            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+//
+//            DatabaseReference notiRef = NotificationsRefUtils
+//                    .getNotificationsRef(firebaseUser.getUid());
+//            notiRef.addChildEventListener(new ChildEventListener() {
+//                @Override
+//                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                    final Notification curNotification = dataSnapshot.getValue(Notification.class);
+//                    DatabaseReference notificationsBookRef = BooksRefUtils
+//                            .getBookRef(curNotification.getBookID());
+//
+//                    Log.i(TAG, curNotification.getNotificationID());
+//
+//                    //get the book object
+//                    notificationsBookRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            final Book notificationBook = dataSnapshot.getValue(Book.class);
+//
+//                            if (curNotification.getrNotificationType() ==
+//                                    Notification.NotificationType.REQUEST) {
+//                                final String requesterID = curNotification.getRequesterID();
+//                                DatabaseReference notificationsReqRef = UsersRefUtils
+//                                        .getUsersRef(requesterID);
+//
+//                                // get requester user object
+//                                notificationsReqRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        User requester = dataSnapshot.getValue(User.class);
+//                                        String requesterName = requester.getUserName();
+//
+//                                        String notificationMessage =
+//                                                requesterName + " has requested for "
+//                                                        + notificationBook.getTitle();
+//
+//                                        Log.i(TAG, "book title: " + notificationBook.getTitle());
+//
+//                                        sendNotification(notificationMessage);
+//
+//                                        //delete notification
+//                                        DatabaseWriteHelper.deleteNotification(
+//                                                curNotification.getNotificationReceiverID(),
+//                                                curNotification.getNotificationID());
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//                                        Log.i(TAG, databaseError.getMessage());
+//                                    }
+//                                });
+//                            } else if (curNotification.getrNotificationType() ==
+//                                    Notification.NotificationType.ACCEPT) {
+//                                final String ownerID = curNotification.getOwnerID();
+//                                DatabaseReference notificationsOwnRef = UsersRefUtils
+//                                        .getUsersRef(ownerID);
+//
+//                                // get owner user object
+//                                notificationsOwnRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        User owner = dataSnapshot.getValue(User.class);
+//                                        String ownerName = owner.getUserName();
+//
+//                                        String notificationMessage =
+//                                                ownerName + " has accepted your request for "
+//                                                        + notificationBook.getTitle();
+//
+//                                        Log.i(TAG, "book title: " + notificationBook.getTitle());
+//
+//                                        sendNotification(notificationMessage);
+//
+//                                        //delete notification
+//                                        DatabaseWriteHelper.deleteNotification(
+//                                                curNotification.getNotificationReceiverID(),
+//                                                curNotification.getNotificationID());
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//                                        Log.i(TAG, databaseError.getMessage());
+//                                    }
+//                                });
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//                            Log.i(TAG, databaseError.getMessage());
+//                        }
+//                    });
+//                }
+//
+//
+//                @Override
+//                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                }
+//
+//                @Override
+//                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//                }
+//
+//                @Override
+//                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                    Log.i(TAG, databaseError.getMessage());
+//                }
+//            });
+//        } else {
+//            Log.w(TAG, "Shouldn't happen!");
+//        }
         //END NOTIFICATIONS BLOCK
 
         // Update user information in the navbar
@@ -235,9 +237,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
             });
+
+            //notifications
+            UserNotificationsViewModelFactory userNotificationsViewModelFactory =
+                    new UserNotificationsViewModelFactory(firebaseUser.getUid());
+            final UserNotificationsViewModel userNotificationsViewModel = ViewModelProviders
+                    .of(this, userNotificationsViewModelFactory)
+                    .get(UserNotificationsViewModel.class);
+            LiveData<Notification> notificationLiveData =
+                    userNotificationsViewModel.getNotificationLiveData();
+            notificationLiveData.observe(this, new Observer<Notification>() {
+                @Override
+                public void onChanged(@Nullable Notification notification) {
+                    if (notification == null) {
+                        Log.i(TAG, "notification is null");
+                    } else {
+                        sendNotification(notification.getMessage());
+                        DatabaseWriteHelper.deleteNotification(notification);
+                    }
+                }
+            });
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
+
     }
 
 

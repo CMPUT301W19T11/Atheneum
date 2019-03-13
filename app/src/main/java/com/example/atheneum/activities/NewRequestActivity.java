@@ -113,8 +113,8 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                                     book.getBookID(),
                                     Notification.NotificationType.REQUEST,
                                     "");
+                            notification.constructMessage(requester.getUserName(), book.getTitle());
                             DatabaseWriteHelper.makeRequest(newRequest, notification);
-
 
                             Log.i(TAG, "Request added, id=" + newRequest.getBookID());
                             startActivity(intentRequestList);
