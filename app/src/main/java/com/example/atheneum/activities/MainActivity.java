@@ -65,6 +65,19 @@ import java.util.ArrayList;
  *
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private LiveData<Notification> notificationLiveData;
+    private Observer<Notification> notificationObserver
+            = new Observer<Notification>() {
+        @Override
+        public void onChanged(@Nullable Notification notification) {
+            if (notification == null) {
+                Log.i(TAG, "notification is null");
+            } else {
+                sendNotification(notification.getMessage());
+                DatabaseWriteHelper.deleteNotification(notification);
+            }
+        }
+    };
     private String TAG = MainActivity.class.getSimpleName();
     private int pushNotificationID = 0;
 
@@ -122,19 +135,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final UserNotificationsViewModel userNotificationsViewModel = ViewModelProviders
                     .of(this, userNotificationsViewModelFactory)
                     .get(UserNotificationsViewModel.class);
-            LiveData<Notification> notificationLiveData =
+            notificationLiveData =
                     userNotificationsViewModel.getNotificationLiveData();
-            notificationLiveData.observe(this, new Observer<Notification>() {
-                @Override
-                public void onChanged(@Nullable Notification notification) {
-                    if (notification == null) {
-                        Log.i(TAG, "notification is null");
-                    } else {
-                        sendNotification(notification.getMessage());
-                        DatabaseWriteHelper.deleteNotification(notification);
-                    }
-                }
-            });
+            notificationLiveData.observeForever(notificationObserver);
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
@@ -209,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
 
         } else if (id == R.id.nav_logout) {
+            notificationLiveData.removeObserver(notificationObserver);
             // Sign out of account and go back to authentication screen
             AuthUI.getInstance()
                     .signOut(this)
