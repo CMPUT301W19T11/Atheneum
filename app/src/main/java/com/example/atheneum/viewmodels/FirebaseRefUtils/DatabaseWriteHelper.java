@@ -132,8 +132,8 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void deleteNotification(User notificationReceiver, Notification notification) {
-        deleteNotification(notificationReceiver.getUserID(), notification.getNotificationID());
+    public static void deleteNotification(Notification notification) {
+        deleteNotification(notification.getNotificationReceiverID(), notification.getNotificationID());
     }
 
     public static void deleteNotification(String notificationReceiverID, String notificationID) {

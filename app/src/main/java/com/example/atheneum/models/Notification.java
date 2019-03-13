@@ -190,4 +190,15 @@ public class Notification {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    /**
+     * Constructs the message
+     */
+    public void constructMessage(String userName, String bookName) {
+        if (this.rNotificationType == NotificationType.REQUEST) {
+            this.message = userName + " has requested for your book: " + bookName;
+        } else if (this.rNotificationType == NotificationType.ACCEPT) {
+            this.message = userName + " has accepted your request for the book " + bookName;
+        }
+    }
 }
