@@ -97,6 +97,7 @@ public class AddEditBookActivity extends AppCompatActivity {
 
 
         this.view = findViewById(android.R.id.content);
+        context = this.getApplicationContext();
 
         // bind editText references to UI elements
         titleEditText = findViewById(R.id.bookTitleEditText);
