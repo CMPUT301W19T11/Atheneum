@@ -174,7 +174,7 @@ public class Notification {
     }
 
     /**
-     * Construct and returns message.
+     * Returns message.
      *
      * @return the message
      */
