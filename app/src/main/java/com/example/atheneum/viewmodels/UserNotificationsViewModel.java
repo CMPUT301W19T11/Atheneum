@@ -33,8 +33,6 @@ public class UserNotificationsViewModel extends ViewModel {
     private class Deserializer implements Function<DataSnapshot, Notification> {
         @Override
         public Notification apply(DataSnapshot dataSnapshot) {
-            Log.i(TAG, dataSnapshot.toString());
-            Log.i(TAG, Long.toString(dataSnapshot.getChildrenCount()));
             if (dataSnapshot.getChildrenCount() > 0)
                 return dataSnapshot.getChildren().iterator().next().getValue(Notification.class);
             return null;
