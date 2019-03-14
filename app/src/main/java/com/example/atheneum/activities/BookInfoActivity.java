@@ -76,6 +76,8 @@ public class BookInfoActivity extends AppCompatActivity {
     private BookInfoViewModel bookInfoViewModel;
 
     private User loggedInUser;
+    private DatabaseReference loggedInUserRef;
+    private ValueEventListener loggedInUserFirebaseListener;
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -101,12 +103,14 @@ public class BookInfoActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         firebaseRecyclerAdapter.startListening();
+        loggedInUserRef.addListenerForSingleValueEvent(loggedInUserFirebaseListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         firebaseRecyclerAdapter.stopListening();
+        loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
     @Override
@@ -181,20 +185,19 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
-        // get logged in user
-        UserViewModelFactory userViewModelFactory =
-                new UserViewModelFactory(FirebaseAuthUtils.getCurrentUser().getUid());
-        UserViewModel userViewModel = ViewModelProviders.of(BookInfoActivity.this,
-                userViewModelFactory).get(UserViewModel.class);
-        final LiveData<User> userLiveData = userViewModel.getUserLiveData();
-        userLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+        //get user
+        loggedInUserFirebaseListener = new ValueEventListener() {
             @Override
-            public void onChanged(@Nullable User user) {
-                loggedInUser = user;
-                // Remove the observer after update
-                userLiveData.removeObserver(this);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                loggedInUser = dataSnapshot.getValue(User.class);
             }
-        });
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        loggedInUserRef = UsersRefUtils.getUsersRef(FirebaseAuthUtils.getCurrentUser().getUid());
 
         Log.v(TAG, bookID);
 

@@ -129,6 +129,7 @@ public class DatabaseWriteHelper {
         updates.put(bookRequestRef, null);
         updates.put(bookBorrowerIDRef, request.getRequesterID());
         updates.put(bookStatusRef, Book.Status.ACCEPTED.toString());
+        updates.put(notificationsRef, acceptNotification);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
@@ -156,6 +157,8 @@ public class DatabaseWriteHelper {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 final String requesterID = dataSnapshot.getKey();
                 Log.i(TAG, "requester being declined from book acceptance" + requesterID);
+                notification.setNotificationReceiverID(requesterID);
+                notification.setRequesterID(requesterID);
                 declineRequest(requesterID, bookID, notification);
             }
 
