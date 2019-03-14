@@ -35,12 +35,14 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.example.atheneum.viewmodels.UserViewModel;
@@ -122,7 +124,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
         bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
-        LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+        final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
@@ -196,7 +198,8 @@ public class BookInfoActivity extends AppCompatActivity {
 
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
                 @Override
-                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final String requesterID) {
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder,
+                                                int position, @NonNull final String requesterID) {
                     //Bind Book object to BookViewHolder
                     Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
 
@@ -205,8 +208,31 @@ public class BookInfoActivity extends AppCompatActivity {
                     requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User requester = dataSnapshot.getValue(User.class);
+                            final User requester = dataSnapshot.getValue(User.class);
                             holder.requesterNameTextView.setText(requester.getUserName());
+                            holder.declineRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "decline request button pressed");
+                                    Notification notification = new Notification(
+                                            requesterID,
+                                            FirebaseAuthUtils.getCurrentUser().getUid(),
+                                            requesterID,
+                                            bookID,
+                                            Notification.NotificationType.DECLINE,
+                                            ""
+                                    );
+                                    notification.constructMessage(requester.getUserName(),
+                                            bookInfoViewModel.getBookLiveData().getValue().getTitle());
+                                    DatabaseWriteHelper.declineRequest(requesterID, bookID, notification);
+                                }
+                            });
+                            holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "accept request button pressed");
+                                }
+                            });
                         }
 
                         @Override
@@ -297,5 +323,4 @@ public class BookInfoActivity extends AppCompatActivity {
             finish();
         }
     }
-
 }

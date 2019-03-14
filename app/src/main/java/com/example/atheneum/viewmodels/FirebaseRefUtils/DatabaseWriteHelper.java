@@ -132,6 +132,36 @@ public class DatabaseWriteHelper {
         });
     }
 
+    public static void declineRequest(String requesterID, String bookID, Notification notification) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+
+        final String requesterRef = String.format("requestCollection/%s/%s",
+                requesterID, bookID);
+        final String bookRequestRef = String.format("bookRequests/%s/%s",
+                bookID, requesterID);
+        final String notificationsRef = String.format("notifications/%s/%s",
+                notification.getNotificationReceiverID(),
+                notification.getNotificationID());
+
+        updates.put(requesterRef, null);
+        updates.put(bookRequestRef, null);
+        updates.put(notificationsRef, notification);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "bookRequestRef: " + bookRequestRef.toString());
+                    Log.i(TAG, "requesterRef: " + requesterRef.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef.toString());
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
+
     public static void deleteNotification(Notification notification) {
         deleteNotification(notification.getNotificationReceiverID(), notification.getNotificationID());
     }
