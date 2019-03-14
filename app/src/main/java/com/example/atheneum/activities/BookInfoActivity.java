@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
+import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
@@ -73,7 +74,8 @@ public class BookInfoActivity extends AppCompatActivity {
     private String bookID;
     private String borrowerID;
     private BookInfoViewModel bookInfoViewModel;
-    private UserViewModel userViewModel;
+
+    private User loggedInUser;
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -145,7 +147,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // retrieve email
                         UserViewModelFactory userViewModelFactory = new UserViewModelFactory(borrowerID);
-                        userViewModel = ViewModelProviders.of(BookInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
+                        UserViewModel userViewModel = ViewModelProviders.of(BookInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
                         final LiveData<User> userLiveData = userViewModel.getUserLiveData();
 
                         userLiveData.observe(BookInfoActivity.this, new Observer<User>() {
@@ -179,6 +181,20 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
+        // get logged in user
+        UserViewModelFactory userViewModelFactory =
+                new UserViewModelFactory(FirebaseAuthUtils.getCurrentUser().getUid());
+        UserViewModel userViewModel = ViewModelProviders.of(BookInfoActivity.this,
+                userViewModelFactory).get(UserViewModel.class);
+        final LiveData<User> userLiveData = userViewModel.getUserLiveData();
+        userLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+            @Override
+            public void onChanged(@Nullable User user) {
+                loggedInUser = user;
+                // Remove the observer after update
+                userLiveData.removeObserver(this);
+            }
+        });
 
         Log.v(TAG, bookID);
 
@@ -186,15 +202,14 @@ public class BookInfoActivity extends AppCompatActivity {
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
 
-            FirebaseRecyclerOptions<String> options =
-                    new FirebaseRecyclerOptions.Builder<String>()
-                            .setQuery(query, new SnapshotParser<String>() {
-                                //@Nonnull is removed, it doesn't work when introduced for some reason
-                                @Override
-                                public String parseSnapshot(DataSnapshot snapshot) {
-                                    return snapshot.getKey();
-                                }
-                            }).build();
+            FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
+                    .setQuery(query, new SnapshotParser<String>() {
+                        //@Nonnull is removed, it doesn't work when introduced for some reason
+                        @Override
+                        public String parseSnapshot(DataSnapshot snapshot) {
+                            return snapshot.getKey();
+                        }
+                    }).build();
 
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
                 @Override
@@ -214,23 +229,14 @@ public class BookInfoActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View view) {
                                     Log.i(TAG, "decline request button pressed");
-                                    Notification notification = new Notification(
-                                            requesterID,
-                                            FirebaseAuthUtils.getCurrentUser().getUid(),
-                                            requesterID,
-                                            bookID,
-                                            Notification.NotificationType.DECLINE,
-                                            ""
-                                    );
-                                    notification.constructMessage(requester.getUserName(),
-                                            bookInfoViewModel.getBookLiveData().getValue().getTitle());
-                                    DatabaseWriteHelper.declineRequest(requesterID, bookID, notification);
+                                    declineRequest(requester);
                                 }
                             });
                             holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     Log.i(TAG, "accept request button pressed");
+                                    acceptRequest(requester);
                                 }
                             });
                         }
@@ -322,5 +328,55 @@ public class BookInfoActivity extends AppCompatActivity {
             bookInfoViewModel.deleteBook(firebaseUser.getUid());
             finish();
         }
+    }
+
+    /**
+     * Decline request of single requester
+     *
+     * @param requester
+     */
+    public void declineRequest(User requester) {
+        Notification notification = new Notification(
+                requester.getUserID(),
+                FirebaseAuthUtils.getCurrentUser().getUid(),
+                requester.getUserID(),
+                bookID,
+                Notification.NotificationType.DECLINE,
+                ""
+        );
+        notification.constructMessage(loggedInUser.getUserName(),
+                bookInfoViewModel.getBookLiveData().getValue().getTitle());
+        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification);
+    }
+
+    /**
+     * Accept request for one person, decline for everyone else
+     *
+     * @param requester
+     */
+    public void acceptRequest(User requester) {
+        Notification acceptNotification = new Notification(
+                requester.getUserID(),
+                FirebaseAuthUtils.getCurrentUser().getUid(),
+                requester.getUserID(),
+                bookID,
+                Notification.NotificationType.ACCEPT,
+                ""
+        );
+        acceptNotification.constructMessage(loggedInUser.getUserName(),
+                bookInfoViewModel.getBookLiveData().getValue().getTitle());
+        Notification declineNotification = new Notification(
+                "",
+                FirebaseAuthUtils.getCurrentUser().getUid(),
+                "",
+                bookID,
+                Notification.NotificationType.DECLINE,
+                ""
+        );
+        declineNotification.constructMessage(loggedInUser.getUserName(),
+                bookInfoViewModel.getBookLiveData().getValue().getTitle());
+        Request request = new Request(requester.getUserID(), bookID);
+        request.setrStatus(Request.Status.ACCEPTED);
+        DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
     }
 }
