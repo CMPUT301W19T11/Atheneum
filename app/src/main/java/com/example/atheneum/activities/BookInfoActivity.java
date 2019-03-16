@@ -269,7 +269,6 @@ public class BookInfoActivity extends AppCompatActivity {
             };
 
             requestsRecyclerView = (RecyclerView) findViewById(R.id.book_requests_recycler_view);
-            requestsRecyclerView.setHasFixedSize(true);
             requestsLayoutManager = new LinearLayoutManager(this);
             requestsRecyclerView.setLayoutManager(requestsLayoutManager);
             requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
