@@ -80,11 +80,9 @@ public class SearchFragment extends Fragment {
         });
 
         searchUsersViewModel = ViewModelProviders.of(getActivity()).get(SearchUsersViewModel.class);
-        LiveData<List<User>> userListLiveData = searchUsersViewModel.getUserListLiveData();
-        userListLiveData.observe(getActivity(), new Observer<List<User>>() {
+        searchUsersViewModel.getUserListLiveData().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(@Nullable List<User> users) {
-                Log.i(TAG, "in Observer!");
                 if (users != null) {
                     userListAdapter.submitList(users);
                 }
