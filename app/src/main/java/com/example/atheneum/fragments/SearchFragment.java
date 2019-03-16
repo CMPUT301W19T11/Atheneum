@@ -3,11 +3,14 @@ package com.example.atheneum.fragments;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,20 +19,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.User;
 import com.example.atheneum.viewmodels.SearchUsersViewModel;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
+import com.example.atheneum.views.adapters.UserListAdapter;
 import java.util.List;
 
 /**
@@ -39,20 +33,14 @@ import java.util.List;
  * See: https://www.youtube.com/watch?v=jJYSm_yrT7I
  */
 public class SearchFragment extends Fragment {
+    private static final String TAG = SearchFragment.class.getSimpleName();
+
     private View view;
     private MainActivity mainActivity = null;
     private SearchUsersViewModel searchUsersViewModel;
 
-    /**
-     * The User list view.
-     */
-    ListView userListView;
-    /**
-     * The User list.
-     */
-    List<User> userList;
-
-    private static final String TAG = SearchFragment.class.getSimpleName();
+    private RecyclerView userListRecyclerView;
+    private UserListAdapter userListAdapter;
 
     /**
      * Override onCreateView method of fragment to load search layout
@@ -74,6 +62,23 @@ public class SearchFragment extends Fragment {
             mainActivity.setActionBarTitle(getContext().getResources().getString(R.string.search_page_title));
         }
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        userListRecyclerView = view.findViewById(R.id.user_recyclerview);
+        userListRecyclerView.setLayoutManager(linearLayoutManager);
+        userListRecyclerView.addItemDecoration(new DividerItemDecoration(userListRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        userListAdapter = new UserListAdapter();
+        userListRecyclerView.setAdapter(userListAdapter);
+        userListAdapter.setOnClickListener(new UserListAdapter.onClickListener() {
+            @Override
+            public void onClick(@NonNull User user) {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity)getActivity()).passDataToViewProfileActivity(user);
+                }
+            }
+        });
+
         searchUsersViewModel = ViewModelProviders.of(getActivity()).get(SearchUsersViewModel.class);
         LiveData<List<User>> userListLiveData = searchUsersViewModel.getUserListLiveData();
         userListLiveData.observe(getActivity(), new Observer<List<User>>() {
@@ -81,56 +86,8 @@ public class SearchFragment extends Fragment {
             public void onChanged(@Nullable List<User> users) {
                 Log.i(TAG, "in Observer!");
                 if (users != null) {
-                    Log.i(TAG, "Observer not null!");
-                    userList = users;
-                    List<String> userNameList = new ArrayList<String>();
-                    for (User user : users) {
-                        userNameList.add(user.getUserName());
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, userNameList);
-                    userListView.setAdapter(adapter);
+                    userListAdapter.submitList(users);
                 }
-            }
-        });
-
-        userListView = (ListView) this.view.findViewById(R.id.userListView);
-        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /**
-             * Override onItemClick method for ListView items
-             * to send user data to view profile activity
-             * @param parent AdapterView
-             * @param view View
-             * @param position int
-             * @param id long
-             *
-             * See: https://stackoverflow.com/questions/7073577/how-to-get-object-from-listview-in-setonitemclicklistener-in-android
-             * See: https://stackoverflow.com/questions/2139134/how-to-send-an-object-from-one-android-activity-to-another-using-intents
-             * See: https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
-             * See: https://stackoverflow.com/questions/14891026/get-clicked-item-from-listview
-             */
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String username = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
-                Log.d(TAG, username + " was selected");
-
-                // TODO: Refactor to make the adapter use an array of users and
-                // then display only their user names
-                db = FirebaseDatabase.getInstance();
-                dbRef = db.getReference("users");
-                dbRef.orderByChild("userName").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child: dataSnapshot.getChildren()) {
-                            User selectedUser = child.getValue(User.class);
-                            ((MainActivity)getActivity()).passDataToViewProfileActivity(selectedUser);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
             }
         });
 
@@ -187,6 +144,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                // Dynamically update search results as the user is typing
                 searchUsersViewModel.setUserNameQuery(s);
                 return false;
             }
