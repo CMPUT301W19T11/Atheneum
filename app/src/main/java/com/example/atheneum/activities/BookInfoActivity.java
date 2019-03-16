@@ -86,6 +86,8 @@ public class BookInfoActivity extends AppCompatActivity {
     private Button deleteBtn;
     private Button editBtn;
 
+    private LinearLayout borrowerProfileArea;
+
     private static final String TAG = BookInfoActivity.class.getSimpleName();
 
     @Override
@@ -119,6 +121,8 @@ public class BookInfoActivity extends AppCompatActivity {
         textIsbn = (TextView) findViewById(R.id.bookISBN);
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
+
+        borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
         bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
@@ -167,11 +171,23 @@ public class BookInfoActivity extends AppCompatActivity {
                                 userLiveData.removeObserver(this);
                             }
                         });
+
+                        // set clickable profile area
+                        borrowerProfileArea.setClickable(true);
+                        borrowerProfileArea.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Log.i(TAG, "Borrower Profile clicked");
+                                viewUserProfile(borrowerID);
+                            }
+                        });
+
                     }
                     else { // no borrower;
                         Log.i(TAG, "No borrower");
                         borrowerEmailTextView.setText("None");
                         borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
+                        borrowerProfileArea.setClickable(false);
                     }
                 }
             }
@@ -268,6 +284,16 @@ public class BookInfoActivity extends AppCompatActivity {
                 editBook();
             }
         });
+    }
+
+    /**
+     * Start activity for a user's profile
+     *
+     */
+    public void viewUserProfile(String userID) {
+        Intent intent = new Intent(this, ViewProfileActivity.class);
+        intent.putExtra(ViewProfileActivity.USER_ID, userID);
+        startActivity(intent);
     }
 
     /**

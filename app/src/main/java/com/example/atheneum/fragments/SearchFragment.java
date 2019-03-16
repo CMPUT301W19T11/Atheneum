@@ -74,7 +74,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(@NonNull User user) {
                 if (getActivity() instanceof MainActivity) {
-                    ((MainActivity)getActivity()).passDataToViewProfileActivity(user);
+                    ((MainActivity)getActivity()).passDataToViewProfileActivity(user.getUserID());
                 }
             }
         });
