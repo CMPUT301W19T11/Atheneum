@@ -57,6 +57,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
     implementation 'com.jayway.android.robotium:robotium-solo:5.6.3'
+    implementation 'org.jetbrains:annotations-java5:15.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
