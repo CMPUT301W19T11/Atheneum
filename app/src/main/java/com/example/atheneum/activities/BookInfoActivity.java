@@ -230,6 +230,14 @@ public class BookInfoActivity extends AppCompatActivity {
 							Log.e(TAG, databaseError.getMessage());
                         }
                     });
+
+                    // set on click to take you to the user's profile page
+                    holder.requestItem.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            viewUserProfile(requesterID);
+                        }
+                    });
                 }
 
                 @Override
@@ -267,6 +275,7 @@ public class BookInfoActivity extends AppCompatActivity {
             requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
             requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
                     DividerItemDecoration.VERTICAL));
+
         }
 
         deleteBtn = findViewById(R.id.buttonDelete);
