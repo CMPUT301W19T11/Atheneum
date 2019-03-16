@@ -65,19 +65,9 @@ import java.util.ArrayList;
  *
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private LiveData<Notification> notificationLiveData;
-    private final Observer<Notification> notificationObserver
-            = new Observer<Notification>() {
-        @Override
-        public void onChanged(@Nullable Notification notification) {
-            if (notification == null) {
-                Log.i(TAG, "notification is null");
-            } else {
-                sendNotification(notification.getMessage());
-                DatabaseWriteHelper.deleteNotification(notification);
-            }
-        }
-    };
+    private UserNotificationsViewModel userNotificationsViewModel;
+    private Observer<Notification> notificationObserver;
+
     private String TAG = MainActivity.class.getSimpleName();
     private int pushNotificationID = 0;
 
@@ -132,12 +122,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //notifications
             UserNotificationsViewModelFactory userNotificationsViewModelFactory =
                     new UserNotificationsViewModelFactory(firebaseUser.getUid());
-            final UserNotificationsViewModel userNotificationsViewModel = ViewModelProviders
+            userNotificationsViewModel = ViewModelProviders
                     .of(this, userNotificationsViewModelFactory)
                     .get(UserNotificationsViewModel.class);
-            notificationLiveData =
-                    userNotificationsViewModel.getNotificationLiveData();
-            notificationLiveData.observeForever(notificationObserver);
+            notificationObserver = new Observer<Notification>() {
+                @Override
+                public void onChanged(@Nullable Notification notification) {
+                    if (notification == null) {
+                        Log.i(TAG, "notification is null");
+                    } else {
+                        sendNotification(notification.getMessage());
+                        DatabaseWriteHelper.deleteNotification(notification);
+                    }
+                }
+            };
+            userNotificationsViewModel
+                    .getNotificationLiveData()
+                    .observeForever(notificationObserver);
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
@@ -212,7 +213,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
 
         } else if (id == R.id.nav_logout) {
-            notificationLiveData.removeObserver(notificationObserver);
+            userNotificationsViewModel
+                    .getNotificationLiveData()
+                    .removeObserver(notificationObserver);
             // Sign out of account and go back to authentication screen
             AuthUI.getInstance()
                     .signOut(this)
