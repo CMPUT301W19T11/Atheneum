@@ -66,6 +66,7 @@ import java.util.ArrayList;
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private UserNotificationsViewModel userNotificationsViewModel;
+    private LiveData<Notification> notificationLiveData;
     private Observer<Notification> notificationObserver;
 
     private String TAG = MainActivity.class.getSimpleName();
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             userNotificationsViewModel = ViewModelProviders
                     .of(this, userNotificationsViewModelFactory)
                     .get(UserNotificationsViewModel.class);
+            notificationLiveData = userNotificationsViewModel.getNotificationLiveData();
             notificationObserver = new Observer<Notification>() {
                 @Override
                 public void onChanged(@Nullable Notification notification) {
@@ -136,15 +138,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
             };
-            userNotificationsViewModel
-                    .getNotificationLiveData()
-                    .observeForever(notificationObserver);
+            notificationLiveData.observeForever(notificationObserver);
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
 
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        notificationLiveData.removeObserver(notificationObserver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        notificationLiveData.removeObserver(notificationObserver);
+    }
 
     /**
      * On back press for main activity method
@@ -213,9 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
 
         } else if (id == R.id.nav_logout) {
-            userNotificationsViewModel
-                    .getNotificationLiveData()
-                    .removeObserver(notificationObserver);
+            notificationLiveData.removeObserver(notificationObserver);
             // Sign out of account and go back to authentication screen
             AuthUI.getInstance()
                     .signOut(this)

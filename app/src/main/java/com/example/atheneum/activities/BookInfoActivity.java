@@ -284,6 +284,7 @@ public class BookInfoActivity extends AppCompatActivity {
             requestsLayoutManager = new LinearLayoutManager(this);
             requestsRecyclerView.setLayoutManager(requestsLayoutManager);
             requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+            requestsRecyclerView.setNestedScrollingEnabled(false);
             requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
                     DividerItemDecoration.VERTICAL));
         }
