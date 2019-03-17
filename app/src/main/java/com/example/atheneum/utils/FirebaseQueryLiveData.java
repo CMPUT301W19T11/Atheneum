@@ -21,8 +21,9 @@ public class FirebaseQueryLiveData extends LiveData<DataSnapshot> {
     private static final String TAG = FirebaseQueryLiveData.class.getSimpleName();
 
     private boolean listenRemovePending = false;
+
     // Query to observe
-    private final Query query;
+    private Query query;
     // Reads result of query
     private final MyValueEventListener listener = new MyValueEventListener();
     // Android OS component that handles a runnable function that should either be called after
@@ -55,6 +56,37 @@ public class FirebaseQueryLiveData extends LiveData<DataSnapshot> {
      */
     public FirebaseQueryLiveData(DatabaseReference ref) {
         this.query = ref;
+    }
+
+    /**
+     * Updates the query that gets the live data events. Properly handles removal of the
+     * listener.
+     *
+     * @param newQuery New query to retrieve a DataSnapshot from
+     */
+    public void updateQuery(Query newQuery) {
+        // Don't spend time adding/removing listeners if the query didn't change
+        if (query.equals(newQuery)) {
+            return;
+        }
+        Log.i(TAG, String.format("Old query: %s, New Query: %s", query, newQuery));
+        // If there is a listener removal event pending, cancel the handler
+        if (listenRemovePending) {
+            Log.i(TAG, "Cancel handler in updateQuery()!");
+            handler.removeCallbacks(removeListener);
+        }
+        // Remove the listener from the old value of the query, this is to ensure that the
+        // DataSnapshot is not updated based on the old value of the query
+        query.removeEventListener(listener);
+        // Update the query
+        query = newQuery;
+        // If we call updateQuery() while the Lifecycle owner is active, then we can start listening
+        // for events on the new query right away. Otherwise, defer adding the listener until the
+        // next call to onActive().
+        if (!listenRemovePending) {
+            query.addValueEventListener(listener);
+        }
+        listenRemovePending = false;
     }
 
     /**
