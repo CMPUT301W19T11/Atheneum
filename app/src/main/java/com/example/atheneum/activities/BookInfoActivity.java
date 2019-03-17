@@ -36,12 +36,15 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Notification;
+import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.example.atheneum.viewmodels.UserViewModel;
@@ -72,7 +75,10 @@ public class BookInfoActivity extends AppCompatActivity {
     private String bookID;
     private String borrowerID;
     private BookInfoViewModel bookInfoViewModel;
-    private UserViewModel userViewModel;
+
+    private User loggedInUser;
+    private DatabaseReference loggedInUserRef;
+    private ValueEventListener loggedInUserFirebaseListener;
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -100,12 +106,14 @@ public class BookInfoActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         firebaseRecyclerAdapter.startListening();
+        loggedInUserRef.addListenerForSingleValueEvent(loggedInUserFirebaseListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         firebaseRecyclerAdapter.stopListening();
+        loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
     @Override
@@ -127,7 +135,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
         bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
-        LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+        final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
@@ -149,7 +157,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // retrieve email
                         UserViewModelFactory userViewModelFactory = new UserViewModelFactory(borrowerID);
-                        userViewModel = ViewModelProviders.of(BookInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
+                        UserViewModel userViewModel = ViewModelProviders.of(BookInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
                         final LiveData<User> userLiveData = userViewModel.getUserLiveData();
 
                         userLiveData.observe(BookInfoActivity.this, new Observer<User>() {
@@ -195,6 +203,19 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
+        //get user
+        loggedInUserFirebaseListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                loggedInUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        loggedInUserRef = UsersRefUtils.getUsersRef(FirebaseAuthUtils.getCurrentUser().getUid());
 
         Log.v(TAG, bookID);
 
@@ -202,19 +223,19 @@ public class BookInfoActivity extends AppCompatActivity {
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
 
-            FirebaseRecyclerOptions<String> options =
-                    new FirebaseRecyclerOptions.Builder<String>()
-                            .setQuery(query, new SnapshotParser<String>() {
-                                //@Nonnull is removed, it doesn't work when introduced for some reason
-                                @Override
-                                public String parseSnapshot(DataSnapshot snapshot) {
-                                    return snapshot.getKey();
-                                }
-                            }).build();
+            FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
+                    .setQuery(query, new SnapshotParser<String>() {
+                        //@Nonnull is removed, it doesn't work when introduced for some reason
+                        @Override
+                        public String parseSnapshot(DataSnapshot snapshot) {
+                            return snapshot.getKey();
+                        }
+                    }).build();
 
             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
                 @Override
-                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder, int position, @NonNull final String requesterID) {
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder,
+                                                int position, @NonNull final String requesterID) {
                     //Bind Book object to BookViewHolder
                     Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
 
@@ -223,8 +244,22 @@ public class BookInfoActivity extends AppCompatActivity {
                     requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User requester = dataSnapshot.getValue(User.class);
+                            final User requester = dataSnapshot.getValue(User.class);
                             holder.requesterNameTextView.setText(requester.getUserName());
+                            holder.declineRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "decline request button pressed");
+                                    declineRequest(requester);
+                                }
+                            });
+                            holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "accept request button pressed");
+                                    acceptRequest(requester);
+                                }
+                            });
                         }
 
                         @Override
@@ -274,6 +309,7 @@ public class BookInfoActivity extends AppCompatActivity {
             requestsLayoutManager = new LinearLayoutManager(this);
             requestsRecyclerView.setLayoutManager(requestsLayoutManager);
             requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+            requestsRecyclerView.setNestedScrollingEnabled(false);
             requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
                     DividerItemDecoration.VERTICAL));
 
@@ -350,5 +386,55 @@ public class BookInfoActivity extends AppCompatActivity {
         } else if (bkStatus == Book.Status.BORROWED) {
             textStatus.setTextColor(getResources().getColor(R.color.bookBorrowed));
         }
+    }
+
+    /**
+     * Decline request of single requester
+     *
+     * @param requester
+     */
+    public void declineRequest(User requester) {
+        Notification notification = new Notification(
+                requester.getUserID(),
+                FirebaseAuthUtils.getCurrentUser().getUid(),
+                requester.getUserID(),
+                bookID,
+                Notification.NotificationType.DECLINE,
+                ""
+        );
+        notification.constructMessage(loggedInUser.getUserName(),
+                bookInfoViewModel.getBookLiveData().getValue().getTitle());
+        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification);
+    }
+
+    /**
+     * Accept request for one person, decline for everyone else
+     *
+     * @param requester
+     */
+    public void acceptRequest(User requester) {
+        Notification acceptNotification = new Notification(
+                requester.getUserID(),
+                FirebaseAuthUtils.getCurrentUser().getUid(),
+                requester.getUserID(),
+                bookID,
+                Notification.NotificationType.ACCEPT,
+                ""
+        );
+        acceptNotification.constructMessage(loggedInUser.getUserName(),
+                bookInfoViewModel.getBookLiveData().getValue().getTitle());
+        Notification declineNotification = new Notification(
+                "",
+                FirebaseAuthUtils.getCurrentUser().getUid(),
+                "",
+                bookID,
+                Notification.NotificationType.DECLINE,
+                ""
+        );
+        declineNotification.constructMessage(loggedInUser.getUserName(),
+                bookInfoViewModel.getBookLiveData().getValue().getTitle());
+        Request request = new Request(requester.getUserID(), bookID);
+        request.setrStatus(Request.Status.ACCEPTED);
+        DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
     }
 }

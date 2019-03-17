@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <service android:name=".services.NotificationsService"></service>
         <activity
             android:name=".activities.EditProfileActivity"
             android:label="@string/title_activity_edit_profile"

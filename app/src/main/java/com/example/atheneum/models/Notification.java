@@ -25,7 +25,11 @@ public class Notification {
         /**
          * Request notification type.
          */
-        REQUEST
+        REQUEST,
+        /**
+         * Decline notification type.
+         */
+        DECLINE
     }
 
     /**
@@ -199,6 +203,8 @@ public class Notification {
             this.message = userName + " has requested for your book: " + bookName;
         } else if (this.rNotificationType == NotificationType.ACCEPT) {
             this.message = userName + " has accepted your request for the book " + bookName;
+        } else if (this.rNotificationType == NotificationType.DECLINE) {
+            this.message = userName + " has declined your request for the book " + bookName;
         }
     }
 }
