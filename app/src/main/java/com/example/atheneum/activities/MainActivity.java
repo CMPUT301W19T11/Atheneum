@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User thisUser = dataSnapshot.getValue(User.class);
-                    view_profile_intent.putExtra("user", thisUser);
+                    view_profile_intent.putExtra(ViewProfileActivity.USER_ID, thisUser.getUserID());
                     startActivity(view_profile_intent);
 
                 }
@@ -245,11 +245,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
      * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
      *
-     * @param user the user
+     * @param userID the user's ID
      */
-    public void passDataToViewProfileActivity(User user) {
+    public void passDataToViewProfileActivity(String userID) {
         Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
-        view_profile_intent.putExtra("user", user);
+        view_profile_intent.putExtra(ViewProfileActivity.USER_ID, userID);
         startActivity(view_profile_intent);
     }
 
