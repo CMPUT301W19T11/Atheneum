@@ -352,6 +352,8 @@ public class AddEditBookActivity extends AppCompatActivity {
      */
     public void saveNewBook() {
 //        Log.i(TAG, "AddBook*** Save Button Pressed");
+        // prevent additional clicks
+        saveBtn.setClickable(false);
 
         Log.i(TAG, "save new book!");
         if (!allFieldsFilled()) {
@@ -363,9 +365,12 @@ public class AddEditBookActivity extends AppCompatActivity {
             for (EditTextWithValidator editTextVal : editTextWithValidatorArray) {
                 editTextVal.validator.validate(editTextVal.editText);
             }
+            // re-enable clicks
+            saveBtn.setClickable(true);
             return;
         }
 
+        // clicks don't need to be re-enabled here because all fields have been verified to be filled
         Log.i(TAG, "AddBook*** Fields checked, all filled");
 
         title = titleEditText.getText().toString();
@@ -392,9 +397,10 @@ public class AddEditBookActivity extends AppCompatActivity {
                         Log.i(TAG, "owner is null!");
                     }
                     userLiveData.removeObserver(this);
-                    finish();
                 }
             });
+
+            finish(); // finish outside of handler to prevent multiple clicks
         }
 
     }
