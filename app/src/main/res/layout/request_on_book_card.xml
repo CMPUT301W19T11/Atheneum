@@ -3,15 +3,34 @@
     android:id="@+id/request_on_book_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="15dp">
 
     <TextView
         android:id="@+id/requester_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="left"
         android:text="REQUESTER NAME HERE"
         android:textSize="16sp" />
 
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:id="@+id/request_decline"
+        android:src="@drawable/close"
+        android:onClick="declineRequest"
+        />
+
+    <ImageView
+        android:id="@+id/request_accept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:src="@drawable/check"
+        android:onClick="acceptRequest" />
 
 </LinearLayout>
