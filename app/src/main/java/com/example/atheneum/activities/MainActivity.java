@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_logout) {
             Log.i(TAG, "logging out");
+            // stop notifications service
             Intent service = new Intent(this.getApplicationContext(), NotificationsService.class);
             stopService(service);
             // Sign out of account and go back to authentication screen
