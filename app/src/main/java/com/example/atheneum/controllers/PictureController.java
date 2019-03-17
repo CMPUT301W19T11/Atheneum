@@ -1,12 +1,16 @@
 package com.example.atheneum.controllers;
 
+import android.Manifest;
 import android.app.Activity;
 import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import static android.app.Activity.RESULT_OK;
@@ -20,6 +24,7 @@ import static android.app.Activity.RESULT_OK;
 public class PictureController<T> {
     private static final String TAG = PictureController.class.getSimpleName();
     private static final int REQUEST_IMAGE_CAPTURE = 7093;
+    private static final int REQUEST_CAMERA_PERMISSION = 6149;
 
     private final T fragmentOrActivity;
     private OnPictureTakenListener pictureTakenListener;
@@ -84,17 +89,63 @@ public class PictureController<T> {
      * or the Activity.
      */
     public void dispatchTakePictureIntent() {
+        // See: https://developer.android.com/training/camera/photobasics
+        // See: https://developer.android.com/training/permissions/requesting
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (fragmentOrActivity instanceof Fragment) {
             Fragment fragment = (Fragment) fragmentOrActivity;
-            if (takePictureIntent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
+            if (ContextCompat.checkSelfPermission(fragment.getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                // See: https://stackoverflow.com/a/46046597/11039833
+                fragment.requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            } else if (takePictureIntent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
                 fragment.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         } else if (fragmentOrActivity instanceof Activity) {
             Log.i(TAG, "here");
             Activity activity = (Activity) fragmentOrActivity;
-            if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
+            if (ContextCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            } else if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    /**
+     * Handles result of permission request made to the fragment/activity.
+     *
+     * Instantiate an instance of pictureController somewhere in the activity/fragment and then
+     * override the onRequestPermissionsResult() method for the activity/fragment and call the onRequestPermissionsResult()
+     * method of the picture controller instance in order to handle events.
+     *
+     * Example:
+     *
+     * {@code
+     *     @Override
+     *     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+     *         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+     *         pictureController.onRequestPermissionsResult(requestCode, permissions, grantResults);
+     *     }
+     * }
+     *
+     * @param requestCode Type of permissions request
+     * @param permissions Array of strings containing permissions requested
+     * @param grantResults Results of permissions granted
+     */
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // permission was granted, yay! Do the
+                // contacts-related task you need to do.
+                dispatchTakePictureIntent();
+            } else {
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+                Log.i(TAG, "Camera permission denied!");
             }
         }
     }
@@ -105,7 +156,7 @@ public class PictureController<T> {
      * events from the controller will never be handled.
      *
      * Instantiate an instance of pictureController somewhere in the activity/fragment and then
-     * override the onActivityResult() method for the activity/fragment and call the onActivityResult
+     * override the onActivityResult() method for the activity/fragment and call the onActivityResult()
      * method of the picture controller instance in order to handle events.
      *
      * Example:
