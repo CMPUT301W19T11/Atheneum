@@ -161,6 +161,7 @@ public class BorrowerPageFragment extends Fragment {
 
                                 }
                                 requestAdapter.notifyDataSetChanged();
+//                                requestList.clear();
 
                             }
                         }
