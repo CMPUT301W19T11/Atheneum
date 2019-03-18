@@ -11,13 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
 
+import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.activities.ViewProfileActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
@@ -52,6 +55,7 @@ public class BorrowerPageFragment extends Fragment {
      * The Book object borrowed.
      */
     Book book;
+    private Intent requestInfoIndent;
 
 
     /**
@@ -70,9 +74,8 @@ public class BorrowerPageFragment extends Fragment {
         this.context = getContext();
         requestView = (ListView) this.view.findViewById(R.id.requestView);
 
-
-
-
+        requestInfoIndent = new Intent(getActivity(), ShowRequestInfoActivity.class);
+        final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
@@ -83,13 +86,50 @@ public class BorrowerPageFragment extends Fragment {
 
         requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
         requestView.setAdapter(requestAdapter);
+        requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Book listItem = (Book) requestView.getItemAtPosition(position);
+
+                requestInfoIndent.putExtra("bookID", listItem.getBookID());
+
+                Log.d(TAG, "find requested book1 " + listItem.getBookID());
+
+                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
+                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
+                        .child(currentUser.getUid()).child(listItem.getBookID());
+                ref_request.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+
+                            String request1 = dataSnapshot.child("bookID").getValue(String.class);
+                            Request.Status status = dataSnapshot.child("rStatus").getValue(Request.Status.class);
+//                            String request1 = dataSnapshot.getValue(String.class).toString();
+                            Log.d(TAG, "find requested book2 " + request1);
+
+
+                            requestInfoIndent.putExtra("rStatus", status.toString());
+                            startActivity(requestInfoIndent);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
 //        requestList.clear();
 //        requestAdapter.notifyDataSetChanged();
 
         /**
          * Retrieve request
          */
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
                 .child(currentUser.getUid());
@@ -121,8 +161,6 @@ public class BorrowerPageFragment extends Fragment {
 
                                 }
                                 requestAdapter.notifyDataSetChanged();
-
-
 
                             }
                         }

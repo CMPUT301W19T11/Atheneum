@@ -9,7 +9,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="NewRequestActivity">New Request</string>
+
 
     <!--Firebase table names-->
     <string name="db_users">users</string>
@@ -81,6 +81,9 @@
     <string name="accepted">Accepted</string>
     <string name="title_activity_book_info">BookInfoActivity</string>
     <string name="title_activity_add_book">AddBookActivity</string>
+    <string name="NewRequestActivity">New Request</string>
+    <string name="RequestInfo">Request Info</string>
+    <string name="AvailableBookInfo">Available Book Info</string>
     <!--End of Strings for borrower page-->
 
     <!--Strings for search page-->
