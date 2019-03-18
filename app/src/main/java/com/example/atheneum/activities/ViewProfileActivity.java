@@ -54,7 +54,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         final TextView username = findViewById(R.id.username);
         final TextView phone = findViewById(R.id.phone);
-        final TextView borrower_rating = findViewById(R.id.borrower);
+        final TextView borrower_rating = findViewById(R.id.rStatus);
         final TextView owner_rating = findViewById(R.id.owner);
 
         UserViewModelFactory factory = new UserViewModelFactory(userID);

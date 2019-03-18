@@ -23,8 +23,6 @@ import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
-
 /**
  * The fragment for users to view their own profiles
  * See: https://stackoverflow.com/questions/39959747/how-to-convert-string-into-image-android-studio
@@ -68,7 +66,7 @@ public class ViewProfileFragment extends Fragment {
 
         TextView username = view.findViewById(R.id.username);
         TextView phone = view.findViewById(R.id.phone);
-        TextView borrower_rating = view.findViewById(R.id.borrower);
+        TextView borrower_rating = view.findViewById(R.id.rStatus);
         TextView owner_rating = view.findViewById(R.id.owner);
 
         username.setText(user.getUserName());
