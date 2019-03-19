@@ -235,4 +235,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         view_profile_intent.putExtra(ViewProfileActivity.USER_ID, userID);
         startActivity(view_profile_intent);
     }
+
 }

@@ -21,7 +21,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
+import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
@@ -132,8 +134,9 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "menu item collapse");
-                availableAdapter = new AvailableBookAdapter(NewRequestActivity.this, R.layout.request_list_item, defaultAvailableBook);
-                availableBookList.setAdapter(availableAdapter);
+
+                getFragmentManager().popBackStack();
+                retriveBook();
                 return true;
             }
         });
@@ -156,8 +159,10 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Book book = child.getValue(Book.class);
                             if(searchCheck(book, query)){
-                                if(!searchAvailableBook.contains(book)){
-                                    searchAvailableBook.add(book);
+                                if(!book.getOwnerID().equals(currentUserID)) {
+                                    if (!searchAvailableBook.contains(book)) {
+                                        searchAvailableBook.add(book);
+                                    }
                                 }
                             }
 
@@ -189,6 +194,8 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                 Log.d(TAG1, "On CLICKC was Called");
             }
         });
+
+
 
 
         return super.onCreateOptionsMenu(menu);
