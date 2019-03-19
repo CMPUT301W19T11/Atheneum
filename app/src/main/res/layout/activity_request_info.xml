@@ -91,18 +91,24 @@
 
         <TextView
             android:id="@+id/Owner"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Owner"
-            android:textColor="@color/design_default_color_primary_dark"/>
+            android:textColor="@color/design_default_color_primary_dark" />
 
         <TextView
             android:id="@+id/bookOwner"
-            android:layout_width="match_parent"
+            android:layout_width="194dp"
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:paddingBottom="15dp"
-            android:text="BOOK STATUS GOES HERE" />
+            android:text="BOOK OWNER GOES HERE" />
+
+        <Button
+            android:id="@+id/ownerDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="owner details" />
 
         <TextView
             android:id="@+id/description"

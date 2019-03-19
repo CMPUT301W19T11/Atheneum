@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -40,8 +42,11 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
 
     private TextView RequestStatus;
 
+    private Button ownerDetails;
+
     private String bookID;
     private String rStaus;
+    private String ownerID;
 
     private static final String TAG = "ShowRequest";
 
@@ -63,6 +68,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
         bookOwner = (TextView) findViewById(R.id.bookOwner);
         bookDescription = (TextView) findViewById(R.id.bookDescription);
         RequestStatus = (TextView) findViewById(R.id.RequestStatus);
+        ownerDetails = (Button) findViewById(R.id.ownerDetails);
 
         Intent Message = getIntent();
 
@@ -83,8 +89,8 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
 
                     // retrieve the Owner's email
                     if (!(book.getOwnerID() == null || book.getOwnerID().equals(""))) {
-                        Log.i(TAG, "Valid borrowerID");
-
+                        Log.i(TAG, "Valid ownerID");
+                        ownerID = book.getOwnerID();
                         // retrieve email
                         UserViewModelFactory userViewModelFactory = new UserViewModelFactory(book.getOwnerID());
                         UserViewModel userViewModel = ViewModelProviders.of(ShowRequestInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
@@ -114,6 +120,16 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
 
         rStaus = Message.getStringExtra("rStatus");
         RequestStatus.setText(rStaus);
+
+
+        ownerDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent view_profile_intent  = new Intent(ShowRequestInfoActivity.this, ViewProfileActivity.class);
+                view_profile_intent.putExtra(ViewProfileActivity.USER_ID, ownerID);
+                startActivity(view_profile_intent);
+            }
+        });
 
     }
 }
