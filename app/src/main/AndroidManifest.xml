@@ -84,6 +84,7 @@
             android:name=".activities.AvailableBookInfoActivity"
             android:label="@string/AvailableBookInfo"
             android:theme="@style/AppTheme"></activity>
+
       
     </application>
 
