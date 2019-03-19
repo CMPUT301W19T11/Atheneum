@@ -134,7 +134,9 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "menu item collapse");
+
                 getFragmentManager().popBackStack();
+                retriveBook();
                 return true;
             }
         });
