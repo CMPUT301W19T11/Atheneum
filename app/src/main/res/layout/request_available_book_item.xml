@@ -17,7 +17,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="158dp">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/show_title"
@@ -25,7 +25,9 @@
             android:layout_height="19dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
             android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/show_owner"
             app:layout_constraintStart_toEndOf="@+id/bookID"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,7 +37,9 @@
             android:layout_height="19dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="72dp"
             android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/show_description"
             app:layout_constraintStart_toEndOf="@+id/requester"
             app:layout_constraintTop_toBottomOf="@+id/show_title" />
 
@@ -46,7 +50,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="64dp"
+            android:layout_marginBottom="12dp"
             android:text="Title"
+            app:layout_constraintBottom_toTopOf="@+id/requester"
             app:layout_constraintEnd_toStartOf="@+id/show_title"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +65,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="32dp"
+            android:layout_marginBottom="12dp"
             android:text="Owner"
+            app:layout_constraintBottom_toTopOf="@+id/description"
             app:layout_constraintEnd_toStartOf="@+id/show_owner"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bookID" />
@@ -86,6 +94,19 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description" />
+
+        <TextView
+            android:id="@+id/show_description2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/description" />
 
