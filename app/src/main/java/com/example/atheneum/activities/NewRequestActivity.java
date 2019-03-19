@@ -156,8 +156,10 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Book book = child.getValue(Book.class);
                             if(searchCheck(book, query)){
-                                if(!searchAvailableBook.contains(book)){
-                                    searchAvailableBook.add(book);
+                                if(!book.getOwnerID().equals(currentUserID)) {
+                                    if (!searchAvailableBook.contains(book)) {
+                                        searchAvailableBook.add(book);
+                                    }
                                 }
                             }
 
