@@ -84,6 +84,12 @@
     <string name="NewRequestActivity">New Request</string>
     <string name="RequestInfo">Request Info</string>
     <string name="AvailableBookInfo">Available Book Info</string>
+    <string-array name="requestSpinnerArray">
+        <item>ALL</item>
+        <item>PENDING</item>
+        <item>ACCEPTED</item>
+        <item>DECLINED</item>
+    </string-array>
     <!--End of Strings for borrower page-->
 
     <!--Strings for search page-->
