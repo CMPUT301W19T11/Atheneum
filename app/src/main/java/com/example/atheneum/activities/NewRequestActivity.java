@@ -25,6 +25,7 @@ import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.AvailableBookAdapter;
 import com.example.atheneum.utils.requestAdapter;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -66,7 +67,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
     private static ArrayList<Book> availableBook = new ArrayList<Book>();
     private static ArrayList<Book> defaultAvailableBook = new ArrayList<Book>();
     private static ArrayList<Book> searchAvailableBook = new ArrayList<Book>();
-    private requestAdapter availableAdapter;
+    private AvailableBookAdapter availableAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
 
         intentNewRequest = getIntent();
-        intentRequestList = new Intent(this, MainActivity.class);
+        intentRequestList = new Intent(this, AvailableBookInfoActivity.class);
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -91,48 +92,13 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Book book = (Book) availableBookList.getItemAtPosition(position);
-
-                currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                db = FirebaseDatabase.getInstance();
-                ref = db.getReference()
-                        .child(getString(R.string.db_users)).child(currentUser.getUid());
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            requester = dataSnapshot.getValue(User.class);
-
-                            Request newRequest = new Request(requester.getUserID(), book.getBookID());
-                            // add book to the owner's collection
-                            Log.i(TAG, "send added, id=" + newRequest.getBookID());
-
-                            Notification notification = new Notification(
-                                    requester.getUserID(),
-                                    book.getOwnerID(),
-                                    book.getOwnerID(),
-                                    book.getBookID(),
-                                    Notification.NotificationType.REQUEST,
-                                    "");
-                            notification.constructMessage(requester.getUserName(), book.getTitle());
-                            DatabaseWriteHelper.makeRequest(newRequest, notification);
-
-                            Log.i(TAG, "Request added, id=" + newRequest.getBookID());
-                            startActivity(intentRequestList);
+                Log.i(TAG, "Request added, id=" + book.getBookID());
+                intentRequestList.putExtra("availableBookID", book.getBookID());
+                startActivity(intentRequestList);
 
 
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-
-                });
             }
         });
-
-
     }
 
 
@@ -166,7 +132,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "menu item collapse");
-                availableAdapter = new requestAdapter(NewRequestActivity.this, R.layout.request_list_item, defaultAvailableBook);
+                availableAdapter = new AvailableBookAdapter(NewRequestActivity.this, R.layout.request_list_item, defaultAvailableBook);
                 availableBookList.setAdapter(availableAdapter);
                 return true;
             }
@@ -199,7 +165,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                         if (searchAvailableBook.isEmpty()) {
                             Toast.makeText(NewRequestActivity.this, "No exact matches found for search query", Toast.LENGTH_SHORT).show();
                         }
-                        availableAdapter = new requestAdapter(NewRequestActivity.this, R.layout.request_list_item, searchAvailableBook);
+                        availableAdapter = new AvailableBookAdapter(NewRequestActivity.this, R.layout.request_available_book_item, searchAvailableBook);
                         availableBookList.setAdapter(availableAdapter);
                     }
 
@@ -277,7 +243,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
                 }
 
-                availableAdapter = new requestAdapter(NewRequestActivity.this, R.layout.request_list_item, availableBook);
+                availableAdapter = new AvailableBookAdapter(NewRequestActivity.this, R.layout.request_available_book_item, availableBook);
                 availableBookList.setAdapter(availableAdapter);
             }
 

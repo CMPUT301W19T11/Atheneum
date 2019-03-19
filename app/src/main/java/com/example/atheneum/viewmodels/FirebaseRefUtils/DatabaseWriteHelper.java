@@ -88,10 +88,12 @@ public class DatabaseWriteHelper {
         final String notificationsRef = String.format("notifications/%s/%s",
                 notification.getNotificationReceiverID(),
                 notification.getNotificationID());
+        final String bookStatusRef = String.format("books/%s/status", request.getBookID());
 
         updates.put(requesterRef, request);
         updates.put(bookRequestRef, true);
         updates.put(notificationsRef, notification);
+        updates.put(bookStatusRef, Book.Status.REQUESTED.toString());
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {

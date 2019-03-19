@@ -91,7 +91,7 @@
             app:layout_constraintTop_toBottomOf="@+id/phone" />
 
         <TextView
-            android:id="@+id/borrower"
+            android:id="@+id/rStatus"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -115,7 +115,7 @@
             android:layout_marginTop="16dp"
             android:text="Owner Rating"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/borrower" />
+            app:layout_constraintTop_toBottomOf="@+id/rStatus" />
 
         <TextView
             android:id="@+id/owner"
