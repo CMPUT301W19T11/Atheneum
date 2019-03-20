@@ -6,7 +6,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -126,6 +128,9 @@ public class OwnerPageFragment extends Fragment {
                     holder.statusTextView.setText(
                             book.getStatus().toString());
 
+                    // change color of status text
+                    setStatusTextColor(holder, book);
+
                     // retrieve the User's email
                     if (!(book.getBorrowerID() == null || book.getBorrowerID().equals(""))) {
                         Log.i(TAG, "Borrower exists : " + book.getBorrowerID());
@@ -201,8 +206,28 @@ public class OwnerPageFragment extends Fragment {
                     Log.i(TAG, e.getMessage());
                 }
 
-
-
+                /**
+                 * Set color of TextView for book status
+                 *
+                 * @param holder
+                 * @param book
+                 */
+                public void setStatusTextColor(@NonNull final BookViewHolder holder, @NonNull final Book book) {
+                    Book.Status bkStatus = book.getStatus();
+                    if (bkStatus == Book.Status.ACCEPTED) {
+                        holder.statusTextView
+                                .setTextColor(getResources().getColor(R.color.bookAccepted));
+                    } else if (bkStatus == Book.Status.AVAILABLE) {
+                        holder.statusTextView
+                                .setTextColor(getResources().getColor(R.color.bookAvailable));
+                    } else if (bkStatus == Book.Status.REQUESTED) {
+                        holder.statusTextView
+                                .setTextColor(getResources().getColor(R.color.bookRequested));
+                    } else if (bkStatus == Book.Status.BORROWED) {
+                        holder.statusTextView
+                                .setTextColor(getResources().getColor(R.color.bookBorrowed));
+                    }
+                }
             };
 
             ownerBooksRecyclerView = (RecyclerView) this.view.findViewById(R.id.owner_books_recycler_view);

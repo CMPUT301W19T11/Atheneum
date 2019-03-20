@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <!-- Book availability colors -->
+    <color name="bookAvailable">#008577</color>
+    <color name="bookRequested">#f4c842</color>
+    <color name="bookAccepted">#ce6412</color>
+    <color name="bookBorrowed">#af270f</color>
+    <!-- End of Book availability colors -->
 </resources>

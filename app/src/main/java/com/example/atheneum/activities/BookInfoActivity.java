@@ -16,6 +16,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -144,6 +145,7 @@ public class BookInfoActivity extends AppCompatActivity {
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
+                    setStatusTextColor(book);
                     borrowerID = book.getBorrowerID();
 
                     // using borrowerID, show borrower email and profile image, or "None"
@@ -365,6 +367,24 @@ public class BookInfoActivity extends AppCompatActivity {
         if (firebaseUser != null) {
             bookInfoViewModel.deleteBook(firebaseUser.getUid());
             finish();
+        }
+    }
+
+    /**
+     * Set color of TextView for book status
+     *
+     * @param book
+     */
+    public void setStatusTextColor(@Nullable Book book) {
+        Book.Status bkStatus = book.getStatus();
+        if (bkStatus == Book.Status.ACCEPTED) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookAccepted));
+        } else if (bkStatus == Book.Status.AVAILABLE) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookAvailable));
+        } else if (bkStatus == Book.Status.REQUESTED) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookRequested));
+        } else if (bkStatus == Book.Status.BORROWED) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookBorrowed));
         }
     }
 
