@@ -20,6 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_complete_registration" />
+    <include layout="@layout/fragment_edit_profile" />
 
 </android.support.design.widget.CoordinatorLayout>
