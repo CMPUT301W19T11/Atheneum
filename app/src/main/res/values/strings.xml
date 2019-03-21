@@ -1,5 +1,5 @@
 <resources>
-    <string name="google_maps_key"></string>
+    <string name="google_maps_key">AIzaSyDTqJ4MtwZjK33X8NXGAOJta4BdTEreMuM</string>
 
     <string name="app_name">Atheneum</string>
     <string name="title_activity_main">Home</string>
