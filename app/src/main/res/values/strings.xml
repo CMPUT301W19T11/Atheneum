@@ -38,6 +38,10 @@
     <string name="no_user_signed_in">No user signed in!</string>
     <!-- End of Strings related to login -->
 
+    <!-- Strings for notifications page -->
+    <string name="title_activity_notifications">Notifications</string>
+    <!-- End of Strings for notifications page -->
+
     <!--Strings for profile page-->
     <string name="profile_title">Profile</string>
     <string name="title_activity_view_profile">View Profile</string>
@@ -104,6 +108,5 @@
     <string name="newbooktest_desc">Lorem ipsum dolor sit amet</string>
     <string name="editbooktest_newtitle">New Title</string>
     <string name="editbooktest_newdesc">Some different text here</string>
-    <string name="title_activity_notifications">NotificationsActivity</string>
     <!--End of Strings for Add/edit/delete book tests-->
 </resources>

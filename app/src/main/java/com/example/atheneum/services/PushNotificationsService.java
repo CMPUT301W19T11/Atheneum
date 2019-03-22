@@ -62,7 +62,7 @@ public class PushNotificationsService extends Service {
             Log.i(TAG, "starting listener");
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
             pushNotificationsRef = NotificationsRefUtils
-                    .getNotificationsRef(firebaseUser.getUid());
+                    .getPushNotificationsRef(firebaseUser.getUid());
             pushNotificationsListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
