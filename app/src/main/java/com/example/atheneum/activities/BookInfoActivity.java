@@ -10,7 +10,6 @@
 
 package com.example.atheneum.activities;
 
-import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -31,10 +30,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.GoodreadsReviewInfo;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
@@ -82,6 +83,14 @@ public class BookInfoActivity extends AppCompatActivity {
     private RecyclerView requestsRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager requestsLayoutManager;
+
+    // temporary initialization
+    private GoodreadsReviewInfo goodreadsReviewInfo =
+            new GoodreadsReviewInfo(Book.INVALILD_ISBN, 1,
+                    "https://www.goodreads.com/api/reviews_widget_iframe?did=DEVELOPER_ID&amp;format=html&amp;isbn=059035342X&amp;links=660&amp;min_rating=&amp;review_back=fff&amp;stars=000&amp");
+    private RatingBar goodreadsAvgRatingbar;
+    private Button getReviewsBtn;
+
 
     private Button deleteBtn;
     private Button editBtn;
@@ -253,6 +262,10 @@ public class BookInfoActivity extends AppCompatActivity {
                     DividerItemDecoration.VERTICAL));
         }
 
+        // TODO deal with goodreads reviews
+        getGoodreadsReviewInfo();
+
+
         deleteBtn = findViewById(R.id.buttonDelete);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -298,4 +311,26 @@ public class BookInfoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Attempt to get information from goodreads
+     */
+    public void getGoodreadsReviewInfo() {
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_html());
+            }
+        });
+    }
+
+    public void gotoReviewsActivity(String widgetURL) {
+        Intent intent = new Intent(this, GoodreadsReviewsActivity.class);
+
+        intent.putExtra(GoodreadsReviewsActivity.WEBVIEW_URL, widgetURL);
+        startActivity(intent);
+
+    }
 }
