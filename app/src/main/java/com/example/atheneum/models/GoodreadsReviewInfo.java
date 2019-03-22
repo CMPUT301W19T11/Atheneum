@@ -4,6 +4,8 @@ package com.example.atheneum.models;
  * Model class for holding the goodreads review info.
  */
 public class GoodreadsReviewInfo {
+    public static final double INVALID_RATING = -1;
+
     private long isbn;
     private double avg_rating;
     private String reviews_widget_html;

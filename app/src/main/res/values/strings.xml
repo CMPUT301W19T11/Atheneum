@@ -96,4 +96,8 @@
     <string name="editbooktest_newtitle">New Title</string>
     <string name="editbooktest_newdesc">Some different text here</string>
     <!--End of Strings for Add/edit/delete book tests-->
+
+    <!--Goodreds API Key-->
+    <string name="GoodreadsAPI">6HCjeCCd22d7FunOF3vcA</string>
+
 </resources>

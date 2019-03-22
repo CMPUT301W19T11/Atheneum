@@ -8,6 +8,10 @@ import android.webkit.WebView;
 
 import com.example.atheneum.R;
 
+/**
+ * An activity to hold and show the reviews page of the book from goodreads. This was done since
+ * Goodreads removed having reviews directly available in their API in 2012.
+ */
 public class GoodreadsReviewsActivity extends AppCompatActivity {
     public static final String WEBVIEW_URL = "webview_url";
     private String urlToShow;

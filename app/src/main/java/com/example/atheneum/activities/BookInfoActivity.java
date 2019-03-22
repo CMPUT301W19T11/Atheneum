@@ -33,11 +33,17 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.GoodreadsReviewInfo;
+import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
+import com.example.atheneum.utils.ConnectionChecker;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
@@ -315,9 +321,45 @@ public class BookInfoActivity extends AppCompatActivity {
      * Attempt to get information from goodreads
      */
     public void getGoodreadsReviewInfo() {
-        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        // show error instead if there is no internet connection
+        ConnectionChecker connectionChecker = new ConnectionChecker(this);
+        if (!connectionChecker.isNetworkConnected()) {
+            showGoodreadsReviewError("Ratings and reviews unavailable while offline.");
+            return;
+        }
 
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
         getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        String apiRequestURL = null;
+
+
+        // null check for ISBN
+        if (textIsbn.getText() != null && !textIsbn.getText().toString().equals("")) {
+            apiRequestURL = "https://www.goodreads.com/book/isbn/" +
+                    textIsbn.getText().toString() +
+                    "?key=" + getString(R.string.GoodreadsAPI);
+        }
+
+        if (apiRequestURL != null) {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, apiRequestURL,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, "API Response error");
+                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads.");
+                        }
+                    });
+
+            SingletonRequestQueue.getInstance(this).getRequestQueue().add(stringRequest);
+
+        }
+
         getReviewsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -326,7 +368,32 @@ public class BookInfoActivity extends AppCompatActivity {
         });
     }
 
-    public void gotoReviewsActivity(String widgetURL) {
+    private void hideGoodreadsReviewError() {
+        // show the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.VISIBLE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.VISIBLE);
+
+        // hide the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setVisibility(View.GONE);
+    }
+
+    private void showGoodreadsReviewError(String errorMessage) {
+        // hide the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.GONE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.GONE);
+
+        // show the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setText(errorMessage);
+        goodreadsErrorTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void gotoReviewsActivity(String widgetURL) {
         Intent intent = new Intent(this, GoodreadsReviewsActivity.class);
 
         intent.putExtra(GoodreadsReviewsActivity.WEBVIEW_URL, widgetURL);
