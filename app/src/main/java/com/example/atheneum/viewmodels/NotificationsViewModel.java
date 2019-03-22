@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
@@ -13,7 +12,7 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
-public class UserNotificationsViewModel extends ViewModel {
+public class NotificationsViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
@@ -21,13 +20,13 @@ public class UserNotificationsViewModel extends ViewModel {
     // Reference to user in Firebase
     private final DatabaseReference notificationsRef;
 
-    private final String TAG = UserNotificationsViewModel.class.getSimpleName();
+    private final String TAG = NotificationsViewModel.class.getSimpleName();
 
-    public UserNotificationsViewModel(String userID) {
+    public NotificationsViewModel(String userID) {
         notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
         queryLiveData = new FirebaseQueryLiveData(notificationsRef);
         notificationLiveData = Transformations.map(queryLiveData,
-                new UserNotificationsViewModel.Deserializer());
+                new NotificationsViewModel.Deserializer());
     }
 
     private class Deserializer implements Function<DataSnapshot, Notification> {
