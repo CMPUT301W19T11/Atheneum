@@ -1,5 +1,6 @@
 package com.example.atheneum.models;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -13,6 +14,7 @@ public class Notification {
     private String bookID;
     private NotificationType rNotificationType;
     private String message;
+    private Date creationDate = new Date();
 
     /**
      * The enum Notification type.
@@ -206,5 +208,14 @@ public class Notification {
         } else if (this.rNotificationType == NotificationType.DECLINE) {
             this.message = userName + " has declined your request for the book " + bookName;
         }
+    }
+
+    /**
+     * Gets creation date of notification
+     *
+     * @return creationDate
+     */
+    public Date getCreationDate() {
+        return creationDate;
     }
 }
