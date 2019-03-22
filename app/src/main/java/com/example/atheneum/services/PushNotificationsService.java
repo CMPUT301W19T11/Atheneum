@@ -3,9 +3,6 @@ package com.example.atheneum.services;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -23,8 +20,6 @@ import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
-import com.example.atheneum.viewmodels.UserNotificationsViewModel;
-import com.example.atheneum.viewmodels.UserNotificationsViewModelFactory;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -35,13 +30,13 @@ import com.google.firebase.database.DatabaseReference;
  * A service to run indefinitely for push notifications
  * See: https://developer.android.com/guide/components/services
  */
-public class NotificationsService extends Service {
-    public static DatabaseReference notificationsRef = null;
-    public static ChildEventListener notificationListener = null;
+public class PushNotificationsService extends Service {
+    public static DatabaseReference pushNotificationsRef = null;
+    public static ChildEventListener pushNotificationsListener = null;
 
     private int pushNotificationID = 0;
 
-    private final static String TAG = NotificationsService.class.getSimpleName();
+    private final static String TAG = PushNotificationsService.class.getSimpleName();
 
     @Nullable
     @Override
@@ -62,18 +57,18 @@ public class NotificationsService extends Service {
         Log.i(TAG, "starting");
         //notifications
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()
-                && notificationsRef == null
-                && notificationListener == null) {
+                && pushNotificationsRef == null
+                && pushNotificationsListener == null) {
             Log.i(TAG, "starting listener");
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
-            notificationsRef = NotificationsRefUtils
+            pushNotificationsRef = NotificationsRefUtils
                     .getNotificationsRef(firebaseUser.getUid());
-            notificationListener = new ChildEventListener() {
+            pushNotificationsListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Notification notification = dataSnapshot.getValue(Notification.class);
                     sendNotification(notification.getMessage());
-                    DatabaseWriteHelper.deleteNotification(notification);
+                    DatabaseWriteHelper.deletePushNotification(notification);
                 }
 
                 @Override
@@ -96,7 +91,7 @@ public class NotificationsService extends Service {
 
                 }
             };
-            notificationsRef.addChildEventListener(notificationListener);
+            pushNotificationsRef.addChildEventListener(pushNotificationsListener);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -113,9 +108,9 @@ public class NotificationsService extends Service {
     @Override
     public void onDestroy() {
         Log.i(TAG, "destroying");
-        notificationsRef.removeEventListener(notificationListener);
-        notificationsRef = null;
-        notificationListener = null;
+        pushNotificationsRef.removeEventListener(pushNotificationsListener);
+        pushNotificationsRef = null;
+        pushNotificationsListener = null;
         super.onDestroy();
     }
 

@@ -28,7 +28,7 @@
             android:label="@string/title_activity_notifications"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <service android:name=".services.NotificationsService" />
+        <service android:name=".services.PushNotificationsService" />
 
         <activity
             android:name=".activities.EditProfileActivity"
