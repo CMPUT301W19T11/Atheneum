@@ -4,19 +4,19 @@ package com.example.atheneum.models;
  * Model class for holding the goodreads review info.
  */
 public class GoodreadsReviewInfo {
-    public static final double INVALID_RATING = -1;
+    public static final float INVALID_RATING = -1;
 
     private long isbn;
-    private double avg_rating;
-    private String reviews_widget_html;
+    private float avg_rating;
+    private String reviews_widget_url;
 
     /**
      * Default empty constructor. Sets the average rating to 0 and review url to null
      */
     public GoodreadsReviewInfo() {
         this.isbn = Book.INVALILD_ISBN;
-        this.avg_rating = 0.0;
-        this.reviews_widget_html = null;
+        this.avg_rating = INVALID_RATING;
+        this.reviews_widget_url = null;
     }
 
     /**
@@ -25,17 +25,17 @@ public class GoodreadsReviewInfo {
      * @param avg_rating the book's average rating
      * @param reviews_url the url of the iframe for goodreads review widget
      */
-    public GoodreadsReviewInfo(long isbn, double avg_rating, String reviews_url) {
+    public GoodreadsReviewInfo(long isbn, float avg_rating, String reviews_url) {
         this.isbn = isbn;
         this.avg_rating = avg_rating;
-        this.reviews_widget_html = reviews_url;
+        this.reviews_widget_url = reviews_url;
     }
 
     /**
      * Get the average rating for the book
      * @return the goodreads average rating
      */
-    public double getAvg_rating() {
+    public float getAvg_rating() {
         return avg_rating;
     }
 
@@ -43,7 +43,7 @@ public class GoodreadsReviewInfo {
      * Sets the average rating of the book
      * @param avg_rating the value to set the rating to
      */
-    public void setAvg_rating(double avg_rating) {
+    public void setAvg_rating(float avg_rating) {
         this.avg_rating = avg_rating;
     }
 
@@ -51,16 +51,16 @@ public class GoodreadsReviewInfo {
      * Get the url string of the reviews widget taken from the goodreads api result
      * @return
      */
-    public String getReviews_widget_html() {
-        return reviews_widget_html;
+    public String getReviews_widget_url() {
+        return reviews_widget_url;
     }
 
     /**
      * set the url of the goodreads reviews widget
-     * @param reviews_widget_html
+     * @param reviews_widget_url
      */
-    public void setReviews_widget_html(String reviews_widget_html) {
-        this.reviews_widget_html = reviews_widget_html;
+    public void setReviews_widget_url(String reviews_widget_url) {
+        this.reviews_widget_url = reviews_widget_url;
     }
 
     /**

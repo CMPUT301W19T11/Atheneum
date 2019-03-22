@@ -20,7 +20,13 @@ public class GoodreadsReviewAdapter {
 
     public GoodreadsReviewAdapter(String xml) {
         this.responseXML = xml;
-        this.reviewInfo = xmlToReviewInfo();
+        try {
+            this.reviewInfo = xmlToReviewInfo();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.reviewInfo = new GoodreadsReviewInfo();
+        }
+
     }
 
     private GoodreadsReviewInfo xmlToReviewInfo() throws XmlPullParserException, IOException {
@@ -79,7 +85,7 @@ public class GoodreadsReviewAdapter {
     private GoodreadsReviewInfo readBookEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
 //        GoodreadsReviewInfo goodreadsReviewInfo = new GoodreadsReviewInfo();
         long isbn = Book.INVALILD_ISBN;
-        double avg_rating = GoodreadsReviewInfo.INVALID_RATING;
+        float avg_rating = GoodreadsReviewInfo.INVALID_RATING;
         String reviews_widget_url = null;
 
         parser.require(XmlPullParser.START_TAG, null, "book");
@@ -117,13 +123,13 @@ public class GoodreadsReviewAdapter {
         }
     }
 
-    private double readAvgRatng(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private float readAvgRatng(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "average_rating");
         String rating_str = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "average_rating");
 
         try{
-            return Double.parseDouble(rating_str);
+            return Float.parseFloat(rating_str);
         }catch (Exception e) {
             return Book.INVALILD_ISBN;
         }

@@ -13,6 +13,7 @@ package com.example.atheneum.activities;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -39,6 +41,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.GoodreadsReviewAdapter;
 import com.example.atheneum.models.GoodreadsReviewInfo;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
@@ -70,6 +73,7 @@ import com.google.firebase.database.ValueEventListener;
  * Provides the UI fields and buttons for deleting and editing a book.
  */
 public class BookInfoActivity extends AppCompatActivity {
+    private Context ctx;
 
     String title;
     String author;
@@ -92,8 +96,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     // temporary initialization
     private GoodreadsReviewInfo goodreadsReviewInfo =
-            new GoodreadsReviewInfo(Book.INVALILD_ISBN, 1,
-                    "https://www.goodreads.com/api/reviews_widget_iframe?did=DEVELOPER_ID&amp;format=html&amp;isbn=059035342X&amp;links=660&amp;min_rating=&amp;review_back=fff&amp;stars=000&amp");
+            new GoodreadsReviewInfo(Book.INVALILD_ISBN, GoodreadsReviewInfo.INVALID_RATING,null);
     private RatingBar goodreadsAvgRatingbar;
     private Button getReviewsBtn;
 
@@ -127,6 +130,8 @@ public class BookInfoActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ctx = this;
+
         bookID = getIntent().getStringExtra("bookID");
         Log.i("bookid value: ", bookID);
         textTitle = (TextView) findViewById(R.id.bookTitle);
@@ -137,7 +142,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
         bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
-        LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+        final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
@@ -268,8 +273,27 @@ public class BookInfoActivity extends AppCompatActivity {
                     DividerItemDecoration.VERTICAL));
         }
 
+
+        hideGoodreadsReview();
+        showGoodreadsReviewError("Loading...");
         // TODO deal with goodreads reviews
-        getGoodreadsReviewInfo();
+        bookLiveData.observe(this, new Observer<Book>() {
+            @Override
+            public void onChanged(@Nullable Book book) {
+                long isbn = book.getIsbn();
+                getGoodreadsReviewInfo(isbn);
+
+                getReviewsBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
+                    }
+                });
+
+//                bookLiveData.removeObserver(this);
+            }
+        });
+
 
 
         deleteBtn = findViewById(R.id.buttonDelete);
@@ -320,10 +344,11 @@ public class BookInfoActivity extends AppCompatActivity {
     /**
      * Attempt to get information from goodreads
      */
-    public void getGoodreadsReviewInfo() {
+    public void getGoodreadsReviewInfo(long isbn) {
         // show error instead if there is no internet connection
         ConnectionChecker connectionChecker = new ConnectionChecker(this);
         if (!connectionChecker.isNetworkConnected()) {
+            hideGoodreadsReview();
             showGoodreadsReviewError("Ratings and reviews unavailable while offline.");
             return;
         }
@@ -335,8 +360,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
         // null check for ISBN
         if (textIsbn.getText() != null && !textIsbn.getText().toString().equals("")) {
-            apiRequestURL = "https://www.goodreads.com/book/isbn/" +
-                    textIsbn.getText().toString() +
+            apiRequestURL = "https://www.goodreads.com/book/isbn/" + String.valueOf(isbn) +
                     "?key=" + getString(R.string.GoodreadsAPI);
         }
 
@@ -345,13 +369,18 @@ public class BookInfoActivity extends AppCompatActivity {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+                            GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
+                            goodreadsReviewInfo = reviewAdapter.getReviewInfo();
 
+                            hideGoodreadsReviewError();
+                            showGoodreadsReview();
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e(TAG, "API Response error");
+                            hideGoodreadsReview();
                             showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads.");
                         }
                     });
@@ -359,38 +388,40 @@ public class BookInfoActivity extends AppCompatActivity {
             SingletonRequestQueue.getInstance(this).getRequestQueue().add(stringRequest);
 
         }
-
-        getReviewsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_html());
-            }
-        });
     }
 
     private void hideGoodreadsReviewError() {
-        // show the rating bar and reviews button
-        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
-        goodreadsAvgRatingbar.setVisibility(View.VISIBLE);
-        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
-        getReviewsBtn.setVisibility(View.VISIBLE);
-
         // hide the error textview
         TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
         goodreadsErrorTextView.setVisibility(View.GONE);
     }
 
     private void showGoodreadsReviewError(String errorMessage) {
+        // show the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setText(errorMessage);
+        goodreadsErrorTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideGoodreadsReview() {
         // hide the rating bar and reviews button
         goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
         goodreadsAvgRatingbar.setVisibility(View.GONE);
         getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
         getReviewsBtn.setVisibility(View.GONE);
+    }
 
-        // show the error textview
-        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
-        goodreadsErrorTextView.setText(errorMessage);
-        goodreadsErrorTextView.setVisibility(View.VISIBLE);
+    private void showGoodreadsReview() {
+        // show the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.VISIBLE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.VISIBLE);
+
+        if (goodreadsReviewInfo != null){
+            goodreadsAvgRatingbar.setRating(goodreadsReviewInfo.getAvg_rating());
+
+        }
     }
 
     private void gotoReviewsActivity(String widgetURL) {
