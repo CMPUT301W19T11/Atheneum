@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.atheneum">
-
-    <!--See: https://stackoverflow.com/a/35973323/11039833-->
+    <!-- See: https://stackoverflow.com/a/35973323/11039833 -->
     <uses-feature
         android:name="android.hardware.camera.any"
         android:required="true" />
@@ -16,7 +15,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="com.example.atheneum.AtheneumFirebaseApp"
+        android:name=".AtheneumFirebaseApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,12 +23,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name=".services.NotificationsService"></service>
+        <activity
+            android:name=".activities.NotificationsActivity"
+            android:label="@string/title_activity_notifications"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <service android:name=".services.NotificationsService" />
+
         <activity
             android:name=".activities.EditProfileActivity"
             android:label="@string/title_activity_edit_profile"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
+            android:theme="@style/AppTheme.NoActionBar" /> <!-- android:theme="@style/AppTheme.NoActionBar" ommitted -->
         <activity
             android:name=".activities.CompleteRegistrationActivity"
             android:label="@string/title_activity_complete_registration" />
@@ -41,51 +45,50 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
-     See README(https://goo.gl/l4GJaQ) for more. -->
+        <!--
+ Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_book_black_24dp" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+
         <activity
             android:name=".activities.BookInfoActivity"
             android:label="@string/title_activity_book_info"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.ViewProfileActivity"
             android:label="@string/title_activity_view_profile"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.AddEditBookActivity"
             android:label="@string/title_activity_add_book"
-            android:theme="@style/AppTheme"></activity>
-      
-        <activity 
+            android:theme="@style/AppTheme" />
+        <activity
+            android:id="@+id/searchView"
             android:name=".activities.ScanBarcodeActivity"
             android:label="@string/title_activity_scan_barcode"
-            android:theme="@style/AppTheme"
-            android:id="@+id/searchView"></activity>
-
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.NewRequestActivity"
             android:label="@string/NewRequestActivity"
-            android:theme="@style/AppTheme"></activity>
-
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.ShowRequestInfoActivity"
             android:label="@string/RequestInfo"
-            android:theme="@style/AppTheme"></activity>
-
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.AvailableBookInfoActivity"
             android:label="@string/AvailableBookInfo"
-            android:theme="@style/AppTheme"></activity>
-
-      
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
