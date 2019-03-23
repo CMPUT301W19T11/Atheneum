@@ -105,4 +105,11 @@
     <string name="editbooktest_newtitle">New Title</string>
     <string name="editbooktest_newdesc">Some different text here</string>
     <!--End of Strings for Add/edit/delete book tests-->
+
+    <!--Strings for ViewEditBookPhotos-->
+    <string name="title_activity_view_edit_book_photos">View Book Photos</string>
+    <string name="book_photo_dialog_prompt">Are you sure you want to delete this photo?</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_cancel">Cancel</string>
+    <!--End of Strings for ViewEditBookPhotos-->
 </resources>
