@@ -15,6 +15,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -135,14 +136,17 @@ public class AddEditBookActivity extends AppCompatActivity {
             bookPhotoViewModel.getBookPhotoLiveData().observe(this, new Observer<Photo>() {
                 @Override
                 public void onChanged(@Nullable Photo photo) {
-                    if (photo != null) {
-                        Glide.with(getApplicationContext())
-                                .load(Photo.DecodeBase64BitmapPhoto(photo.getEncodedString()))
-                                .apply(new RequestOptions()
-                                        .centerCrop()
-                                        .format(DecodeFormat.PREFER_ARGB_8888))
-                                .into(bookImage);
-                    }
+                    Bitmap bitmapPhoto = (photo != null)
+                            ? Photo.DecodeBase64BitmapPhoto(photo.getEncodedString())
+                            : null;
+                    // The fallback image will be displayed if bitmapPhoto is null
+                    Glide.with(getApplicationContext())
+                            .load(bitmapPhoto)
+                            .apply(new RequestOptions()
+                                    .fallback(R.drawable.ic_book_black_150dp)
+                                    .centerCrop()
+                                    .format(DecodeFormat.PREFER_ARGB_8888))
+                            .into(bookImage);
                 }
             });
 
