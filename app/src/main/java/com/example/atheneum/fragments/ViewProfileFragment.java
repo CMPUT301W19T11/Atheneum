@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
-import com.example.atheneum.controllers.PictureController;
+import com.example.atheneum.utils.CameraHandler;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +33,7 @@ public class ViewProfileFragment extends Fragment {
     private MainActivity mainActivity = null;
     private Context context;
     private ImageView profilePicture;
-    private PictureController pictureController;
+    private CameraHandler cameraHandler;
     private Bitmap bitmapPhoto;
 
     private User user;
