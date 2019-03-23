@@ -168,7 +168,7 @@ public class EditProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_edit_profile2, container, false);
+        view = inflater.inflate(R.layout.content_edit_profile, container, false);
 
         phoneNumberField = view.findViewById(R.id.edit_phone_number);
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
