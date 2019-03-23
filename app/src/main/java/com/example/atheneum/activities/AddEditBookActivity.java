@@ -12,12 +12,9 @@ package com.example.atheneum.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Picture;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -28,15 +25,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.atheneum.R;
-import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.ConnectionChecker;
@@ -47,9 +48,9 @@ import com.example.atheneum.viewmodels.AddBookViewModel;
 import com.example.atheneum.viewmodels.AddBookViewModelFactory;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
+import com.example.atheneum.viewmodels.FirstBookPhotoViewModel;
+import com.example.atheneum.viewmodels.FirstBookPhotoViewModelFactory;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -81,6 +82,7 @@ public class AddEditBookActivity extends AppCompatActivity {
     private FloatingActionButton saveBtn;
     private Button scanIsbnBtn;
     private Button autoPopulateByIsbnBtn;
+    private ImageView bookImage;
 
     private String bookID;
 
@@ -105,8 +107,10 @@ public class AddEditBookActivity extends AppCompatActivity {
         isbnEditText = findViewById(R.id.isbnEditText);
         descEditText = findViewById(R.id.descEditText);
 
+        bookImage = findViewById(R.id.bookImage);
+
         bookID = getIntent().getStringExtra("BookID");
-        if(bookID != null && !bookID.equals("")){
+        if(bookID != null && !bookID.equals("")) {
             // populate fields with existing book info if activity was entered for editing
             BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
             bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
@@ -121,6 +125,43 @@ public class AddEditBookActivity extends AppCompatActivity {
                         descEditText.setText(book.getDescription());
                     }
                     bookLiveData.removeObserver(this);
+                }
+            });
+
+            FirstBookPhotoViewModelFactory bookPhotoViewModelFactory = new FirstBookPhotoViewModelFactory(bookID);
+            FirstBookPhotoViewModel bookPhotoViewModel = ViewModelProviders
+                                                            .of(this, bookPhotoViewModelFactory)
+                                                            .get(FirstBookPhotoViewModel.class);
+            bookPhotoViewModel.getBookPhotoLiveData().observe(this, new Observer<Photo>() {
+                @Override
+                public void onChanged(@Nullable Photo photo) {
+                    if (photo != null) {
+                        Glide.with(getApplicationContext())
+                                .load(Photo.DecodeBase64BitmapPhoto(photo.getEncodedString()))
+                                .apply(new RequestOptions()
+                                        .centerCrop()
+                                        .format(DecodeFormat.PREFER_ARGB_8888))
+                                .into(bookImage);
+                    }
+                }
+            });
+
+            bookImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
+                    bookLiveData.observe(AddEditBookActivity.this, new Observer<Book>() {
+                        @Override
+                        public void onChanged(@Nullable Book book) {
+                            Intent intent = new Intent(AddEditBookActivity.this, ViewEditBookPhotos.class);
+                            intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, bookID);
+                            if (book != null) {
+                                intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, book.getOwnerID());
+                            }
+                            startActivity(intent);
+                            bookLiveData.removeObserver(this);
+                        }
+                    });
                 }
             });
         }
