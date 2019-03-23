@@ -23,7 +23,7 @@ public class EditProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //
+
         /**
          * Listener for completion of edits
          * when user is done editing profile in edit profile fragment

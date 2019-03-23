@@ -37,6 +37,7 @@ import com.example.atheneum.fragments.SearchFragment;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.User;
+import com.example.atheneum.services.NotificationsService;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
@@ -65,21 +66,7 @@ import java.util.ArrayList;
  *
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private LiveData<Notification> notificationLiveData;
-    private final Observer<Notification> notificationObserver
-            = new Observer<Notification>() {
-        @Override
-        public void onChanged(@Nullable Notification notification) {
-            if (notification == null) {
-                Log.i(TAG, "notification is null");
-            } else {
-                sendNotification(notification.getMessage());
-                DatabaseWriteHelper.deleteNotification(notification);
-            }
-        }
-    };
     private String TAG = MainActivity.class.getSimpleName();
-    private int pushNotificationID = 0;
 
 //    @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,21 +116,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
-            //notifications
-            UserNotificationsViewModelFactory userNotificationsViewModelFactory =
-                    new UserNotificationsViewModelFactory(firebaseUser.getUid());
-            final UserNotificationsViewModel userNotificationsViewModel = ViewModelProviders
-                    .of(this, userNotificationsViewModelFactory)
-                    .get(UserNotificationsViewModel.class);
-            notificationLiveData =
-                    userNotificationsViewModel.getNotificationLiveData();
-            notificationLiveData.observeForever(notificationObserver);
+            // start service for receiving notifications throughout app
+            // https://stackoverflow.com/a/27842496
+            Intent service = new Intent(this.getApplicationContext(), NotificationsService.class);
+            startService(service);
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
-
     }
-
 
     /**
      * On back press for main activity method
@@ -193,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User thisUser = dataSnapshot.getValue(User.class);
-                    view_profile_intent.putExtra("user", thisUser);
+                    view_profile_intent.putExtra(ViewProfileActivity.USER_ID, thisUser.getUserID());
                     startActivity(view_profile_intent);
 
                 }
@@ -212,7 +192,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
 
         } else if (id == R.id.nav_logout) {
-            notificationLiveData.removeObserver(notificationObserver);
+            Log.i(TAG, "logging out");
+            // stop notifications service
+            Intent service = new Intent(this.getApplicationContext(), NotificationsService.class);
+            stopService(service);
             // Sign out of account and go back to authentication screen
             AuthUI.getInstance()
                     .signOut(this)
@@ -245,50 +228,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * See: https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
      * See: https://stackoverflow.com/questions/12739909/send-data-from-activity-to-fragment-in-android
      *
-     * @param user the user
+     * @param userID the user's ID
      */
-    public void passDataToViewProfileActivity(User user) {
+    public void passDataToViewProfileActivity(String userID) {
         Intent view_profile_intent = new Intent(this, ViewProfileActivity.class);
-        view_profile_intent.putExtra("user", user);
+        view_profile_intent.putExtra(ViewProfileActivity.USER_ID, userID);
         startActivity(view_profile_intent);
     }
 
-    /**
-     * Construct and send notification to app. user's phone
-     * See: https://developer.android.com/guide/topics/ui/notifiers/notifications
-     * See: https://developer.android.com/training/notify-user/build-notification
-     * See: https://developer.android.com/training/notify-user/expanded
-     *
-     * @param notificationMessage
-     */
-    public void sendNotification(String notificationMessage) {
-        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        String channelId = getString(R.string.profile_title);
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getBaseContext(), channelId)
-                        .setSmallIcon(R.drawable.ic_book_black_24dp)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(notificationMessage)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(notificationMessage))
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        notificationManager.notify(pushNotificationID, notificationBuilder.build());
-        pushNotificationID++;
-    }
 }

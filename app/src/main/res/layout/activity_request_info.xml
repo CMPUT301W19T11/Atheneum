@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
-            android:text="Book Info:"
+            android:text="Request Info:"
             android:textSize="30sp"
             android:textStyle="bold" />
 
@@ -90,80 +90,25 @@
             android:text="BOOK STATUS GOES HERE"/>
 
         <TextView
-            android:id="@+id/rStatus"
+            android:id="@+id/Owner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Borrower:"
+            android:text="Owner"
             android:textColor="@color/design_default_color_primary_dark" />
-
-        <LinearLayout
-            android:id="@+id/borrower_prof_area"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/borrower_profile_pic"
-                android:layout_width="@dimen/bookinfo_borrower_profile_image_size"
-                android:layout_height="@dimen/bookinfo_borrower_profile_image_size"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:src="@drawable/ic_account_circle_black_24dp" />
-
-            <TextView
-                android:id="@+id/book_borrower_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BORROWEREMAIL"
-                android:layout_gravity="center"
-                android:textSize="16sp" />
-
-        </LinearLayout>
 
         <TextView
-            android:id="@+id/avg_goodreads_rating"
-            android:layout_width="match_parent"
+            android:id="@+id/bookOwner"
+            android:layout_width="194dp"
             android:layout_height="wrap_content"
-            android:text="Average Goodreads Rating:"
-            android:textColor="@color/design_default_color_primary_dark" />
+            android:paddingLeft="15dp"
+            android:paddingBottom="15dp"
+            android:text="BOOK OWNER GOES HERE" />
 
-
-        <LinearLayout
-            android:id="@+id/rating_and_reviews"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/goodreads_unavailable_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Goodreads ratings and reviews unavailable."
-                android:textColor="@color/design_default_color_primary_dark"
-                android:visibility="gone"/>
-
-            <RatingBar
-                android:id="@+id/goodreadsAvgRatingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:rating="3.2"
-                android:stepSize="0.1"
-                android:visibility="visible"/>
-
-            <Button
-                android:id="@+id/gotoReviewsBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0.5"
-                android:text="See Goodreads Reviews"
-                android:visibility="visible"/>
-
-        </LinearLayout>
+        <Button
+            android:id="@+id/ownerDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="owner details" />
 
         <TextView
             android:id="@+id/description"
@@ -178,53 +123,22 @@
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:paddingBottom="15dp"
-            android:text="BOOK DESCRIPTION GOES HERE"/>
+            android:text="BOOK DESCRIPTION GOES HERE" />
 
         <TextView
-            android:id="@+id/requester"
+            android:id="@+id/rStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Requesters:"
-            android:textColor="@color/design_default_color_primary_dark"
-            />
+            android:text="Rquest Status:"
+            android:textColor="@color/design_default_color_primary_dark" />
 
-        <android.support.v7.widget.RecyclerView
+        <TextView
+            android:id="@+id/RequestStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/book_requests_recycler_view"
-            android:scrollbars="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:context=".activities.BookInfoActivity">
+            android:paddingLeft="15dp"
+            android:paddingBottom="15dp"
+            android:text="BOOK STATUS GOES HERE" />
 
-        </android.support.v7.widget.RecyclerView>
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_weight="0.5"
-            android:background="#111111"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="25dp">
-
-            <Button
-                android:id="@+id/buttonDelete"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Delete" />
-
-            <Button
-                android:id="@+id/buttonEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Edit"/>
-
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -30,6 +30,8 @@ import java.util.ArrayList;
  * and other profiles
  */
 public class ViewProfileActivity extends AppCompatActivity {
+    public static final String USER_ID = "user_id";
+
     private static final String TAG = "View Profile Activity";
 
     /**
@@ -46,16 +48,16 @@ public class ViewProfileActivity extends AppCompatActivity {
         setActionBarTitle(getResources().getString(R.string.title_activity_view_profile));
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra("user");
+        String userID = intent.getStringExtra(USER_ID);
 
         final ImageView profilePicture = findViewById(R.id.user_profile_pic);
 
         final TextView username = findViewById(R.id.username);
         final TextView phone = findViewById(R.id.phone);
-        final TextView borrower_rating = findViewById(R.id.borrower);
+        final TextView borrower_rating = findViewById(R.id.rStatus);
         final TextView owner_rating = findViewById(R.id.owner);
 
-        UserViewModelFactory factory = new UserViewModelFactory(user.getUserID());
+        UserViewModelFactory factory = new UserViewModelFactory(userID);
         UserViewModel userViewModel = ViewModelProviders.of(this, factory).get(UserViewModel.class);
         LiveData<User> userLiveData = userViewModel.getUserLiveData();
         userLiveData.observe(this, new Observer<User>() {
@@ -85,8 +87,8 @@ public class ViewProfileActivity extends AppCompatActivity {
             FirebaseUser currUser = FirebaseAuthUtils.getCurrentUser();
             FloatingActionButton triggerEditUserProfile = findViewById(R.id.trigger_edit_user_profile);
             Log.d(TAG, "curr user UID is " + currUser.getUid());
-            Log.d(TAG, "selected user USERID is " + user.getUserID());
-            if (!currUser.getUid().equals(user.getUserID())) {
+            Log.d(TAG, "selected user USERID is " + userID);
+            if (!currUser.getUid().equals(userID)) {
                 Log.d(TAG, "hiding the FAB");
                 triggerEditUserProfile.hide();
             } else {

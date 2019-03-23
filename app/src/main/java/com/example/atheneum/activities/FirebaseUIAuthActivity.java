@@ -58,51 +58,7 @@ public class FirebaseUIAuthActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     *
-     * See: https://www.androidauthority.com/android-push-notifications-with-firebase-cloud-messaging-925075/
-     */
     private void postSignInTransition() {
-        //store user's device token in datbase
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child("userDeviceTokens")
-            .child(firebaseUser.getUid());
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // Add user information to user table if the user doesn't exist in
-                // our database
-                User newUser = new User(firebaseUser.getUid(), firebaseUser.getEmail());
-                final DatabaseReference userTokensRef = db.getReference().child("userDeviceTokens")
-                        .child(newUser.getUserID());
-
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                                if (!task.isSuccessful()) {
-                                    Log.i(TAG, "cannot store user device token?!");
-                                    return;
-                                }
-
-                                String token = task.getResult().getToken();
-                                Log.d(TAG, token);
-
-                                //Store user's instanceID token in firebase
-                                userTokensRef.setValue(token);
-                                Log.i(TAG, "User device token stored in database");
-                            }
-                        });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i(TAG, "user device token cannot be stored??");
-            }
-        });
-
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         finish();
