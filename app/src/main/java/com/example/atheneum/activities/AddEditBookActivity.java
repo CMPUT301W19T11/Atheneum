@@ -438,6 +438,11 @@ public class AddEditBookActivity extends AppCompatActivity {
                         Book newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
                         Log.i(TAG, "newBook " + newBook.toString());
                         addBookViewModel.addBook(owner, newBook);
+
+                        Intent intent = new Intent(getApplicationContext(), ViewEditBookPhotos.class);
+                        intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, newBook.getBookID());
+                        intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, newBook.getOwnerID());
+                        startActivity(intent);
                     } else {
                         Log.i(TAG, "owner is null!");
                     }
