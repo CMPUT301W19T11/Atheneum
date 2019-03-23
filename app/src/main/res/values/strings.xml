@@ -64,6 +64,9 @@
 
     <string name="action_save">Save</string>
     <string name="scanBtnPrompt">Scan</string>
+
+    <string name="activity_title_add_book">Add Book</string>
+    <string name="activity_title_edit_book">Edit Book</string>
     <!-- End of Strings for adding/editing books -->
 
     <!--Strings for owner page-->

@@ -112,6 +112,7 @@ public class AddEditBookActivity extends AppCompatActivity {
 
         bookID = getIntent().getStringExtra("BookID");
         if(bookID != null && !bookID.equals("")) {
+            setTitle(R.string.activity_title_edit_book);
             // populate fields with existing book info if activity was entered for editing
             BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
             bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
@@ -168,6 +169,8 @@ public class AddEditBookActivity extends AppCompatActivity {
                     });
                 }
             });
+        } else {
+            setTitle(R.string.activity_title_add_book);
         }
 
         // Setup all edit texts with their validators
