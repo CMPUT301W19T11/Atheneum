@@ -20,7 +20,6 @@ public class Book {
     private Status status = Status.AVAILABLE;
     private ArrayList<Request> requests = new ArrayList<Request>();
     private String bookID;
-    private ArrayList<String> photos = new ArrayList<String>();
 
     @Override
     public String toString() {
@@ -280,49 +279,6 @@ public class Book {
      * @param bookID A string represetnation of the book ID
      */
     public void setBookID(String bookID) { this.bookID = bookID; }
-
-    /**
-     * Gets photos for the book
-     *
-     * @return the photos
-     */
-    public ArrayList<String> getPhotos() {
-        return photos;
-    }
-
-    /**
-     * Sets photos for the book
-     *
-     * @param photos the photos
-     */
-    public void setPhotos(ArrayList<String> photos) {
-        this.photos = photos;
-    }
-
-    /**
-     * Add photo to the book
-     *
-     * @param photo the photo
-     */
-    public void addPhoto(String photo) {
-        this.photos.add(photo);
-    }
-
-    /**
-     * Delete photo from the book
-     *
-     * @param photo the photo
-     */
-    public void deletePhoto(String photo) {
-        this.photos.remove(photo);
-    }
-
-    /**
-     * Delete all photos from the book
-     */
-    public void deletePhotos() {
-        this.photos.clear();
-    }
 
     /**
      * Returns whether or not two Book objects are equal. For the purposes of determining equality,
