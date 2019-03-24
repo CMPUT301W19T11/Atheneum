@@ -123,6 +123,8 @@ public class BookInfoActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        setTitle(R.string.activity_book_info);
+
         bookID = getIntent().getStringExtra("bookID");
         Log.i("bookid value: ", bookID);
         textTitle = (TextView) findViewById(R.id.bookTitle);

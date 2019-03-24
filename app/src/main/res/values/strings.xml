@@ -69,6 +69,10 @@
     <string name="activity_title_edit_book">Edit Book</string>
     <!-- End of Strings for adding/editing books -->
 
+    <!--Strings for book information-->
+    <string name="activity_book_info">Book Information</string>
+    <!--End of Strings for book information-->
+
     <!--Strings for owner page-->
     <string name="owner_page_title">Owner Page</string>
 
