@@ -81,7 +81,8 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
         });
 
         if (urlToShow != null) {
-            webView.loadUrl("reee");
+            Log.i(TAG, "URL : " + urlToShow);
+            webView.loadUrl(urlToShow);
         }
         else { // URL was none
             showWebviewErrorMessage("No Reviews Available");
