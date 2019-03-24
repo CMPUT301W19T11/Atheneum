@@ -12,6 +12,7 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,9 @@ import java.util.List;
 public class NotificationsViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
-    // Serialized user data to sent to view
     private final LiveData<List<Notification>> notificationLiveData;
-    // Reference to user in Firebase
-    private final DatabaseReference notificationsRef;
+    // Notifications query for firebase
+    private final Query notificationsRef;
 
     private final String TAG = NotificationsViewModel.class.getSimpleName();
 
@@ -34,7 +34,8 @@ public class NotificationsViewModel extends ViewModel {
             public List<Notification> apply(DataSnapshot dataSnapshot) {
                 List<Notification> notificationList = new ArrayList<Notification>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    notificationList.add(data.getValue(Notification.class));
+                    // reverse elements to for reverse-chronological time
+                    notificationList.add(0, data.getValue(Notification.class));
                 }
                 return notificationList;
             }

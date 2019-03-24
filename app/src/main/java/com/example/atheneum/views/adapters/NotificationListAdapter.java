@@ -120,8 +120,6 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
                 .getRelativeTimeSpanString(notification.getCreationDate().getTime());
         holder.time.setText(momentsAgo);
 
-        Log.i(TAG, Boolean.toString(notification.getIsSeen()));
-
         if (notification.getIsSeen()) {
             holder.notificationCard
                     .setBackgroundColor(mContext.getResources().getColor(R.color.notificationSeen));
