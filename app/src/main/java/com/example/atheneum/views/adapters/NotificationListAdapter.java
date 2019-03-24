@@ -12,9 +12,28 @@ import android.widget.TextView;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Notification;
 
+/**
+ * Adapter for notifications RecyclerView
+ *
+ * See: https://developer.android.com/reference/android/support/v7/recyclerview/extensions/ListAdapter
+ */
 public class NotificationListAdapter extends ListAdapter<Notification, NotificationListAdapter.ViewHolder> {
-    protected NotificationListAdapter(@NonNull DiffUtil.ItemCallback<Notification> diffCallback) {
-        super(diffCallback);
+    public static final DiffUtil.ItemCallback<Notification> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<Notification>() {
+                @Override
+                public boolean areItemsTheSame(
+                        @NonNull Notification notification, @NonNull Notification other) {
+                    return notification.getNotificationID().equals(other.getNotificationID());
+                }
+                @Override
+                public boolean areContentsTheSame(
+                        @NonNull Notification notification, @NonNull Notification other) {
+                    return notification.equals(other);
+                }
+            };
+
+    public NotificationListAdapter() {
+        super(DIFF_CALLBACK);
     }
 
     /**

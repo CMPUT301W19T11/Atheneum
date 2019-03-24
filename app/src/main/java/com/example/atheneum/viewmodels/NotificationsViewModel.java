@@ -42,7 +42,7 @@ public class NotificationsViewModel extends ViewModel {
 
     /**
      *
-     * @return Observable User data from Firebase
+     * @return Observable list of Notification data from Firebase
      */
     @NonNull
     public LiveData<List<Notification>> getNotificationLiveData() {
