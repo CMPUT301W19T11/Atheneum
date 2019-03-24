@@ -16,6 +16,7 @@ public class NotificationTest {
     private String bookID;
     private Notification.NotificationType rNotificationType;
     private String message;
+    private boolean isSeen;
 
     @Before
     public void setUp() throws Exception {
@@ -25,6 +26,7 @@ public class NotificationTest {
         bookID = "asdf-1234-wef-rerorerorerorero-616";
         rNotificationType = Notification.NotificationType.REQUEST;
         message = "Michael requested for your Seven Seas";
+        isSeen = false;
         notification = new Notification(
                 requesterID,
                 ownerID,
@@ -32,6 +34,7 @@ public class NotificationTest {
                 bookID,
                 rNotificationType,
                 message);
+        notification.setIsSeen(isSeen);
     }
 
     @After
@@ -116,5 +119,17 @@ public class NotificationTest {
         assertEquals(notification.getMessage(), newMessage);
         notification.setMessage(message);
         assertEquals(notification.getMessage(), message);
+    }
+
+    @Test
+    public void getIsSeen() { assertFalse(notification.getIsSeen()); }
+
+    @Test
+    public void setIsSeen() {
+        boolean newIsSeen = true;
+        notification.setIsSeen(newIsSeen);
+        assertTrue(notification.getIsSeen());
+        notification.setIsSeen(isSeen);
+        assertFalse(notification.getIsSeen());
     }
 }
