@@ -1,5 +1,6 @@
 package com.example.atheneum.views.adapters;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
@@ -7,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
@@ -40,6 +42,7 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
      * Custon ViewHolder for notification
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private LinearLayout notificationCard;
         private TextView message;
         private TextView time;
 
@@ -50,6 +53,7 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
          */
         public ViewHolder(@NonNull View view) {
             super(view);
+            notificationCard = (LinearLayout) view.findViewById(R.id.notification_card);
             message = (TextView) view.findViewById(R.id.notification_message);
             time = (TextView) view.findViewById(R.id.notification_time);
             view.setOnClickListener(new View.OnClickListener() {
@@ -109,5 +113,8 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
         CharSequence momentsAgo = android.text.format.DateUtils
                 .getRelativeTimeSpanString(notification.getCreationDate().getTime());
         holder.time.setText(momentsAgo);
+
+        // TODO: SET COLOUR OF NOTIFICATION INDICATING WHETHER HAS CLICKED ON OR NOT
+        holder.notificationCard.setBackgroundColor(Color.RED);
     }
 }
