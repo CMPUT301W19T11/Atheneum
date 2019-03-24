@@ -152,7 +152,8 @@
                 android:numStars="5"
                 android:rating="3.2"
                 android:stepSize="0.1"
-                android:visibility="visible"/>
+                android:secondaryProgressTint="#00000000"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/gotoReviewsBtn"

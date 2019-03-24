@@ -481,6 +481,7 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     private void showGoodreadsReview() {
+        Log.i(TAG, "Rating: " + goodreadsReviewInfo.getAvg_rating());
         // show the rating bar and reviews button
         goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
         goodreadsAvgRatingbar.setVisibility(View.VISIBLE);
@@ -489,7 +490,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
         if (goodreadsReviewInfo != null){
             goodreadsAvgRatingbar.setRating(goodreadsReviewInfo.getAvg_rating());
-
         }
     }
 
