@@ -209,7 +209,7 @@ public class DatabaseWriteHelper {
                                       Notification notification, final boolean shouldUpdateStatus) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
-        final String requesterRef = String.format("requestCollection/%s/%s",
+        final String requesterRef = String.format("requestCollection/%s/%s/rStatus",
                 requesterID, bookID);
         final String bookRequestRef = String.format("bookRequests/%s/%s",
                 bookID, requesterID);
@@ -220,7 +220,7 @@ public class DatabaseWriteHelper {
                 notification.getNotificationReceiverID(),
                 notification.getNotificationID());
 
-        updates.put(requesterRef, null);
+        updates.put(requesterRef, Request.Status.DECLINED);
         updates.put(bookRequestRef, null);
         updates.put(notificationsRef, notification);
         updates.put(pushNotificationsRef, notification);
