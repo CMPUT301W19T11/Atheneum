@@ -84,6 +84,8 @@ public class ViewEditBookPhotos extends AppCompatActivity {
         });
 
         if (FirebaseAuthUtils.getCurrentUser().getUid().equals(ownerUserID)) {
+            setTitle(R.string.activity_title_edit_book_photos);
+
             cameraHandler = CameraHandler.newInstance(this);
 
             bookPhotosListAdapter.setOnItemClickListener(new BookPhotosListAdapter.OnItemClickListener() {
@@ -153,6 +155,8 @@ public class ViewEditBookPhotos extends AppCompatActivity {
                     });
                 }
             });
+        } else {
+            setTitle(R.string.activity_title_view_book_photos);
         }
     }
 
