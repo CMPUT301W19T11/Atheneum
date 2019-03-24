@@ -169,26 +169,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         } else if (id == R.id.nav_notifications) {
-            final Intent notifications_intent = new Intent(this, NotificationsActivity.class);
-
-            FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
-            FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference dbRef = db.getReference("users").child(firebaseUser.getUid());
-
-            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    User thisUser = dataSnapshot.getValue(User.class);
-                    notifications_intent.putExtra(ViewProfileActivity.USER_ID, thisUser.getUserID());
-                    startActivity(notifications_intent);
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+            final Intent notifications_intent =
+                    new Intent(this, NotificationsActivity.class);
+            startActivity(notifications_intent);
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
