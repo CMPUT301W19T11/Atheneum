@@ -89,14 +89,31 @@ public class ViewEditBookPhotos extends AppCompatActivity {
             bookPhotosListAdapter.setOnItemClickListener(new BookPhotosListAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(final View v, final Photo photo) {
-                    cameraHandler.dispatchTakePictureIntent();
-                    cameraHandler.setPictureTakenListener(new CameraHandler.OnPictureTakenListener() {
-                        @Override
-                        public void onPictureTaken(Bitmap bitmap) {
-                            bookPhotosViewModel.updatePhoto(photo, bitmap);
-                            cameraHandler.removePictureTakenListener();
-                        }
-                    });
+                    // Code gotten from https://stackoverflow.com/a/33650105
+                    // License: https://creativecommons.org/licenses/by-sa/3.0/
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setMessage(getString(R.string.book_photo_dialog_edit_prompt))
+                            .setPositiveButton(getString(R.string.dialog_edit), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    cameraHandler.dispatchTakePictureIntent();
+                                    cameraHandler.setPictureTakenListener(new CameraHandler.OnPictureTakenListener() {
+                                        @Override
+                                        public void onPictureTaken(Bitmap bitmap) {
+                                            bookPhotosViewModel.updatePhoto(photo, bitmap);
+                                            cameraHandler.removePictureTakenListener();
+                                        }
+                                    });
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Do Nothing
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
 
                 @Override
@@ -104,7 +121,7 @@ public class ViewEditBookPhotos extends AppCompatActivity {
                     // Code gotten from https://stackoverflow.com/a/33650105
                     // License: https://creativecommons.org/licenses/by-sa/3.0/
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setMessage(getString(R.string.book_photo_dialog_prompt))
+                    builder.setMessage(getString(R.string.book_photo_dialog_delete_prompt))
                             .setPositiveButton(getString(R.string.dialog_delete), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
