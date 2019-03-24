@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -50,8 +49,6 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
         urlToShow = intent.getStringExtra(WEBVIEW_URL);
         errorMessageTextView = findViewById(R.id.webviewErrorTextview);
         webView = findViewById(R.id.reviewsWebView);
-//        webView.getSettings().setDomStorageEnabled(true);
-//        webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             // to deal with errors
             @Override

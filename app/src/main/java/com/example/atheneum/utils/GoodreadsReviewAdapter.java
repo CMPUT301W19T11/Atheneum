@@ -1,7 +1,10 @@
-package com.example.atheneum.models;
+package com.example.atheneum.utils;
 
-import android.util.Patterns;
+import android.util.Log;
 import android.util.Xml;
+
+import com.example.atheneum.models.Book;
+import com.example.atheneum.models.GoodreadsReviewInfo;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -17,6 +20,8 @@ import java.util.regex.Pattern;
  * https://developer.android.com/training/basics/network-ops/xml
  */
 public class GoodreadsReviewAdapter {
+    private static final String TAG = "GoodreadsReviewAdapter";
+
     private String responseXML;
     private GoodreadsReviewInfo reviewInfo = null;
 
@@ -29,7 +34,7 @@ public class GoodreadsReviewAdapter {
         try {
             this.reviewInfo = xmlToReviewInfo();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, Log.getStackTraceString(e));
             this.reviewInfo = new GoodreadsReviewInfo();
         }
 
@@ -179,6 +184,7 @@ public class GoodreadsReviewAdapter {
         try{
             return Long.parseLong(isbn_str);
         }catch (Exception e) {
+
             return Book.INVALILD_ISBN;
         }
     }
