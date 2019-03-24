@@ -12,11 +12,14 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NotificationsViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
     // Serialized user data to sent to view
-    private final LiveData<Notification> notificationLiveData;
+    private final LiveData<List<Notification>> notificationLiveData;
     // Reference to user in Firebase
     private final DatabaseReference notificationsRef;
 
@@ -25,17 +28,16 @@ public class NotificationsViewModel extends ViewModel {
     public NotificationsViewModel(String userID) {
         notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
         queryLiveData = new FirebaseQueryLiveData(notificationsRef);
-        notificationLiveData = Transformations.map(queryLiveData,
-                new NotificationsViewModel.Deserializer());
-    }
-
-    private class Deserializer implements Function<DataSnapshot, Notification> {
-        @Override
-        public Notification apply(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.getChildrenCount() > 0)
-                return dataSnapshot.getChildren().iterator().next().getValue(Notification.class);
-            return null;
-        }
+        notificationLiveData = Transformations.map(queryLiveData, new Function<DataSnapshot, List<Notification>>() {
+            @Override
+            public List<Notification> apply(DataSnapshot dataSnapshot) {
+                List<Notification> notificationList = new ArrayList<Notification>();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    notificationList.add(data.getValue(Notification.class));
+                }
+                return notificationList;
+            }
+        });
     }
 
     /**
@@ -43,7 +45,7 @@ public class NotificationsViewModel extends ViewModel {
      * @return Observable User data from Firebase
      */
     @NonNull
-    public LiveData<Notification> getNotificationLiveData() {
+    public LiveData<List<Notification>> getNotificationLiveData() {
         return notificationLiveData;
     }
 }
