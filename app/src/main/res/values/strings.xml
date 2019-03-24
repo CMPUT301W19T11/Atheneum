@@ -115,14 +115,14 @@
 
     <!--Strings for ViewEditBookPhotos-->
     <!--<string name="title_activity_view_edit_book_photos">View Book Photos</string>-->
-    <string name="activity_title_view_book_photos">View Photos</string>
-    <string name="activity_title_edit_book_photos">Edit Photos</string>
+    <string name="activity_title_view_book_photos">View Book Photos</string>
+    <string name="activity_title_edit_book_photos">Edit Book Photos</string>
     <string name="book_photo_dialog_delete_prompt">Are you sure you want to delete this photo?</string>
     <string name="book_photo_dialog_edit_prompt">Are you sure you want to edit this photo?</string>
     <!--End of Strings for ViewEditBookPhotos-->
 
     <!--Strings for BookInfoActivity-->
-    <string name="book_form_delete_book_dialog_delete_prompt">Are you sure you want to delete this book?</string>
+    <string name="delete_book_dialog_prompt">Are you sure you want to delete this book?</string>
     <!--End of Strings for BookInfoActivity-->
 
     <!--Strings for Generic Dialog Actions-->

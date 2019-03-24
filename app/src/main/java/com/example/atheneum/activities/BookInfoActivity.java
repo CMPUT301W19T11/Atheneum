@@ -384,7 +384,7 @@ public class BookInfoActivity extends AppCompatActivity {
             case R.id.form_delete_book:
                 Log.i(TAG, "delete book clicked!");
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.book_form_delete_book_dialog_delete_prompt))
+                builder.setMessage(getString(R.string.delete_book_dialog_prompt))
                         .setPositiveButton(getString(R.string.dialog_delete), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
