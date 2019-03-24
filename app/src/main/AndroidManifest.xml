@@ -76,6 +76,11 @@
             android:theme="@style/AppTheme"></activity>
 
         <activity
+            android:name=".activities.GoodreadsReviewsActivity"
+            android:label="Goodreads Reviews"
+            android:theme="@style/AppTheme"></activity>
+
+        <activity
             android:name=".activities.ShowRequestInfoActivity"
             android:label="@string/RequestInfo"
             android:theme="@style/AppTheme"></activity>
@@ -84,7 +89,6 @@
             android:name=".activities.AvailableBookInfoActivity"
             android:label="@string/AvailableBookInfo"
             android:theme="@style/AppTheme"></activity>
-
       
     </application>
 

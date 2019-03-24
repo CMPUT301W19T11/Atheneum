@@ -10,13 +10,12 @@
 
 package com.example.atheneum.activities;
 
-import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,14 +31,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.utils.GoodreadsReviewAdapter;
+import com.example.atheneum.models.GoodreadsReviewInfo;
+import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.Notification;
-import com.example.atheneum.models.Request;
+//import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
+import com.example.atheneum.utils.ConnectionChecker;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
@@ -67,6 +75,7 @@ import com.google.firebase.database.ValueEventListener;
  * Provides the UI fields and buttons for deleting and editing a book.
  */
 public class BookInfoActivity extends AppCompatActivity {
+    private Context ctx;
 
     String title;
     String author;
@@ -89,6 +98,13 @@ public class BookInfoActivity extends AppCompatActivity {
     private RecyclerView requestsRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager requestsLayoutManager;
+
+    // temporary initialization
+    private GoodreadsReviewInfo goodreadsReviewInfo =
+            new GoodreadsReviewInfo(Book.INVALILD_ISBN, GoodreadsReviewInfo.INVALID_RATING,null);
+    private RatingBar goodreadsAvgRatingbar;
+    private Button getReviewsBtn;
+
 
     private Button deleteBtn;
     private Button editBtn;
@@ -122,6 +138,8 @@ public class BookInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_book_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ctx = this;
 
         bookID = getIntent().getStringExtra("bookID");
         Log.i("bookid value: ", bookID);
@@ -315,6 +333,26 @@ public class BookInfoActivity extends AppCompatActivity {
 
         }
 
+
+        hideGoodreadsReview();
+        showGoodreadsReviewError("Loading...\n");
+        // TODO deal with goodreads reviews
+        bookLiveData.observe(this, new Observer<Book>() {
+            @Override
+            public void onChanged(@Nullable Book book) {
+                long isbn = book.getIsbn();
+                getGoodreadsReviewInfo(isbn);
+
+                getReviewsBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
+                    }
+                });
+//                bookLiveData.removeObserver(this);
+            }
+        });
+
         deleteBtn = findViewById(R.id.buttonDelete);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -368,6 +406,96 @@ public class BookInfoActivity extends AppCompatActivity {
             bookInfoViewModel.deleteBook(firebaseUser.getUid());
             finish();
         }
+    }
+
+    /**
+     * Attempt to get information from goodreads
+     */
+    public void getGoodreadsReviewInfo(long isbn) {
+        // show error instead if there is no internet connection
+        ConnectionChecker connectionChecker = new ConnectionChecker(this);
+        if (!connectionChecker.isNetworkConnected()) {
+            hideGoodreadsReview();
+            showGoodreadsReviewError("Ratings and reviews unavailable while offline. \n");
+            return;
+        }
+
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        String apiRequestURL = null;
+
+
+        // null check for ISBN
+        if (textIsbn.getText() != null && !textIsbn.getText().toString().equals("")) {
+            apiRequestURL = "https://www.goodreads.com/book/isbn/" + String.valueOf(isbn) +
+                    "?key=" + getString(R.string.GoodreadsAPI);
+        }
+
+        if (apiRequestURL != null) {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, apiRequestURL,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
+                            goodreadsReviewInfo = reviewAdapter.getReviewInfo();
+
+                            hideGoodreadsReviewError();
+                            showGoodreadsReview();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, "API Response error");
+                            hideGoodreadsReview();
+                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                        }
+                    });
+
+            SingletonRequestQueue.getInstance(this).getRequestQueue().add(stringRequest);
+
+        }
+    }
+
+    private void hideGoodreadsReviewError() {
+        // hide the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setVisibility(View.GONE);
+    }
+
+    private void showGoodreadsReviewError(String errorMessage) {
+        // show the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setText(errorMessage);
+        goodreadsErrorTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideGoodreadsReview() {
+        // hide the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.GONE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.GONE);
+    }
+
+    private void showGoodreadsReview() {
+        Log.i(TAG, "Rating: " + goodreadsReviewInfo.getAvg_rating());
+        // show the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.VISIBLE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.VISIBLE);
+
+        if (goodreadsReviewInfo != null){
+            goodreadsAvgRatingbar.setRating(goodreadsReviewInfo.getAvg_rating());
+        }
+    }
+
+    private void gotoReviewsActivity(String widgetURL) {
+        Intent intent = new Intent(this, GoodreadsReviewsActivity.class);
+
+        intent.putExtra(GoodreadsReviewsActivity.WEBVIEW_URL, widgetURL);
+        startActivity(intent);
     }
 
     /**
@@ -433,8 +561,8 @@ public class BookInfoActivity extends AppCompatActivity {
         );
         declineNotification.constructMessage(loggedInUser.getUserName(),
                 bookInfoViewModel.getBookLiveData().getValue().getTitle());
-        Request request = new Request(requester.getUserID(), bookID);
-        request.setrStatus(Request.Status.ACCEPTED);
+        com.example.atheneum.models.Request request = new com.example.atheneum.models.Request(requester.getUserID(), bookID);
+        request.setrStatus(com.example.atheneum.models.Request.Status.ACCEPTED);
         DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
     }
 }
