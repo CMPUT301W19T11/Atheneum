@@ -337,7 +337,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
 
         hideGoodreadsReview();
-        showGoodreadsReviewError("Loading...");
+        showGoodreadsReviewError("Loading...\n");
         // TODO deal with goodreads reviews
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
@@ -351,7 +351,6 @@ public class BookInfoActivity extends AppCompatActivity {
                         gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
                     }
                 });
-
 //                bookLiveData.removeObserver(this);
             }
         });
@@ -421,7 +420,7 @@ public class BookInfoActivity extends AppCompatActivity {
         ConnectionChecker connectionChecker = new ConnectionChecker(this);
         if (!connectionChecker.isNetworkConnected()) {
             hideGoodreadsReview();
-            showGoodreadsReviewError("Ratings and reviews unavailable while offline.");
+            showGoodreadsReviewError("Ratings and reviews unavailable while offline. \n");
             return;
         }
 
@@ -453,7 +452,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             Log.e(TAG, "API Response error");
                             hideGoodreadsReview();
-                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads.");
+                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
                         }
                     });
 

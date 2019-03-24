@@ -140,8 +140,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Goodreads ratings and reviews unavailable."
-                android:textColor="@color/design_default_color_primary_dark"
-                android:visibility="gone"/>
+                android:textColor="@color/browser_actions_title_color"
+                android:visibility="gone" />
 
             <RatingBar
                 android:id="@+id/goodreadsAvgRatingBar"
