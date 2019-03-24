@@ -63,8 +63,7 @@ public class Notification {
      */
     public Notification(String requesterID, String ownerID,
                         String notificationReceiverID, String bookID,
-                        NotificationType rNotificationType, String message,
-                        boolean isSeen) {
+                        NotificationType rNotificationType, String message) {
         this.notificationID = UUID.randomUUID().toString();
         this.requesterID = requesterID;
         this.ownerID = ownerID;
@@ -72,7 +71,6 @@ public class Notification {
         this.bookID = bookID;
         this.rNotificationType = rNotificationType;
         this.message = message;
-        this.isSeen = isSeen;
     }
 
     /**

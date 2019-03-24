@@ -52,8 +52,9 @@ public class NotificationsActivity extends AppCompatActivity {
         notificationListAdapter.setOnClickListener(new NotificationListAdapter.onClickListener() {
             @Override
             public void onClick(@NonNull Notification notification) {
-                // TODO: START ACTIVITY TO SHOW BOOK
                 Log.i(TAG, "NOTIFICATION CLICKED: " + notification.getMessage());
+
+
                 //showBookInfo(notification);
             }
         });
@@ -77,7 +78,7 @@ public class NotificationsActivity extends AppCompatActivity {
      * Starts BookInfoActivity
      */
 //    private void showBookInfo(Notification notification) {
-//        Intent showBookIntent = new Intent(getApplicationContext(), /* TODO: BOOK INFO ACTIVITY */);
+//        Intent showBookIntent = new Intent(getApplicationContext(), /* TODO: WAITING ON REFACTORED BOOKINFOACTIVITY */);
 //        showBookIntent.putExtra("bookID", notification.getBookID());
 //        startActivity(showBookIntent);
 //    }
