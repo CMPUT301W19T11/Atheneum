@@ -15,7 +15,6 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -33,12 +32,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.ConnectionChecker;
@@ -49,8 +44,6 @@ import com.example.atheneum.viewmodels.AddBookViewModel;
 import com.example.atheneum.viewmodels.AddBookViewModelFactory;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
-import com.example.atheneum.viewmodels.FirstBookPhotoViewModel;
-import com.example.atheneum.viewmodels.FirstBookPhotoViewModelFactory;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -400,9 +393,9 @@ public class AddEditBookActivity extends AppCompatActivity {
                         Log.i(TAG, "newBook " + newBook.toString());
                         addBookViewModel.addBook(owner, newBook);
 
-                        Intent intent = new Intent(getApplicationContext(), ViewEditBookPhotos.class);
-                        intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, newBook.getBookID());
-                        intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, newBook.getOwnerID());
+                        Intent intent = new Intent(getApplicationContext(), ViewEditBookPhotosActivity.class);
+                        intent.putExtra(ViewEditBookPhotosActivity.INTENT_BOOK_ID, newBook.getBookID());
+                        intent.putExtra(ViewEditBookPhotosActivity.INTENT_OWNER_USER_ID, newBook.getOwnerID());
                         startActivity(intent);
                     } else {
                         Log.i(TAG, "owner is null!");

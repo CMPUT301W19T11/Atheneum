@@ -31,12 +31,12 @@ import java.util.ArrayList;
 /**
  * Activity used to perform CRUD operations on a list of photos associated with a particular book.
  */
-public class ViewEditBookPhotos extends AppCompatActivity {
-    private static final String TAG = ViewEditBookPhotos.class.getSimpleName();
+public class ViewEditBookPhotosActivity extends AppCompatActivity {
+    private static final String TAG = ViewEditBookPhotosActivity.class.getSimpleName();
     public static final String INTENT_BOOK_ID =
-            ViewEditBookPhotos.class.getCanonicalName() + ":BOOK_ID";
+            ViewEditBookPhotosActivity.class.getCanonicalName() + ":BOOK_ID";
     public static final String INTENT_OWNER_USER_ID =
-            ViewEditBookPhotos.class.getCanonicalName() + ":OWNER_USER_ID";
+            ViewEditBookPhotosActivity.class.getCanonicalName() + ":OWNER_USER_ID";
 
     private CameraHandler cameraHandler;
     private BookPhotosViewModel bookPhotosViewModel;

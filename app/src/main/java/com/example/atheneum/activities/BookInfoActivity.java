@@ -10,7 +10,6 @@
 
 package com.example.atheneum.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -18,7 +17,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -369,9 +367,9 @@ public class BookInfoActivity extends AppCompatActivity {
             case R.id.form_edit_book_photos:
                 Log.i(TAG, "edit photos clicked!");
                 if (book != null) {
-                    Intent intent = new Intent(BookInfoActivity.this, ViewEditBookPhotos.class);
-                    intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, bookID);
-                    intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, book.getOwnerID());
+                    Intent intent = new Intent(BookInfoActivity.this, ViewEditBookPhotosActivity.class);
+                    intent.putExtra(ViewEditBookPhotosActivity.INTENT_BOOK_ID, bookID);
+                    intent.putExtra(ViewEditBookPhotosActivity.INTENT_OWNER_USER_ID, book.getOwnerID());
                     startActivity(intent);
                 }
                 return true;
