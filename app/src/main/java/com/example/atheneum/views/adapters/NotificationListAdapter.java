@@ -1,5 +1,6 @@
 package com.example.atheneum.views.adapters;
 
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;
@@ -14,6 +15,9 @@ import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Notification;
+import com.example.atheneum.viewmodels.NotificationsViewModel;
+
+import java.util.List;
 
 /**
  * Adapter for notifications RecyclerView
@@ -23,6 +27,7 @@ import com.example.atheneum.models.Notification;
 public class NotificationListAdapter extends ListAdapter<Notification, NotificationListAdapter.ViewHolder> {
     private final static String TAG = NotificationListAdapter.class.getSimpleName();
     public final Context mContext;
+    private NotificationsViewModel mNotificationsViewModel;
 
     public static final DiffUtil.ItemCallback<Notification> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<Notification>() {
@@ -42,6 +47,14 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
     {
         super(DIFF_CALLBACK);
         mContext = context;
+    }
+
+    public Context getContext() {
+        return mContext;
+    }
+
+    public void setNotificationsViewModel(NotificationsViewModel notificationsViewModel) {
+        mNotificationsViewModel = notificationsViewModel;
     }
 
     /**
@@ -127,5 +140,10 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
             holder.notificationCard
                     .setBackgroundColor(mContext.getResources().getColor(R.color.notificationNotSeen));
         }
+    }
+
+    public void deleteItem(int position) {
+        Log.i(TAG, "SWIPED, DELETE ITEM: " + position);
+        mNotificationsViewModel.deleteNotification(position);
     }
 }

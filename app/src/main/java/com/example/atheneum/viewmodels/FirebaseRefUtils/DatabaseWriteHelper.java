@@ -305,6 +305,27 @@ public class DatabaseWriteHelper {
         });
     }
 
+    public static void deleteNotification(Notification notification) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+
+        final String notificationsRef = String.format("notifications/%s/%s",
+                notification.getNotificationReceiverID(), notification.getNotificationID());
+
+        updates.put(notificationsRef, null);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef);
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
+
     public static void makeNotificationSeen(Notification notification) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 

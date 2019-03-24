@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
@@ -42,11 +43,28 @@ public class NotificationsViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Make notification seen
+     *
+     * @param notification
+     */
     public void makeNotificationSeen(Notification notification) {
         if (!notification.getIsSeen()) {
             notification.setIsSeen(true);
             DatabaseWriteHelper.makeNotificationSeen(notification);
         }
+    }
+
+    /**
+     * Delete notification
+     *
+     * @param position
+     */
+    public void deleteNotification(int position) {
+        List<Notification> notifications = getNotificationLiveData().getValue();
+        Notification deletedNotification = notifications.get(position);
+        Log.i(TAG, "delete notification from LiveData: " + deletedNotification.getMessage());
+        DatabaseWriteHelper.deleteNotification(deletedNotification);
     }
 
     /**

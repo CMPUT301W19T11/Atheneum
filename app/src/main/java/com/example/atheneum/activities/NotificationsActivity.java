@@ -11,11 +11,13 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.SwipeToDeleteCallback;
 import com.example.atheneum.viewmodels.NotificationsViewModel;
 import com.example.atheneum.viewmodels.NotificationsViewModelFactory;
 import com.example.atheneum.views.adapters.NotificationListAdapter;
@@ -38,6 +40,14 @@ public class NotificationsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        setUpRecyclerView();
+        subscribeToModel();
+    }
+
+    /**
+     * Sets up the RecyclerView
+     */
+    private void setUpRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -58,6 +68,15 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
+        ItemTouchHelper itemTouchHelper = new
+                ItemTouchHelper(new SwipeToDeleteCallback(notificationListAdapter));
+        itemTouchHelper.attachToRecyclerView(notificationsRecyclerView);
+    }
+
+    /**
+     * Sets up NotificationsViewModel and observe the LiveData
+     */
+    private void subscribeToModel() {
         String userID = FirebaseAuthUtils.getCurrentUser().getUid();
 
         notificationsViewModel = ViewModelProviders
@@ -71,6 +90,7 @@ public class NotificationsActivity extends AppCompatActivity {
                 }
             }
         });
+        notificationListAdapter.setNotificationsViewModel(notificationsViewModel);
     }
 
     /**
