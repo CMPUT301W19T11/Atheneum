@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class NotificationListAdapter extends ListAdapter<Notification, NotificationListAdapter.ViewHolder> {
     private final static String TAG = NotificationListAdapter.class.getSimpleName();
-    public final Context mContext;
+    private final Context mContext;
     private NotificationsViewModel mNotificationsViewModel;
 
     public static final DiffUtil.ItemCallback<Notification> DIFF_CALLBACK =
@@ -142,6 +142,11 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
         }
     }
 
+    /**
+     * Delete notification from list
+     *
+     * @param position
+     */
     public void deleteItem(int position) {
         Notification deletedNotification = getItem(position);
         Log.i(TAG, "SWIPED, DELETE ITEM: " + position);

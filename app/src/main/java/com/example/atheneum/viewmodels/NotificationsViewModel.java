@@ -44,7 +44,7 @@ public class NotificationsViewModel extends ViewModel {
     }
 
     /**
-     * Make notification seen
+     * Make notification seen in Firebase
      *
      * @param notification
      */
@@ -56,9 +56,9 @@ public class NotificationsViewModel extends ViewModel {
     }
 
     /**
-     * Delete notification
+     * Delete notification from Firebase
      *
-     * @param position
+     * @param deletedNotification
      */
     public void deleteNotification(Notification deletedNotification) {
         Log.i(TAG, "delete notification from LiveData: " + deletedNotification.getMessage());
