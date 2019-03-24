@@ -11,9 +11,11 @@
 package com.example.atheneum.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -27,6 +29,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -100,6 +104,8 @@ public class BookInfoActivity extends AppCompatActivity {
     private Button deleteBtn;
     private Button editBtn;
 
+    private Book book;
+
     private LinearLayout borrowerProfileArea;
 
     private static final String TAG = BookInfoActivity.class.getSimpleName();
@@ -172,6 +178,8 @@ public class BookInfoActivity extends AppCompatActivity {
             @Override
             public void onChanged(final @Nullable Book book) {
                 if (book != null) {
+                    BookInfoActivity.this.book = book;
+
                     textTitle.setText(book.getTitle());
                     textAuthor.setText(book.getAuthor());
                     textIsbn.setText(String.valueOf(book.getIsbn()));
@@ -179,16 +187,6 @@ public class BookInfoActivity extends AppCompatActivity {
                     textStatus.setText(String.valueOf(book.getStatus()));
                     setStatusTextColor(book);
                     borrowerID = book.getBorrowerID();
-
-                    bookImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(BookInfoActivity.this, ViewEditBookPhotos.class);
-                            intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, bookID);
-                            intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, book.getOwnerID());
-                            startActivity(intent);
-                        }
-                    });
 
                     // using borrowerID, show borrower email and profile image, or "None"
                     final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
@@ -356,23 +354,61 @@ public class BookInfoActivity extends AppCompatActivity {
                     DividerItemDecoration.VERTICAL));
 
         }
-
-        deleteBtn = findViewById(R.id.buttonDelete);
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteBook();
-            }
-        });
-
-        editBtn = findViewById(R.id.buttonEdit);
-        editBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editBook();
-            }
-        });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_book_info, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.form_edit_book_photos:
+                Log.i(TAG, "edit photos clicked!");
+                if (book != null) {
+                    Intent intent = new Intent(BookInfoActivity.this, ViewEditBookPhotos.class);
+                    intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, bookID);
+                    intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, book.getOwnerID());
+                    startActivity(intent);
+                }
+                return true;
+
+            case R.id.form_edit_book:
+                Log.i(TAG, "edit book clicked!");
+                editBook();
+                return true;
+
+            case R.id.form_delete_book:
+                Log.i(TAG, "delete book clicked!");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.book_form_delete_book_dialog_delete_prompt))
+                        .setPositiveButton(getString(R.string.dialog_delete), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteBook();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do Nothing
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 
     /**
      * Start activity for a user's profile
@@ -388,7 +424,7 @@ public class BookInfoActivity extends AppCompatActivity {
      * Start activity for editing the book
      */
     public void editBook(){
-        Log.i(TAG, "Edit book button pressed");
+        Log.i(TAG, "in editBook()");
         Intent intent = new Intent(this, AddEditBookActivity.class);
 //        intent.putExtra("ADD_EDIT_BOOK_MODE", EDIT_BOOK);
         intent.putExtra("BookID", bookID);
@@ -402,7 +438,7 @@ public class BookInfoActivity extends AppCompatActivity {
      * Triggers bookInfoViewModel to delete book
      */
     public void deleteBook(){
-        Log.i(TAG, "Delete book button pressed");
+        Log.i(TAG, "in deleteBook()");
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();

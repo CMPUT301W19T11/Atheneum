@@ -155,27 +155,6 @@
 
             </android.support.v7.widget.RecyclerView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:padding="25dp">
-
-                <Button
-                    android:id="@+id/buttonDelete"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="Delete" />
-
-                <Button
-                    android:id="@+id/buttonEdit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="Edit" />
-
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
