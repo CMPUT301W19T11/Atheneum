@@ -14,7 +14,7 @@ public class Notification {
     private String bookID;
     private NotificationType rNotificationType;
     private String message;
-    private boolean isSeen;
+    private boolean isSeen = false;
     private Date creationDate = new Date();
 
     /**
@@ -46,7 +46,6 @@ public class Notification {
         this.ownerID = "";
         this.notificationReceiverID = "";
         this.bookID = "";
-        this.isSeen = false;
         this.rNotificationType = null;
         this.message = "";
     }
