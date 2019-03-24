@@ -34,7 +34,7 @@ public class NotificationsViewModel extends ViewModel {
             public List<Notification> apply(DataSnapshot dataSnapshot) {
                 List<Notification> notificationList = new ArrayList<Notification>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    // reverse elements to for reverse-chronological time
+                    // reverses elements for reverse-chronological time ordering in list
                     notificationList.add(0, data.getValue(Notification.class));
                 }
                 return notificationList;
