@@ -108,8 +108,6 @@ public class AddEditBookActivity extends AppCompatActivity {
         isbnEditText = findViewById(R.id.isbnEditText);
         descEditText = findViewById(R.id.descEditText);
 
-        bookImage = findViewById(R.id.bookImage);
-
         bookID = getIntent().getStringExtra("BookID");
         if(bookID != null && !bookID.equals("")) {
             setTitle(R.string.activity_title_edit_book);
@@ -127,46 +125,6 @@ public class AddEditBookActivity extends AppCompatActivity {
                         descEditText.setText(book.getDescription());
                     }
                     bookLiveData.removeObserver(this);
-                }
-            });
-
-            FirstBookPhotoViewModelFactory bookPhotoViewModelFactory = new FirstBookPhotoViewModelFactory(bookID);
-            FirstBookPhotoViewModel bookPhotoViewModel = ViewModelProviders
-                                                            .of(this, bookPhotoViewModelFactory)
-                                                            .get(FirstBookPhotoViewModel.class);
-            bookPhotoViewModel.getBookPhotoLiveData().observe(this, new Observer<Photo>() {
-                @Override
-                public void onChanged(@Nullable Photo photo) {
-                    Bitmap bitmapPhoto = (photo != null)
-                            ? Photo.DecodeBase64BitmapPhoto(photo.getEncodedString())
-                            : null;
-                    // The fallback image will be displayed if bitmapPhoto is null
-                    Glide.with(getApplicationContext())
-                            .load(bitmapPhoto)
-                            .apply(new RequestOptions()
-                                    .fallback(R.drawable.ic_book_black_150dp)
-                                    .centerCrop()
-                                    .format(DecodeFormat.PREFER_ARGB_8888))
-                            .into(bookImage);
-                }
-            });
-
-            bookImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
-                    bookLiveData.observe(AddEditBookActivity.this, new Observer<Book>() {
-                        @Override
-                        public void onChanged(@Nullable Book book) {
-                            Intent intent = new Intent(AddEditBookActivity.this, ViewEditBookPhotos.class);
-                            intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, bookID);
-                            if (book != null) {
-                                intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, book.getOwnerID());
-                            }
-                            startActivity(intent);
-                            bookLiveData.removeObserver(this);
-                        }
-                    });
                 }
             });
         } else {

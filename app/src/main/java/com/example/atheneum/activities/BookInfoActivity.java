@@ -34,9 +34,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
+import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
@@ -47,6 +51,8 @@ import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
+import com.example.atheneum.viewmodels.FirstBookPhotoViewModel;
+import com.example.atheneum.viewmodels.FirstBookPhotoViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -85,6 +91,7 @@ public class BookInfoActivity extends AppCompatActivity {
     private TextView textIsbn;
     private TextView textDesc;
     private TextView textStatus;
+    private ImageView bookImage;
 
     private RecyclerView requestsRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
@@ -132,15 +139,38 @@ public class BookInfoActivity extends AppCompatActivity {
         textIsbn = (TextView) findViewById(R.id.bookISBN);
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
+        bookImage = (ImageView)findViewById(R.id.bookImage);
 
         borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
+
+
+        FirstBookPhotoViewModelFactory bookPhotoViewModelFactory = new FirstBookPhotoViewModelFactory(bookID);
+        FirstBookPhotoViewModel bookPhotoViewModel = ViewModelProviders
+                                                        .of(this, bookPhotoViewModelFactory)
+                                                        .get(FirstBookPhotoViewModel.class);
+        bookPhotoViewModel.getBookPhotoLiveData().observe(this, new Observer<Photo>() {
+            @Override
+            public void onChanged(@Nullable Photo photo) {
+                Bitmap bitmapPhoto = (photo != null)
+                        ? Photo.DecodeBase64BitmapPhoto(photo.getEncodedString())
+                        : null;
+                // The fallback image will be displayed if bitmapPhoto is null
+                Glide.with(getApplicationContext())
+                        .load(bitmapPhoto)
+                        .apply(new RequestOptions()
+                                .fallback(R.drawable.ic_book_black_150dp)
+                                .centerCrop()
+                                .format(DecodeFormat.PREFER_ARGB_8888))
+                        .into(bookImage);
+            }
+        });
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
         bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
         final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
-            public void onChanged(@Nullable Book book) {
+            public void onChanged(final @Nullable Book book) {
                 if (book != null) {
                     textTitle.setText(book.getTitle());
                     textAuthor.setText(book.getAuthor());
@@ -149,6 +179,16 @@ public class BookInfoActivity extends AppCompatActivity {
                     textStatus.setText(String.valueOf(book.getStatus()));
                     setStatusTextColor(book);
                     borrowerID = book.getBorrowerID();
+
+                    bookImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(BookInfoActivity.this, ViewEditBookPhotos.class);
+                            intent.putExtra(ViewEditBookPhotos.INTENT_BOOK_ID, bookID);
+                            intent.putExtra(ViewEditBookPhotos.INTENT_OWNER_USER_ID, book.getOwnerID());
+                            startActivity(intent);
+                        }
+                    });
 
                     // using borrowerID, show borrower email and profile image, or "None"
                     final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
