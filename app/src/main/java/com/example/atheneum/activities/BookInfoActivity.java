@@ -355,8 +355,6 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
-
-
         deleteBtn = findViewById(R.id.buttonDelete);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override

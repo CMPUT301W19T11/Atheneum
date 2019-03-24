@@ -4,7 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.TextView;
 
 import com.example.atheneum.R;
 
@@ -14,8 +21,14 @@ import com.example.atheneum.R;
  */
 public class GoodreadsReviewsActivity extends AppCompatActivity {
     public static final String WEBVIEW_URL = "webview_url";
+    private static final String TAG = "GRReviewsActivity";
+
     private String urlToShow;
     private WebView webView;
+    private TextView errorMessageTextView;
+
+    // used within the webviewclient
+    private GoodreadsReviewsActivity goodreadsReviewsActivity = this;
 
     @Override
     protected void onStart() {
@@ -35,16 +48,50 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
         // get HTML string from intent
         Intent intent = getIntent();
         urlToShow = intent.getStringExtra(WEBVIEW_URL);
+        errorMessageTextView = findViewById(R.id.webviewErrorTextview);
         webView = findViewById(R.id.reviewsWebView);
+        webView.setWebViewClient(new WebViewClient() {
+            // to deal with errors
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                Log.e(GoodreadsReviewsActivity.TAG, "Error loading page");
+
+                goodreadsReviewsActivity.showWebviewErrorMessage("Invalid page! \nReviews are not available for this book!");
+            }
+
+            // deal with 404 errors
+            // Taken from https://stackoverflow.com/questions/3181843/how-can-i-check-from-android-webview-if-a-page-is-a-404-page-not-found
+            // License: https://creativecommons.org/licenses/by-sa/3.0/
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                String pageTitle = webView.getTitle();
+                Log.i(TAG, "Title:" + pageTitle);
+                String[] separated = pageTitle.split("-");
+                if(separated[0].equals("404")) {
+                    Log.i(TAG, "detect page not found error 404");
+                    goodreadsReviewsActivity.showWebviewErrorMessage("Invalid page! \nReviews are not available for this book!");
+                }
+                else if (pageTitle.equals("about:blank")){
+                    Log.i(TAG, "detect blank page");
+                    goodreadsReviewsActivity.showWebviewErrorMessage("Reviews are not available for this book!");
+                }
+            }
+        });
 
         if (urlToShow != null) {
-            webView.loadUrl(urlToShow);
+            webView.loadUrl("reee");
         }
-        else {
-            // TODO display error text
+        else { // URL was none
+            showWebviewErrorMessage("No Reviews Available");
         }
+    }
 
-
+    private void showWebviewErrorMessage(String message) {
+        webView.setVisibility(View.GONE);
+        errorMessageTextView.setText(message);
+        errorMessageTextView.setVisibility(View.VISIBLE);
     }
 }
 
