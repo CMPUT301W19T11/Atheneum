@@ -14,6 +14,7 @@ public class Notification {
     private String bookID;
     private NotificationType rNotificationType;
     private String message;
+    private boolean isSeen;
     private Date creationDate = new Date();
 
     /**
@@ -40,11 +41,12 @@ public class Notification {
      * Needed for Firebase. Do not use in application code.
      */
     public Notification() {
-        this.notificationID = UUID.randomUUID().toString();;
+        this.notificationID = UUID.randomUUID().toString();
         this.requesterID = "";
         this.ownerID = "";
         this.notificationReceiverID = "";
         this.bookID = "";
+        this.isSeen = false;
         this.rNotificationType = null;
         this.message = "";
     }
@@ -61,7 +63,8 @@ public class Notification {
      */
     public Notification(String requesterID, String ownerID,
                         String notificationReceiverID, String bookID,
-                        NotificationType rNotificationType, String message) {
+                        NotificationType rNotificationType, String message,
+                        boolean isSeen) {
         this.notificationID = UUID.randomUUID().toString();
         this.requesterID = requesterID;
         this.ownerID = ownerID;
@@ -69,6 +72,7 @@ public class Notification {
         this.bookID = bookID;
         this.rNotificationType = rNotificationType;
         this.message = message;
+        this.isSeen = isSeen;
     }
 
     /**
@@ -208,6 +212,24 @@ public class Notification {
         } else if (this.rNotificationType == NotificationType.DECLINE) {
             this.message = userName + " has declined your request for the book " + bookName;
         }
+    }
+
+    /**
+     * Returns isSeen boolean
+     *
+     * @return boolean indicating whether user has clicked this notification
+     */
+    public boolean getSeen() {
+        return isSeen;
+    }
+
+    /**
+     * Sets isSeen
+     *
+     * @param seen
+     */
+    public void setSeen(boolean seen) {
+        this.isSeen = seen;
     }
 
     /**
