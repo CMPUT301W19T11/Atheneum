@@ -14,7 +14,7 @@ public class Notification {
     private String bookID;
     private NotificationType rNotificationType;
     private String message;
-    private boolean isSeen = false;
+    private boolean isSeen;
     private Date creationDate = new Date();
 
     /**
@@ -216,17 +216,17 @@ public class Notification {
      *
      * @return boolean indicating whether user has clicked this notification
      */
-    public boolean getSeen() {
+    public boolean getIsSeen() {
         return isSeen;
     }
 
     /**
      * Sets isSeen
      *
-     * @param seen
+     * @param isSeen
      */
-    public void setSeen(boolean seen) {
-        this.isSeen = seen;
+    public void setIsSeen(boolean isSeen) {
+        this.isSeen = isSeen;
     }
 
     /**

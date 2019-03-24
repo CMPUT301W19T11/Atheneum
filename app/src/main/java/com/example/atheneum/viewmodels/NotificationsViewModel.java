@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -38,6 +39,11 @@ public class NotificationsViewModel extends ViewModel {
                 return notificationList;
             }
         });
+    }
+
+    public void makeNotificationSeen(Notification notification) {
+        notification.setIsSeen(true);
+        DatabaseWriteHelper.makeNotificationSeen(notification);
     }
 
     /**

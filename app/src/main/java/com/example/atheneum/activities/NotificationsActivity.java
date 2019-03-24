@@ -47,15 +47,14 @@ public class NotificationsActivity extends AppCompatActivity {
                 new DividerItemDecoration(
                         notificationsRecyclerView.getContext(),
                         DividerItemDecoration.VERTICAL));
-        notificationListAdapter = new NotificationListAdapter();
+        notificationListAdapter = new NotificationListAdapter(this);
         notificationsRecyclerView.setAdapter(notificationListAdapter);
         notificationListAdapter.setOnClickListener(new NotificationListAdapter.onClickListener() {
             @Override
             public void onClick(@NonNull Notification notification) {
                 Log.i(TAG, "NOTIFICATION CLICKED: " + notification.getMessage());
-
-
                 //showBookInfo(notification);
+                makeNotificationSeen(notification);
             }
         });
 
@@ -82,4 +81,13 @@ public class NotificationsActivity extends AppCompatActivity {
 //        showBookIntent.putExtra("bookID", notification.getBookID());
 //        startActivity(showBookIntent);
 //    }
+
+    /**
+     * Make notification seen, used when user taps on notification
+     *
+     * @param notification
+     */
+    private void makeNotificationSeen(Notification notification) {
+        notificationsViewModel.makeNotificationSeen(notification);
+    }
 }

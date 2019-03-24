@@ -1,10 +1,11 @@
 package com.example.atheneum.views.adapters;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,9 @@ import com.example.atheneum.models.Notification;
  * See: https://developer.android.com/reference/android/support/v7/recyclerview/extensions/ListAdapter
  */
 public class NotificationListAdapter extends ListAdapter<Notification, NotificationListAdapter.ViewHolder> {
+    private final static String TAG = NotificationListAdapter.class.getSimpleName();
+    public final Context mContext;
+
     public static final DiffUtil.ItemCallback<Notification> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<Notification>() {
                 @Override
@@ -34,8 +38,10 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
                 }
             };
 
-    public NotificationListAdapter() {
+    public NotificationListAdapter(Context context)
+    {
         super(DIFF_CALLBACK);
+        mContext = context;
     }
 
     /**
@@ -114,7 +120,14 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
                 .getRelativeTimeSpanString(notification.getCreationDate().getTime());
         holder.time.setText(momentsAgo);
 
-        // TODO: SET COLOUR OF NOTIFICATION INDICATING WHETHER HAS CLICKED ON OR NOT
-        holder.notificationCard.setBackgroundColor(Color.RED);
+        Log.i(TAG, Boolean.toString(notification.getIsSeen()));
+
+        if (notification.getIsSeen()) {
+            holder.notificationCard
+                    .setBackgroundColor(mContext.getResources().getColor(R.color.notificationSeen));
+        } else {
+            holder.notificationCard
+                    .setBackgroundColor(mContext.getResources().getColor(R.color.notificationNotSeen));
+        }
     }
 }
