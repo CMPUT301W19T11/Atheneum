@@ -404,7 +404,7 @@ public class BookInfoActivity extends AppCompatActivity {
         );
         notification.constructMessage(loggedInUser.getUserName(),
                 bookInfoViewModel.getBookLiveData().getValue().getTitle());
-        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification);
+        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification, true);
     }
 
     /**

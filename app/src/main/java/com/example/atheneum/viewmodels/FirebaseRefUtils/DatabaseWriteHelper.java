@@ -162,6 +162,13 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Triggers when a request is accepted
+     * Used only by other DatabaseWriteHelper methods
+     *
+     * @param bookID
+     * @param notification
+     */
     public static void declineAllRequests(final String bookID, final Notification notification) {
         DatabaseReference bookRequestRef = RequestCollectionRefUtils
                 .getBookRequestCollectionRef(bookID);
@@ -173,7 +180,7 @@ public class DatabaseWriteHelper {
                 notification.setNotificationReceiverID(requesterID);
                 notification.setRequesterID(requesterID);
                 Log.i(TAG, "notification requester ID: " + notification.getRequesterID());
-                declineRequest(requesterID, bookID, notification);
+                declineRequest(requesterID, bookID, notification, false);
             }
 
             @Override
@@ -198,7 +205,8 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void declineRequest(String requesterID, String bookID, Notification notification) {
+    public static void declineRequest(String requesterID, final String bookID,
+                                      Notification notification, final boolean shouldUpdateStatus) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
         final String requesterRef = String.format("requestCollection/%s/%s",
@@ -228,7 +236,46 @@ public class DatabaseWriteHelper {
                     Log.i(TAG, "pushNotificationsRef: " + pushNotificationsRef);
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
+                    if (shouldUpdateStatus) updateBookStatusToAvailable(bookID);
                 }
+            }
+        });
+    }
+
+    /**
+     * Triggers when all requests on a book are declined (no requests are accepted)
+     * Used only by other DatabaseWriteHelper methods
+     */
+    public static void updateBookStatusToAvailable(final String bookID) {
+        DatabaseReference bookRequestRef = RequestCollectionRefUtils
+                .getBookRequestCollectionRef(bookID);
+        bookRequestRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i(TAG, "number of requesters: " + Long.toString(dataSnapshot.getChildrenCount()));
+                // only update status to AVAILABLE when there are no more requesters
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    HashMap<String, Object> updates = new HashMap<String, Object>();
+                    final String bookStatusRef = String.format("books/%s/status", bookID);
+                    updates.put(bookStatusRef, Book.Status.AVAILABLE.toString());
+
+                    RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                            if (databaseError != null) {
+                                Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                                Log.i(TAG, "bookRequestRef: " + bookStatusRef);
+                            } else {
+                                Log.i(TAG, "Successful update at " + databaseReference.toString());
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }
