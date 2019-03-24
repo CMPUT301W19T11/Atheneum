@@ -42,8 +42,10 @@ public class NotificationsViewModel extends ViewModel {
     }
 
     public void makeNotificationSeen(Notification notification) {
-        notification.setIsSeen(true);
-        DatabaseWriteHelper.makeNotificationSeen(notification);
+        if (!notification.getIsSeen()) {
+            notification.setIsSeen(true);
+            DatabaseWriteHelper.makeNotificationSeen(notification);
+        }
     }
 
     /**
