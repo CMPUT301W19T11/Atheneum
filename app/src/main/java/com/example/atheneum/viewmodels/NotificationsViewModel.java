@@ -60,9 +60,7 @@ public class NotificationsViewModel extends ViewModel {
      *
      * @param position
      */
-    public void deleteNotification(int position) {
-        List<Notification> notifications = getNotificationLiveData().getValue();
-        Notification deletedNotification = notifications.get(position);
+    public void deleteNotification(Notification deletedNotification) {
         Log.i(TAG, "delete notification from LiveData: " + deletedNotification.getMessage());
         DatabaseWriteHelper.deleteNotification(deletedNotification);
     }

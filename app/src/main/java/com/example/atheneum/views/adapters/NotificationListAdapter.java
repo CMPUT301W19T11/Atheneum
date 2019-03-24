@@ -143,7 +143,8 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
     }
 
     public void deleteItem(int position) {
+        Notification deletedNotification = getItem(position);
         Log.i(TAG, "SWIPED, DELETE ITEM: " + position);
-        mNotificationsViewModel.deleteNotification(position);
+        mNotificationsViewModel.deleteNotification(deletedNotification);
     }
 }
