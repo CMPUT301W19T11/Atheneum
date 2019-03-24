@@ -103,7 +103,11 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Notification notification = getItem(position);
         holder.message.setText(notification.getMessage());
-        // TODO: MAKE THIS MOMENTS AGO INSTEAD OF JUST THE TIME AND DATE
-        holder.time.setText(notification.getCreationDate().toString());
+        // Formats Date into 'how long ago'
+        // See: https://stackoverflow.com/a/3859298
+        // See: https://developer.android.com/reference/android/text/format/DateUtils.html#getRelativeTimeSpanString%28long%29
+        CharSequence momentsAgo = android.text.format.DateUtils
+                .getRelativeTimeSpanString(notification.getCreationDate().getTime());
+        holder.time.setText(momentsAgo);
     }
 }
