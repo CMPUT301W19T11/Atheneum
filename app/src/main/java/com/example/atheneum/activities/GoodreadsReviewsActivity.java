@@ -50,6 +50,8 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
         urlToShow = intent.getStringExtra(WEBVIEW_URL);
         errorMessageTextView = findViewById(R.id.webviewErrorTextview);
         webView = findViewById(R.id.reviewsWebView);
+//        webView.getSettings().setDomStorageEnabled(true);
+//        webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             // to deal with errors
             @Override
@@ -77,6 +79,9 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
                     Log.i(TAG, "detect blank page");
                     goodreadsReviewsActivity.showWebviewErrorMessage("Reviews are not available for this book!");
                 }
+                else {
+                    goodreadsReviewsActivity.showWebview();
+                }
             }
         });
 
@@ -93,6 +98,11 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
         webView.setVisibility(View.GONE);
         errorMessageTextView.setText(message);
         errorMessageTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void showWebview() {
+        errorMessageTextView.setVisibility(View.GONE);
+        webView.setVisibility(View.VISIBLE);
     }
 }
 
