@@ -13,11 +13,17 @@ import java.util.regex.Pattern;
 
 /**
  * Adapter class for converting the XML response from goodreads into a GoodreadsReveiwInfo Object.
+ * Most of the XML handling taken from the Google tutorial found at
+ * https://developer.android.com/training/basics/network-ops/xml
  */
 public class GoodreadsReviewAdapter {
     private String responseXML;
     private GoodreadsReviewInfo reviewInfo = null;
 
+    /**
+     * Constructor for the object
+     * @param xml the XML response string
+     */
     public GoodreadsReviewAdapter(String xml) {
         this.responseXML = xml;
         try {
@@ -29,11 +35,17 @@ public class GoodreadsReviewAdapter {
 
     }
 
+    /**
+     * Intializes the parser and calls the readFeed function to read the xml
+     *
+     * @return The GoodreadsReviewInfo object generated from the XML string
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private GoodreadsReviewInfo xmlToReviewInfo() throws XmlPullParserException, IOException {
         StringReader input = new StringReader(this.responseXML);
 
         try {
-
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(input);
@@ -44,6 +56,15 @@ public class GoodreadsReviewAdapter {
         }
     }
 
+    /**
+     * Readss the data in the parser and calls readBookEntry on the first book found, which should
+     * be the desired result
+     *
+     * @param parser the XmlPullParser being used
+     * @return
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private GoodreadsReviewInfo readFeed(XmlPullParser  parser) throws XmlPullParserException, IOException {
         GoodreadsReviewInfo reviewInfo = null;// = new GoodreadsReviewInfo();
 
@@ -64,7 +85,13 @@ public class GoodreadsReviewAdapter {
 
     }
 
-    // taken from https://developer.android.com/training/basics/network-ops/xml#skip
+    /**
+     * skips the current take and moves the parser to the next one
+     *
+     * @param parser the XmlPullParser being used
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();
@@ -82,8 +109,33 @@ public class GoodreadsReviewAdapter {
         }
     }
 
+    /**
+     * Reads and returns the text between the start and end tags
+     *
+     * @param parser the XmlPullParser being used
+     * @return the text between the tags
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
+    private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+        String result = "";
+        if (parser.next() == XmlPullParser.TEXT) {
+            result = parser.getText();
+            parser.nextTag();
+        }
+        return result;
+    }
+
+    /**
+     * Reads the data from within a book entry. Currently, takes the ISBN, average rating, and
+     * the src URL of the reviews widget
+     *
+     * @param parser the XmlPullParser being used
+     * @return the {@link GoodreadsReviewInfo} object
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private GoodreadsReviewInfo readBookEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
-//        GoodreadsReviewInfo goodreadsReviewInfo = new GoodreadsReviewInfo();
         long isbn = Book.INVALILD_ISBN;
         float avg_rating = GoodreadsReviewInfo.INVALID_RATING;
         String reviews_widget_url = null;
@@ -111,6 +163,14 @@ public class GoodreadsReviewAdapter {
         return new GoodreadsReviewInfo(isbn, avg_rating, reviews_widget_url);
     }
 
+    /**
+     * Takes the found isbn13 tag and returns the ISBN
+     *
+     * @param parser the XmlPullParser being used
+     * @return the ISBN
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
     private long readIsbn13(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "isbn13");
         String isbn_str = readText(parser);
@@ -123,6 +183,14 @@ public class GoodreadsReviewAdapter {
         }
     }
 
+    /**
+     * Takes the found average_rating tag and returns the average rating
+     *
+     * @param parser the XmlPullParser being used
+     * @return the average rating
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
     private float readAvgRatng(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "average_rating");
         String rating_str = readText(parser);
@@ -135,6 +203,14 @@ public class GoodreadsReviewAdapter {
         }
     }
 
+    /**
+     * Get the review widget html once the reviews_widget tag was found
+     *
+     * @param parser the XmlPullParser being used
+     * @return The review widget html
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
     private String readReviewWidgetHtml(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "reviews_widget");
         String reviewWidgetHtml_str = readText(parser);
@@ -142,15 +218,11 @@ public class GoodreadsReviewAdapter {
         return reviewWidgetHtml_str;
     }
 
-    private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
-        if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.getText();
-            parser.nextTag();
-        }
-        return result;
-    }
-
+    /**
+     * Uses RE to match and extract the src URL from the reviews widget HTML string
+     * @param reviewWidgetHtml
+     * @return the URL of the reviews
+     */
     private String getReviewsUrl(String reviewWidgetHtml) {
         String url = null;
         Pattern pattern = Pattern.compile("(?:src=\\\")([^\"]+)(?:\\\")");
@@ -162,6 +234,10 @@ public class GoodreadsReviewAdapter {
         return url;
     }
 
+    /**
+     * Get the reviewInfo(of type {@link GoodreadsReviewInfo}
+     * @return the {@link GoodreadsReviewInfo} object
+     */
     public GoodreadsReviewInfo getReviewInfo() {
         return reviewInfo;
     }
