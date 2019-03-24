@@ -1,5 +1,6 @@
 package com.example.atheneum.models;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -13,6 +14,8 @@ public class Notification {
     private String bookID;
     private NotificationType rNotificationType;
     private String message;
+    private boolean isSeen;
+    private Date creationDate = new Date();
 
     /**
      * The enum Notification type.
@@ -38,7 +41,7 @@ public class Notification {
      * Needed for Firebase. Do not use in application code.
      */
     public Notification() {
-        this.notificationID = UUID.randomUUID().toString();;
+        this.notificationID = UUID.randomUUID().toString();
         this.requesterID = "";
         this.ownerID = "";
         this.notificationReceiverID = "";
@@ -206,5 +209,32 @@ public class Notification {
         } else if (this.rNotificationType == NotificationType.DECLINE) {
             this.message = userName + " has declined your request for the book " + bookName;
         }
+    }
+
+    /**
+     * Returns isSeen boolean
+     *
+     * @return boolean indicating whether user has clicked this notification
+     */
+    public boolean getIsSeen() {
+        return isSeen;
+    }
+
+    /**
+     * Sets isSeen
+     *
+     * @param isSeen
+     */
+    public void setIsSeen(boolean isSeen) {
+        this.isSeen = isSeen;
+    }
+
+    /**
+     * Gets creation date of notification
+     *
+     * @return creationDate
+     */
+    public Date getCreationDate() {
+        return creationDate;
     }
 }
