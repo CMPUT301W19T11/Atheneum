@@ -71,7 +71,7 @@ public class PushNotificationsService extends Service {
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Notification notification = dataSnapshot.getValue(Notification.class);
                     sendNotification(notification);
-                    DatabaseWriteHelper.deletePushNotification(notification);
+//                    DatabaseWriteHelper.deletePushNotification(notification);
                 }
 
                 @Override
@@ -134,7 +134,7 @@ public class PushNotificationsService extends Service {
         // BELOW IS PLACEHOLDER AND SHOULD BE THE STATUS OF THE REQUEST INSTEAD OF THE NOTIFICATION
         notifyIntent.putExtra("rStatus", notification.getrNotificationType().toString());
         // Set the Activity to start in a new, empty task
-        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Create the TaskStackBuilder and add the intent, which inflates the back stack
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
