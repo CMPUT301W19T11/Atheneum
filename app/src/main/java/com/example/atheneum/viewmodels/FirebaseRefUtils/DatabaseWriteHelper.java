@@ -89,11 +89,15 @@ public class DatabaseWriteHelper {
         final String notificationsRef = String.format("notifications/%s/%s",
                 notification.getNotificationReceiverID(),
                 notification.getNotificationID());
+        final String pushNotificationsRef = String.format("pushNotifications/%s/%s",
+                notification.getNotificationReceiverID(),
+                notification.getNotificationID());
         final String bookStatusRef = String.format("books/%s/status", request.getBookID());
 
         updates.put(requesterRef, request);
         updates.put(bookRequestRef, true);
         updates.put(notificationsRef, notification);
+        updates.put(pushNotificationsRef, notification);
         updates.put(bookStatusRef, Book.Status.REQUESTED.toString());
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
@@ -103,6 +107,8 @@ public class DatabaseWriteHelper {
                     Log.i(TAG, "bookRequestRef: " + bookRequestRef.toString());
                     Log.i(TAG, "requesterRef: " + requesterRef.toString());
                     Log.i(TAG, "notificationRef: " + notificationsRef.toString());
+                    Log.i(TAG, "pushNotificationsRef: " + pushNotificationsRef);
+                    Log.i(TAG, "bookStatusRef: " + bookStatusRef);
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
                 }
@@ -127,12 +133,16 @@ public class DatabaseWriteHelper {
         final String notificationsRef = String.format("notifications/%s/%s",
                 acceptNotification.getNotificationReceiverID(),
                 acceptNotification.getNotificationID());
+        final String pushNotificationsRef = String.format("pushNotifications/%s/%s",
+                acceptNotification.getNotificationReceiverID(),
+                acceptNotification.getNotificationID());
 
         updates.put(requesterRef, request);
         updates.put(bookRequestRef, null);
         updates.put(bookBorrowerIDRef, request.getRequesterID());
         updates.put(bookStatusRef, Book.Status.ACCEPTED.toString());
         updates.put(notificationsRef, acceptNotification);
+        updates.put(pushNotificationsRef, acceptNotification);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
@@ -144,6 +154,7 @@ public class DatabaseWriteHelper {
                     Log.i(TAG, "bookBorrowerIDRef: " + bookBorrowerIDRef.toString());
                     Log.i(TAG, "bookStatusRef: " + bookStatusRef);
                     Log.i(TAG, "notificationsRef: " + notificationsRef);
+                    Log.i(TAG, "pushNotificationsRef: " + pushNotificationsRef);
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
                     declineAllRequests(request.getBookID(), declineNotification);
@@ -152,6 +163,13 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Triggers when a request is accepted
+     * Used only by other DatabaseWriteHelper methods
+     *
+     * @param bookID
+     * @param notification
+     */
     public static void declineAllRequests(final String bookID, final Notification notification) {
         DatabaseReference bookRequestRef = RequestCollectionRefUtils
                 .getBookRequestCollectionRef(bookID);
@@ -163,7 +181,7 @@ public class DatabaseWriteHelper {
                 notification.setNotificationReceiverID(requesterID);
                 notification.setRequesterID(requesterID);
                 Log.i(TAG, "notification requester ID: " + notification.getRequesterID());
-                declineRequest(requesterID, bookID, notification);
+                declineRequest(requesterID, bookID, notification, false);
             }
 
             @Override
@@ -188,20 +206,25 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void declineRequest(String requesterID, String bookID, Notification notification) {
+    public static void declineRequest(String requesterID, final String bookID,
+                                      Notification notification, final boolean shouldUpdateStatus) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
-        final String requesterRef = String.format("requestCollection/%s/%s",
+        final String requesterRef = String.format("requestCollection/%s/%s/rStatus",
                 requesterID, bookID);
         final String bookRequestRef = String.format("bookRequests/%s/%s",
                 bookID, requesterID);
         final String notificationsRef = String.format("notifications/%s/%s",
                 notification.getNotificationReceiverID(),
                 notification.getNotificationID());
+        final String pushNotificationsRef = String.format("pushNotifications/%s/%s",
+                notification.getNotificationReceiverID(),
+                notification.getNotificationID());
 
-        updates.put(requesterRef, null);
+        updates.put(requesterRef, Request.Status.DECLINED);
         updates.put(bookRequestRef, null);
         updates.put(notificationsRef, notification);
+        updates.put(pushNotificationsRef, notification);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
@@ -211,6 +234,71 @@ public class DatabaseWriteHelper {
                     Log.i(TAG, "bookRequestRef: " + bookRequestRef.toString());
                     Log.i(TAG, "requesterRef: " + requesterRef.toString());
                     Log.i(TAG, "notificationsRef: " + notificationsRef.toString());
+                    Log.i(TAG, "pushNotificationsRef: " + pushNotificationsRef);
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                    if (shouldUpdateStatus) updateBookStatusToAvailable(bookID);
+                }
+            }
+        });
+    }
+
+    /**
+     * Triggers when all requests on a book are declined (no requests are accepted)
+     * Used only by other DatabaseWriteHelper methods
+     */
+    public static void updateBookStatusToAvailable(final String bookID) {
+        DatabaseReference bookRequestRef = RequestCollectionRefUtils
+                .getBookRequestCollectionRef(bookID);
+        bookRequestRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i(TAG, "number of requesters: " + Long.toString(dataSnapshot.getChildrenCount()));
+                // only update status to AVAILABLE when there are no more requesters
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    HashMap<String, Object> updates = new HashMap<String, Object>();
+                    final String bookStatusRef = String.format("books/%s/status", bookID);
+                    updates.put(bookStatusRef, Book.Status.AVAILABLE.toString());
+
+                    RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                            if (databaseError != null) {
+                                Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                                Log.i(TAG, "bookRequestRef: " + bookStatusRef);
+                            } else {
+                                Log.i(TAG, "Successful update at " + databaseReference.toString());
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void deletePushNotification(Notification notification) {
+        deletePushNotification(notification.getNotificationReceiverID(), notification.getNotificationID());
+    }
+
+    public static void deletePushNotification(String notificationReceiverID, String notificationID) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+
+        final String pushNotificationsRef = String.format("pushNotifications/%s/%s",
+                notificationReceiverID, notificationID);
+
+        updates.put(pushNotificationsRef, null);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "pushNotificationsRef: " + pushNotificationsRef);
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
                 }
@@ -219,14 +307,10 @@ public class DatabaseWriteHelper {
     }
 
     public static void deleteNotification(Notification notification) {
-        deleteNotification(notification.getNotificationReceiverID(), notification.getNotificationID());
-    }
-
-    public static void deleteNotification(String notificationReceiverID, String notificationID) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
         final String notificationsRef = String.format("notifications/%s/%s",
-                notificationReceiverID, notificationID);
+                notification.getNotificationReceiverID(), notification.getNotificationID());
 
         updates.put(notificationsRef, null);
 
@@ -235,7 +319,28 @@ public class DatabaseWriteHelper {
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
                     Log.w(TAG, "Error updating data at " + databaseReference.toString());
-                    Log.i(TAG, "notificationsRef: " + notificationsRef.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef);
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
+
+    public static void makeNotificationSeen(Notification notification) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+
+        final String notificationsRef = String.format("notifications/%s/%s/isSeen",
+                notification.getNotificationReceiverID(), notification.getNotificationID());
+
+        updates.put(notificationsRef, true);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef);
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
                 }
