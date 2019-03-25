@@ -98,10 +98,10 @@ public class NotificationsActivity extends AppCompatActivity {
      */
     private void showBookInfo(Notification notification) {
         Intent showBookIntent = new Intent(getApplicationContext(), ShowRequestInfoActivity.class);
-        showBookIntent.putExtra("bookID", notification.getBookID());
+        showBookIntent.putExtra(ShowRequestInfoActivity.BOOK_ID, notification.getBookID());
         // TODO: rStatus in ShowRequestInfoActivity should be obtained within itself
         // BELOW IS PLACEHOLDER AND SHOULD BE THE STATUS OF THE REQUEST INSTEAD OF THE NOTIFICATION
-        showBookIntent.putExtra("rStatus", notification.getrNotificationType().toString());
+        showBookIntent.putExtra(ShowRequestInfoActivity.RSTATUS, notification.getrNotificationType().toString());
         startActivity(showBookIntent);
     }
 
