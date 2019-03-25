@@ -127,7 +127,7 @@ public class OwnerPageFragment extends Fragment {
                             .setIndexedQuery(keyQuery, dataRef, Book.class)
                             .build();
 
-            retriveOwnBook(options);
+            retriveOwnBook(options, "ALL");
             //https://stackoverflow.com/questions/2399086/how-to-use-spinner
             //https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
             ownBookSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -141,7 +141,7 @@ public class OwnerPageFragment extends Fragment {
                         keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid());
                     }
                     else{
-                        keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid()).orderByChild("status").equalTo(status);
+                        keyQuery = OwnerCollectionRefUtils.getOwnerCollectionRef(firebaseUser.getUid());
                     }
 //                    keyQuery.orderByChild("books/status").equalTo("REQUESTED");
                     Query query = BooksRefUtils.BOOKS_REF.orderByChild("status").equalTo("REQUESTED");
@@ -152,7 +152,7 @@ public class OwnerPageFragment extends Fragment {
                                     .setIndexedQuery(keyQuery, dataRef, Book.class)
                                     .build();
 
-                    retriveOwnBook(options1);
+                    retriveOwnBook(options1, status);
                     ownerBooksRecyclerView.setAdapter(firebaseRecyclerAdapter);
                 }
 
@@ -303,68 +303,70 @@ public class OwnerPageFragment extends Fragment {
         return this.view;
     }
 
-    public void retriveOwnBook(FirebaseRecyclerOptions<Book> options_new){
+    public void retriveOwnBook(FirebaseRecyclerOptions<Book> options_new, final String status){
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookViewHolder>(options_new) {
             @Override
             protected void onBindViewHolder(@NonNull final BookViewHolder holder, int position, @NonNull final Book book) {
                 Log.i(TAG, "in onBind!");
+                if(status.equals("ALL") || book.getStatus().toString().equals(status)){
+                    //Bind Book object to BookViewHolder
+                    holder.titleTextView.setText(
+                            book.getTitle());
+                    holder.authorTextView.setText(
+                            book.getAuthor());
+                    holder.statusTextView.setText(
+                            book.getStatus().toString());
 
-                //Bind Book object to BookViewHolder
-                holder.titleTextView.setText(
-                        book.getTitle());
-                holder.authorTextView.setText(
-                        book.getAuthor());
-                holder.statusTextView.setText(
-                        book.getStatus().toString());
+                    // change color of status text
+                    setStatusTextColor(holder, book);
 
-                // change color of status text
-                setStatusTextColor(holder, book);
-
-                // retrieve the User's email
-                if (!(book.getBorrowerID() == null || book.getBorrowerID().equals(""))) {
-                    Log.i(TAG, "Borrower exists : " + book.getBorrowerID());
-                    // retrieve email with direct call to firebase
-                    final FirebaseDatabase db = FirebaseDatabase.getInstance();
-                    DatabaseReference borrowerRef = db.getReference().child(getString(R.string.db_users)).child(book.getBorrowerID());
-                    borrowerRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                User borrower = dataSnapshot.getValue(User.class);
-                                holder.borrowerNameTextView.setText(borrower.getUserName());
+                    // retrieve the User's email
+                    if (!(book.getBorrowerID() == null || book.getBorrowerID().equals(""))) {
+                        Log.i(TAG, "Borrower exists : " + book.getBorrowerID());
+                        // retrieve email with direct call to firebase
+                        final FirebaseDatabase db = FirebaseDatabase.getInstance();
+                        DatabaseReference borrowerRef = db.getReference().child(getString(R.string.db_users)).child(book.getBorrowerID());
+                        borrowerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    User borrower = dataSnapshot.getValue(User.class);
+                                    holder.borrowerNameTextView.setText(borrower.getUserName());
+                                }
+                                else {
+                                    Log.e(TAG, "nonexistent user error, shouldn't be here");
+                                }
                             }
-                            else {
-                                Log.e(TAG, "nonexistent user error, shouldn't be here");
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.w(TAG, "User listener was cancelled");
                             }
-                        }
+                        });
+
+                    }
+                    else { // no borrower;
+                        holder.borrowerNameTextView.setText("None");
+                    }
+
+                    holder.bookItem.setOnClickListener(new View.OnClickListener() {
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.w(TAG, "User listener was cancelled");
+                        public void onClick(View v){
+                            //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                            Log.i("OwnerBook", "clicked on a book");
+                            String sBookId = book.getBookID();
+                            Intent intent = new Intent(context, BookInfoActivity.class);
+                            intent.putExtra("bookID", sBookId);
+                            intent.putExtra("position", holder.getAdapterPosition());
+
+                            mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
+
                         }
                     });
 
                 }
-                else { // no borrower;
-                    holder.borrowerNameTextView.setText("None");
-                }
-
-                holder.bookItem.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v){
-                        //                Toast.makeText(parent.getContext(), "Test Click" + String.valueOf(vh.getAdapterPosition()), Toast.LENGTH_SHORT).show();
-                        Log.i("OwnerBook", "clicked on a book");
-                        String sBookId = book.getBookID();
-                        Intent intent = new Intent(context, BookInfoActivity.class);
-                        intent.putExtra("bookID", sBookId);
-                        intent.putExtra("position", holder.getAdapterPosition());
-
-                        mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
-
-                    }
-                });
 
 
             }
