@@ -12,6 +12,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <Spinner
+            android:id="@+id/ownBookSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/requestView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
         <include layout="@layout/owner_books" />
 
     </LinearLayout>
@@ -31,5 +41,7 @@
         app:rippleColor="@android:color/background_light"
         android:tint="@android:color/white"
         android:focusable="true" />
+
+
 
 </android.support.constraint.ConstraintLayout>

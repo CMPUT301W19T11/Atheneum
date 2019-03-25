@@ -92,6 +92,14 @@
     </string-array>
     <!--End of Strings for borrower page-->
 
+    <string-array name="ownBookSpinnerArray">
+        <item>ALL</item>
+        <item>AVAILABLE</item>
+        <item>REQUESTED</item>
+        <item>ACCEPTED</item>
+        <item>BORROWED</item>
+    </string-array>
+
     <!--Strings for search page-->
     <string name="search_page_title">Search</string>
     <string name="title_activity_scan_barcode">ScanBarcodeActivity</string>

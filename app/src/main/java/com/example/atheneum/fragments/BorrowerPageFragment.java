@@ -17,16 +17,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
 
 import com.example.atheneum.activities.ShowRequestInfoActivity;
-import com.example.atheneum.activities.ViewProfileActivity;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.requestAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +37,6 @@ import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * The Borrower page fragment to list borrower's requested books.
@@ -83,7 +79,7 @@ public class BorrowerPageFragment extends Fragment {
         requestView = (ListView) this.view.findViewById(R.id.requestView);
 
         //https://developer.android.com/guide/topics/ui/controls/spinner
-        requestSpinner = (Spinner) this.view.findViewById(R.id.requestSpinner);
+        requestSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
         requestSpinnerAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.requestSpinnerArray));
         requestSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
