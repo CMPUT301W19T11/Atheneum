@@ -132,7 +132,7 @@ public class PushNotificationsService extends Service {
         notifyIntent.putExtra("bookID", notification.getBookID());
         // TODO: rStatus in ShowRequestInfoActivity should be obtained within itself
         // BELOW IS PLACEHOLDER AND SHOULD BE THE STATUS OF THE REQUEST INSTEAD OF THE NOTIFICATION
-        notifyIntent.putExtra("rStatus", notification.getrNotificationType());
+        notifyIntent.putExtra("rStatus", notification.getrNotificationType().toString());
         // Set the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
