@@ -25,14 +25,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Map;
+
+import static com.example.atheneum.utils.GoogleMapConstants.ERROR_DIALOG_REQUEST;
+import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 /**
  * An activity that displays a Google map with a marker (pin) to indicate a particular location.
+ *
+ * See: https://gist.github.com/mitchtabian/2b9a3dffbfdc565b81f8d26b25d059bf
  */
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    public final String TAG = "MapActivity";
+    /**
+     * The constant TAG.
+     */
+    public static final String TAG = "MapActivity";
     private boolean locationPermissionGiven = false;
 
     @Override
@@ -61,11 +69,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(edmonton));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (checkMapServices()) {
+            if (locationPermissionGiven) {
+                getChatRooms();
+            }
+            else {
+                getLocationPermission();
+            }
+        }
+    }
+
     /**
      * Check if Google Maps services is enabled
-     * @return boolean: true if google map services enabled, else false
+     * in isServicesOK method
      *
-     * See: https://gist.github.com/mitchtabian/2b9a3dffbfdc565b81f8d26b25d059bf
+     * then checks that GPS is enabled
+     * in isMapsEnabled method
+     *
+     * @return boolean: true if google map services enabled, else false
      */
     private boolean checkMapServices(){
         if(isServicesOK()){
@@ -76,6 +100,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return false;
     }
 
+    /**
+     * Ask for user to enable GPS in dialog box
+     * Create activity/intent to enable GPS
+     * User response captured in onActivityResult method
+     */
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
@@ -90,6 +119,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         alert.show();
     }
 
+    /**
+     * Check if GPS enabled for Atheneum
+     *
+     * @return boolean: true if GPS enabled, else false
+     */
     public boolean isMapsEnabled(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
@@ -100,10 +134,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return true;
     }
 
+    /**
+     * Request location permission to get user device location
+     * Get response in onRequestPermissionsResult method
+     */
     private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
+        /* The result of the permission request is handled by a callback,
          * onRequestPermissionsResult.
          */
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
@@ -118,6 +154,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Check if google services is installed on device
+     *
+     * @return boolean : true if connected to google services, else false
+     */
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
 
