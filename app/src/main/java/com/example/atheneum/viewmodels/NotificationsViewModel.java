@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.atheneum.models.Notification;
+import com.example.atheneum.models.Request;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;

@@ -63,7 +63,7 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull Notification notification) {
                 Log.i(TAG, "NOTIFICATION CLICKED: " + notification.getMessage());
-                //showBookInfo(notification);
+                showBookInfo(notification);
                 makeNotificationSeen(notification);
             }
         });
@@ -96,11 +96,14 @@ public class NotificationsActivity extends AppCompatActivity {
     /**
      * Starts BookInfoActivity
      */
-//    private void showBookInfo(Notification notification) {
-//        Intent showBookIntent = new Intent(getApplicationContext(), /* TODO: WAITING ON REFACTORED BOOKINFOACTIVITY */);
-//        showBookIntent.putExtra("bookID", notification.getBookID());
-//        startActivity(showBookIntent);
-//    }
+    private void showBookInfo(Notification notification) {
+        Intent showBookIntent = new Intent(getApplicationContext(), ShowRequestInfoActivity.class);
+        showBookIntent.putExtra("bookID", notification.getBookID());
+        // TODO: rStatus in ShowRequestInfoActivity should be obtained within itself
+        // BELOW IS PLACEHOLDER AND SHOULD BE THE STATUS OF THE REQUEST INSTEAD OF THE NOTIFICATION
+        showBookIntent.putExtra("rStatus", notification.getrNotificationType().toString());
+        startActivity(showBookIntent);
+    }
 
     /**
      * Make notification seen, used when user taps on notification
