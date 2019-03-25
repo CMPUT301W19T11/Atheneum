@@ -87,7 +87,13 @@
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:paddingBottom="15dp"
-            android:text="BOOK STATUS GOES HERE"/>
+            android:text="BOOK STATUS GOES HERE" />
+
+        <Button
+            android:id="@+id/scanISBN"
+            android:layout_width="149dp"
+            android:layout_height="wrap_content"
+            android:text="SCAN" />
 
         <TextView
             android:id="@+id/rStatus"

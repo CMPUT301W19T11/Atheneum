@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
+import com.example.atheneum.models.Transaction;
 import com.example.atheneum.models.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +28,7 @@ public class DatabaseWriteHelper {
         final String bookRef = String.format("books/%s", newBook.getBookID());
         final String ownerBookRef = String.format("ownerCollection/%s/%s", owner.getUserID(), newBook.getBookID());
         updates.put(bookRef, newBook);
-        // Even though we are just interested in the bookID, we have store a value for the bookID
+        // Even though we are just interested in the bookID, we have to store a value for the bookID
         // for Firebase. So we just use true.
         updates.put(ownerBookRef, true);
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
@@ -240,5 +241,15 @@ public class DatabaseWriteHelper {
                 }
             }
         });
+    }
+
+    public static void addNewTransaction(Transaction transaction){
+        TransactionRefUtils.TRANSACTION_REF.child(transaction.getBookID()).setValue(transaction);
+
+    }
+
+    public static void updateTransaction(Transaction transaction){
+//        BooksRefUtils.getBookRef(book).setValue(book);
+        TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(transaction);
     }
 }

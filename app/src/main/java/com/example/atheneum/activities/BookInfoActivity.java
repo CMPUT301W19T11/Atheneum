@@ -13,6 +13,7 @@ package com.example.atheneum.activities;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -33,11 +34,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Request;
+import com.example.atheneum.models.Transaction;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
 import com.example.atheneum.utils.FirebaseAuthUtils;
@@ -47,11 +50,15 @@ import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
+import com.example.atheneum.viewmodels.TransactionViewModel;
+import com.example.atheneum.viewmodels.TransactionViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -60,6 +67,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.UUID;
 
 
 /**
@@ -74,7 +83,10 @@ public class BookInfoActivity extends AppCompatActivity {
     String desc;
     private String bookID;
     private String borrowerID;
+    private Book bOok;
+    private String status;
     private BookInfoViewModel bookInfoViewModel;
+    private TransactionViewModel transactionViewModel;
 
     private User loggedInUser;
     private DatabaseReference loggedInUserRef;
@@ -92,6 +104,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     private Button deleteBtn;
     private Button editBtn;
+    private Button scanBtn;
 
     private LinearLayout borrowerProfileArea;
 
@@ -100,6 +113,64 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Log.i(TAG, "Return from scan ISBN");
+        if(requestCode == 0){
+            if(resultCode == CommonStatusCodes.SUCCESS){
+                if(data != null && bOok != null){
+                    Barcode barcode = data.getParcelableExtra("Barcode");
+                    String barcodeISBN = String.valueOf(barcode.displayValue);
+
+                    if(barcodeISBN.equals(Long.toString(bOok.getIsbn()))) {
+                        Log.i(TAG, "They do equal");
+                        Log.i(TAG, "value of bOokID:" + bOok.getBookID());
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(bOok.getBookID());
+                        transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
+                        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+
+                        transactionLiveData.observe(this, new Observer<Transaction>() {
+                            @Override
+                            public void onChanged(@Nullable Transaction transaction) {
+                                if (transaction != null) {
+                                    Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
+                                    transaction.setOScan(true);
+                                    Log.i(TAG, "BScan value:" +  String.valueOf(transaction.getBScan()));
+                                    Log.i(TAG, "OScan value:" +  String.valueOf(transaction.getOScan()));
+                                    Log.i(TAG, "Owner value:" + transaction.getOwnerID());
+                                    Log.i(TAG, "Borrower value:" + transaction.getBorrowerID());
+                                    transaction.setBorrowerID(borrowerID);
+                                    transaction.setOwnerID(loggedInUser.getUserID());
+                                    transactionViewModel.updateTransaction(transaction);
+
+                                    if(transaction.isComplete()){
+                                        bOok.setStatus(Book.Status.BORROWED);
+                                        DatabaseWriteHelper.updateBook(bOok);
+
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    else{
+                            Toast.makeText(this, "Error: The ISBN does not match that of the requested book",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+
+                }
+                else{
+                    Toast.makeText(this, "Error: Barcode not found",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+        else{
+            Log.i(TAG, "in else");
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        Log.i(TAG, "leaving onActivityResult");
     }
 
     @Override
@@ -131,6 +202,8 @@ public class BookInfoActivity extends AppCompatActivity {
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
 
+
+
         borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
@@ -140,11 +213,31 @@ public class BookInfoActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable Book book) {
                 if (book != null) {
+                    bOok = book;
                     textTitle.setText(book.getTitle());
                     textAuthor.setText(book.getAuthor());
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
+                    status = String.valueOf(book.getStatus());
+//                    Log.i(TAG,  "heeeeeeeeeeeeeerrrrrrrrrrree");
+                    Log.i(TAG, "*********" + status);
+                    if(status.equals("ACCEPTED")){
+                        Log.i(TAG, "scan button visible");
+                        scanBtn.setVisibility(View.VISIBLE);
+                        scanBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Log.i(TAG, "ISBN scan requested");
+                                Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+                                startActivityForResult(intent, 0);
+                            }
+                        });
+                    }
+                    else{
+                        Log.i(TAG, "scan button not visible");
+                        scanBtn.setVisibility(View.INVISIBLE);
+                    }
                     setStatusTextColor(book);
                     borrowerID = book.getBorrowerID();
 
@@ -199,6 +292,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
                         borrowerProfileArea.setClickable(false);
                     }
+
                 }
             }
         });
@@ -330,7 +424,46 @@ public class BookInfoActivity extends AppCompatActivity {
                 editBook();
             }
         });
+
+        scanBtn = (Button) findViewById(R.id.scanISBN);
+
+//        TransactionViewModelFactory factory1 = new TransactionViewModelFactory(bookID);
+//        TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory1).get(TransactionViewModel.class);
+//        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+//
+//        transactionLiveData.observe(this, new Observer<Transaction>() {
+//            @Override
+//            public void onChanged(@Nullable Transaction transaction) {
+//                if(transaction != null){
+//                    Log.i(TAG, "transaction exists");
+//                    scanBtn.setVisibility(View.VISIBLE);
+//                }
+//                else{
+//                    Log.i(TAG, "scan button not visible");
+//                    scanBtn.setVisibility(View.INVISIBLE);
+//                }
+//            }
+//        });
+//        Log.i (TAG, "))))))))))))((((((" + status);
+//        Log.i(TAG, "**********" + textStatus.getText().toString());
+//        if(status.equals("ACCEPTED")){
+//            Log.i(TAG, "scan button visible");
+//            scanBtn.setVisibility(View.VISIBLE);
+//            scanBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Log.i(TAG, "ISBN scan requested");
+//                    Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+//                    startActivityForResult(intent, 0);
+//                }
+//            });
+//        }
+//        else{
+//            Log.i(TAG, "scan button not visible");
+//            scanBtn.setVisibility(View.INVISIBLE);
+//        }
     }
+
 
     /**
      * Start activity for a user's profile
@@ -436,5 +569,8 @@ public class BookInfoActivity extends AppCompatActivity {
         Request request = new Request(requester.getUserID(), bookID);
         request.setrStatus(Request.Status.ACCEPTED);
         DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
+
+        Transaction transaction = new Transaction(Transaction.CHECKOUT, null, requester.getUserID(), loggedInUser.getUserID(), bookID, false, false);
+        DatabaseWriteHelper.addNewTransaction(transaction);
     }
 }
