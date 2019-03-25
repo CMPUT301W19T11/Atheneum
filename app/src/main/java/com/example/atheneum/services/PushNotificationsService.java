@@ -71,7 +71,7 @@ public class PushNotificationsService extends Service {
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Notification notification = dataSnapshot.getValue(Notification.class);
                     sendNotification(notification);
-//                    DatabaseWriteHelper.deletePushNotification(notification);
+                    DatabaseWriteHelper.deletePushNotification(notification);
                 }
 
                 @Override
