@@ -89,7 +89,7 @@
             tools:text="BOOK OWNER GOES HERE" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/rStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Status:"
@@ -104,7 +104,7 @@
             android:text="BOOK STATUS GOES HERE"/>
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/rStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Description:"
