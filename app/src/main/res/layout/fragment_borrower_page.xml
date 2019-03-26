@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="@string/requests"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_request"
@@ -33,18 +22,23 @@
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <Spinner
+<<<<<<< HEAD
         android:id="@+id/ownBookSpinner"
         android:layout_width="fill_parent"
+=======
+        android:id="@+id/requestSpinner"
+        android:layout_width="0dp"
+>>>>>>> 0c49113202e3e75f3203ca9c631d8d4e5f6979d4
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/requestView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/requestView"
-        android:layout_width="0dp"
-        android:layout_height="509dp"
+        android:layout_width="wrap_content"
+        android:layout_height="551dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

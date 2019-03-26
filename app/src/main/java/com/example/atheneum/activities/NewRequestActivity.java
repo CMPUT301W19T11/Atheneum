@@ -21,15 +21,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
-import com.example.atheneum.fragments.BorrowerPageFragment;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.activities.MainActivity;
-import com.example.atheneum.models.Notification;
-import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.AvailableBookAdapter;
-import com.example.atheneum.utils.requestAdapter;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

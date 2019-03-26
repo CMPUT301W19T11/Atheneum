@@ -25,7 +25,7 @@ import com.example.atheneum.activities.NewRequestActivity;
 import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
-import com.example.atheneum.utils.requestAdapter;
+import com.example.atheneum.utils.RequestAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +50,7 @@ public class BorrowerPageFragment extends Fragment {
     private Spinner requestSpinner;
 
     private static ArrayList<Pair<Book, String>> requestList = new ArrayList<Pair<Book, String>>();
-    private requestAdapter requestAdapter;
+    private RequestAdapter RequestAdapter;
     private ArrayAdapter<String> requestSpinnerAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
@@ -113,8 +113,8 @@ public class BorrowerPageFragment extends Fragment {
             }
         });
 
-        requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
-        requestView.setAdapter(requestAdapter);
+        RequestAdapter = new RequestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
+        requestView.setAdapter(RequestAdapter);
         requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -154,7 +154,7 @@ public class BorrowerPageFragment extends Fragment {
             }
         });
 //        requestList.clear();
-//        requestAdapter.notifyDataSetChanged();
+//        RequestAdapter.notifyDataSetChanged();
 
 
 
@@ -220,7 +220,7 @@ public class BorrowerPageFragment extends Fragment {
                                         requestList.add(new Pair(book, rStatus));
                                     }
                                 }
-                                requestAdapter.notifyDataSetChanged();
+                                RequestAdapter.notifyDataSetChanged();
 //                                requestList.clear();
 
                             }
