@@ -1,6 +1,7 @@
 package com.example.atheneum.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -95,6 +96,15 @@ public class AvailableBookAdapter extends ArrayAdapter {
         viewHolder.show_title.setText(book.getTitle());
 
         viewHolder.show_status.setText(book.getStatus().toString());
+        if (book.getStatus() == Book.Status.ACCEPTED) {
+            viewHolder.show_status.setTextColor(Color.parseColor("#ce6412"));
+        } else if (book.getStatus() == Book.Status.AVAILABLE) {
+            viewHolder.show_status.setTextColor(Color.parseColor("#008577"));
+        } else if (book.getStatus() == Book.Status.REQUESTED) {
+            viewHolder.show_status.setTextColor(Color.parseColor("#f4c842"));
+        } else if (book.getStatus() == Book.Status.BORROWED) {
+            viewHolder.show_status.setTextColor(Color.parseColor("#af270f"));
+        }
 
 
         return view;

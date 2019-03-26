@@ -12,8 +12,10 @@ package com.example.atheneum.utils;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,10 +61,12 @@ public class requestAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        Book book = (Book) getItem(position);
+        Pair pair = (Pair) getItem(position);
+        Book book = (Book) pair.first;
+        String status = (String) pair.second;
         View view;
         class ViewHolder{
-            TextView show_description;
+            TextView rStatus;
             TextView show_owner;
             TextView show_title;
 
@@ -72,7 +76,7 @@ public class requestAdapter extends ArrayAdapter {
         if(convertView == null){
             view = LayoutInflater.from(getContext()).inflate(resource_id, null);
             viewHolder = new ViewHolder();
-            viewHolder.show_description = (TextView) view.findViewById(R.id.show_description);
+            viewHolder.rStatus = (TextView) view.findViewById(R.id.rStatus);
             viewHolder.show_owner = (TextView) view.findViewById(R.id.show_owner);
             viewHolder.show_title = (TextView) view.findViewById(R.id.show_title);
 
@@ -103,7 +107,17 @@ public class requestAdapter extends ArrayAdapter {
             }
         });
 
-        viewHolder.show_description.setText(book.getDescription());
+        viewHolder.rStatus.setText(status);
+        if(status.equals("PENDING")){
+            viewHolder.rStatus.setTextColor(Color.RED);
+        }
+        else if(status.equals("ACCEPTED")){
+            viewHolder.rStatus.setTextColor(Color.BLUE);
+
+        }
+        else if(status.equals("DECLINED")){
+            viewHolder.rStatus.setTextColor(Color.YELLOW);
+        }
 
         viewHolder.show_title.setText(book.getTitle());
 

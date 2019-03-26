@@ -27,7 +27,12 @@
             android:name=".activities.ViewEditBookPhotosActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <service android:name=".services.NotificationsService" />
+        <activity
+            android:name=".activities.NotificationsActivity"
+            android:label="@string/title_activity_notifications"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <service android:name=".services.PushNotificationsService" />
 
         <activity
             android:name=".activities.EditProfileActivity"
@@ -79,18 +84,20 @@
         <activity
             android:name=".activities.NewRequestActivity"
             android:label="@string/NewRequestActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.GoodreadsReviewsActivity"
+            android:label="Goodreads Reviews"
             android:theme="@style/AppTheme"></activity>
 
         <activity
             android:name=".activities.ShowRequestInfoActivity"
             android:label="@string/RequestInfo"
-            android:theme="@style/AppTheme"></activity>
-
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.AvailableBookInfoActivity"
             android:label="@string/AvailableBookInfo"
-            android:theme="@style/AppTheme"></activity>
-
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

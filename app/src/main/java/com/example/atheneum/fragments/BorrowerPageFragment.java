@@ -7,7 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.util.Pair;
 import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -49,7 +53,7 @@ public class BorrowerPageFragment extends Fragment {
     private ListView requestView;
     private Spinner requestSpinner;
 
-    private static ArrayList<Book> requestList = new ArrayList<Book>();
+    private static ArrayList<Pair<Book, String>> requestList = new ArrayList<Pair<Book, String>>();
     private requestAdapter requestAdapter;
     private ArrayAdapter<String> requestSpinnerAdapter;
     private User borrower;
@@ -118,36 +122,39 @@ public class BorrowerPageFragment extends Fragment {
         requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Book listItem = (Book) requestView.getItemAtPosition(position);
+                Pair listItemPair = (Pair) requestView.getItemAtPosition(position);
+                Book listItem = (Book) listItemPair.first;
 
                 requestInfoIndent.putExtra("bookID", listItem.getBookID());
 
                 Log.d(TAG, "find requested book1 " + listItem.getBookID());
+                requestInfoIndent.putExtra("rStatus", (String) listItemPair.second);
+                startActivity(requestInfoIndent);
 
-                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
-                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
-                        .child(currentUser.getUid()).child(listItem.getBookID());
-                ref_request.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-
-                            String request1 = dataSnapshot.child("bookID").getValue(String.class);
-                            Request.Status status = dataSnapshot.child("rStatus").getValue(Request.Status.class);
-//                            String request1 = dataSnapshot.getValue(String.class).toString();
-                            Log.d(TAG, "find requested book2 " + request1);
-
-
-                            requestInfoIndent.putExtra("rStatus", status.toString());
-                            startActivity(requestInfoIndent);
-                        }
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+//                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
+//                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
+//                        .child(currentUser.getUid()).child(listItem.getBookID());
+//                ref_request.addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()) {
+//
+//                            String request1 = dataSnapshot.child("bookID").getValue(String.class);
+//                            Request.Status status = dataSnapshot.child("rStatus").getValue(Request.Status.class);
+////                            String request1 = dataSnapshot.getValue(String.class).toString();
+//                            Log.d(TAG, "find requested book2 " + request1);
+//
+//
+//                            requestInfoIndent.putExtra("rStatus", status.toString());
+//                            startActivity(requestInfoIndent);
+//                        }
+//
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
             }
         });
 //        requestList.clear();
@@ -209,10 +216,12 @@ public class BorrowerPageFragment extends Fragment {
                                 Log.d(TAG, "find book with rStatus " + rStatus);
                                 if(!requestList.contains(book)){
                                     if(conditions.equals("ALL")){
-                                        requestList.add(book);
+                                        requestList.add(new Pair(book, rStatus));
+
+
                                     }
                                     else if(conditions.equals(rStatus)){
-                                        requestList.add(book);
+                                        requestList.add(new Pair(book, rStatus));
                                     }
                                 }
                                 requestAdapter.notifyDataSetChanged();

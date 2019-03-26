@@ -4,10 +4,10 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-public class UserNotificationsViewModelFactory implements ViewModelProvider.Factory {
+public class NotificationsViewModelFactory implements ViewModelProvider.Factory {
     private final String userID;
 
-    public UserNotificationsViewModelFactory(String userID) {
+    public NotificationsViewModelFactory(String userID) {
         this.userID = userID;
     }
 
@@ -21,6 +21,6 @@ public class UserNotificationsViewModelFactory implements ViewModelProvider.Fact
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new UserNotificationsViewModel(userID);
+        return (T) new NotificationsViewModel(userID);
     }
 }
