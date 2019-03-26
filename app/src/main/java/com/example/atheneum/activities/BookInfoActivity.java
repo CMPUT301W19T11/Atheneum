@@ -340,15 +340,17 @@ public class BookInfoActivity extends AppCompatActivity {
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
-                long isbn = book.getIsbn();
-                getGoodreadsReviewInfo(isbn);
+                if (book != null) {
+                    long isbn = book.getIsbn();
+                    getGoodreadsReviewInfo(isbn);
 
-                getReviewsBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
-                    }
-                });
+                    getReviewsBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
+                        }
+                    });
+                }
 //                bookLiveData.removeObserver(this);
             }
         });
@@ -532,7 +534,7 @@ public class BookInfoActivity extends AppCompatActivity {
         );
         notification.constructMessage(loggedInUser.getUserName(),
                 bookInfoViewModel.getBookLiveData().getValue().getTitle());
-        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification);
+        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification, true);
     }
 
     /**
