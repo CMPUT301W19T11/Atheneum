@@ -39,7 +39,7 @@ import java.util.List;
  * The type Request adapter handles displaying arrays.
  */
 //refer from https://www.sitepoint.com/custom-data-layouts-with-your-own-android-arrayadapter/ on Mar 2, 2019
-public class requestAdapter extends ArrayAdapter {
+public class RequestAdapter extends ArrayAdapter {
     private int resource_id;
     private static User owner;
     private static final String TAG = "FindOwner";
@@ -51,7 +51,7 @@ public class requestAdapter extends ArrayAdapter {
      * @param resource the resource
      * @param objects  the objects
      */
-    public requestAdapter(Context context, int resource, List objects) {
+    public RequestAdapter(Context context, int resource, List objects) {
         super(context, resource, objects);
         resource_id = resource;
     }
@@ -116,7 +116,7 @@ public class requestAdapter extends ArrayAdapter {
 
         }
         else if(status.equals("DECLINED")){
-            viewHolder.rStatus.setTextColor(Color.YELLOW);
+            viewHolder.rStatus.setTextColor(Color.GREEN);
         }
 
         viewHolder.show_title.setText(book.getTitle());
