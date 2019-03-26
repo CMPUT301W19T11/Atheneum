@@ -22,7 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.atheneum.R;
-import com.example.atheneum.controllers.PictureController;
+import com.example.atheneum.utils.CameraHandler;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
@@ -42,7 +42,7 @@ public class EditProfileFragment extends Fragment {
     private EditText phoneNumberField;
     private ImageView profilePicture;
 
-    private PictureController pictureController;
+    private CameraHandler cameraHandler;
     private Bitmap bitmapPhoto;
     private OnEditProfileCompleteListener editProfileCompleteListener;
     private UserViewModel userViewModel;
@@ -75,7 +75,7 @@ public class EditProfileFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Log.i(TAG, "Profile image clicked!");
-            pictureController.dispatchTakePictureIntent();
+            cameraHandler.dispatchTakePictureIntent();
         }
     }
 
@@ -130,7 +130,7 @@ public class EditProfileFragment extends Fragment {
     /**
      * Handles image taken from external camera app
      */
-    private class PictureTakenListener implements PictureController.OnPictureTakenListener {
+    private class PictureTakenListener implements CameraHandler.OnPictureTakenListener {
 
         @Override
         public void onPictureTaken(Bitmap bitmap) {
@@ -179,8 +179,8 @@ public class EditProfileFragment extends Fragment {
         profilePicture = view.findViewById(R.id.user_profile_picture);
         profilePicture.setOnClickListener(new ProfilePictureOnClickListener());
 
-        pictureController = PictureController.newInstance(this);
-        pictureController.setPictureTakenListener(new PictureTakenListener());
+        cameraHandler = CameraHandler.newInstance(this);
+        cameraHandler.setPictureTakenListener(new PictureTakenListener());
 
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
@@ -225,7 +225,7 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        pictureController.onActivityResult(requestCode, resultCode, data);
+        cameraHandler.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -238,6 +238,6 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        pictureController.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        cameraHandler.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

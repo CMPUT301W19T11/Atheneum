@@ -24,6 +24,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".activities.ViewEditBookPhotosActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
             android:name=".activities.NotificationsActivity"
             android:label="@string/title_activity_notifications"
             android:theme="@style/AppTheme.NoActionBar"></activity>
