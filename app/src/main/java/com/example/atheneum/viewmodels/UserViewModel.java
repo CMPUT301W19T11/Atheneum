@@ -35,6 +35,10 @@ public class UserViewModel extends ViewModel {
     // Reference to user in Firebase
     private final DatabaseReference userRef;
 
+    public static String generateViewModelProviderKey(String userID) {
+        return UserViewModel.class.getCanonicalName() + ":" + userID;
+    }
+
     /**
      * Creates an instance of UserViewModel that watches for changes to data held in a Firebase
      * Query, transforms it to a User object, and allows a view to observer for changes on this
