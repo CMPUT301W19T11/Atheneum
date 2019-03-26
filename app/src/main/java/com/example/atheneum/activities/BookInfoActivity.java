@@ -55,7 +55,6 @@ import com.example.atheneum.models.GoodreadsReviewInfo;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Photo;
-import com.example.atheneum.models.Request;
 //import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
@@ -381,16 +380,17 @@ public class BookInfoActivity extends AppCompatActivity {
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
-                long isbn = book.getIsbn();
-                getGoodreadsReviewInfo(isbn);
+                if (book != null) {
+                    long isbn = book.getIsbn();
+                    getGoodreadsReviewInfo(isbn);
 
-                getReviewsBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
-                    }
-                });
-//                bookLiveData.removeObserver(this);
+                    getReviewsBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
+                        }
+                    });
+                }
             }
         });
     }
