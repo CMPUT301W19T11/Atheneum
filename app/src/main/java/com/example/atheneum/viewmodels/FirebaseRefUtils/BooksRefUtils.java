@@ -2,6 +2,7 @@ package com.example.atheneum.viewmodels.FirebaseRefUtils;
 
 import com.example.atheneum.models.Book;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 /**
  * Class used to generate References to objects under the books node in the database.
@@ -28,10 +29,10 @@ public class BooksRefUtils extends RootRefUtils {
     }
 
     /**
-     * @param bookID Book ID of book we're interested in
-     * @return Reference to list of photos associated with the bookID
+     * @param ownerID User ID of the owner
+     * @return Reference to list of books owned by the owner
      */
-    public static DatabaseReference getBookPhotosRef(String bookID) {
-        return getBookRef(bookID).child("photos");
+    public static Query getOwnerBooksRef(String ownerID) {
+        return BOOKS_REF.orderByChild("ownerID").equalTo(ownerID);
     }
 }

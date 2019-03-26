@@ -1,6 +1,7 @@
 package com.example.atheneum.models;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -291,8 +292,23 @@ public class Book {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Book)) return false;
         Book book = (Book) o;
-        return (this.getBookID().equals(book.getBookID()));
+        return getIsbn() == book.getIsbn() &&
+                Objects.equals(getTitle(), book.getTitle()) &&
+                Objects.equals(getDescription(), book.getDescription()) &&
+                Objects.equals(getAuthor(), book.getAuthor()) &&
+                Objects.equals(getOwnerID(), book.getOwnerID()) &&
+                Objects.equals(getBorrowerID(), book.getBorrowerID()) &&
+                getStatus() == book.getStatus() &&
+                Objects.equals(getBookID(), book.getBookID());
+    }
+
+    /**
+     * @return Hash of the book object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIsbn(), getTitle(), getDescription(), getAuthor(), getOwnerID(), getBorrowerID(), getStatus(), getBookID());
     }
 }
