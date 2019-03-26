@@ -12,12 +12,9 @@ package com.example.atheneum.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Picture;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -35,7 +33,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.atheneum.R;
-import com.example.atheneum.controllers.PictureController;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.User;
@@ -47,9 +44,7 @@ import com.example.atheneum.viewmodels.AddBookViewModel;
 import com.example.atheneum.viewmodels.AddBookViewModelFactory;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
 import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -81,6 +76,7 @@ public class AddEditBookActivity extends AppCompatActivity {
     private FloatingActionButton saveBtn;
     private Button scanIsbnBtn;
     private Button autoPopulateByIsbnBtn;
+    private ImageView bookImage;
 
     private String bookID;
 
@@ -106,7 +102,8 @@ public class AddEditBookActivity extends AppCompatActivity {
         descEditText = findViewById(R.id.descEditText);
 
         bookID = getIntent().getStringExtra("BookID");
-        if(bookID != null && !bookID.equals("")){
+        if(bookID != null && !bookID.equals("")) {
+            setTitle(R.string.activity_title_edit_book);
             // populate fields with existing book info if activity was entered for editing
             BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
             bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
@@ -123,6 +120,8 @@ public class AddEditBookActivity extends AppCompatActivity {
                     bookLiveData.removeObserver(this);
                 }
             });
+        } else {
+            setTitle(R.string.activity_title_add_book);
         }
 
         // Setup all edit texts with their validators
@@ -393,6 +392,11 @@ public class AddEditBookActivity extends AppCompatActivity {
                         Book newBook = new Book(isbn, title, desc, author, owner, null, Book.Status.AVAILABLE);
                         Log.i(TAG, "newBook " + newBook.toString());
                         addBookViewModel.addBook(owner, newBook);
+
+                        Intent intent = new Intent(getApplicationContext(), ViewEditBookPhotosActivity.class);
+                        intent.putExtra(ViewEditBookPhotosActivity.INTENT_BOOK_ID, newBook.getBookID());
+                        intent.putExtra(ViewEditBookPhotosActivity.INTENT_OWNER_USER_ID, newBook.getOwnerID());
+                        startActivity(intent);
                     } else {
                         Log.i(TAG, "owner is null!");
                     }

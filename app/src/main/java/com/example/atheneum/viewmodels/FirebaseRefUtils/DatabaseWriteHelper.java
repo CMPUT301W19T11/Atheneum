@@ -1,11 +1,13 @@
 package com.example.atheneum.viewmodels.FirebaseRefUtils;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
+import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.google.firebase.database.ChildEventListener;
@@ -14,11 +16,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class to abstract writes to the database. Abstracting writes to the database in a central
+ * hides information about the database from the views and makes it easier to write multi-path updates
+ * correctly since multi-path updates can touch multiple paths within the database.
+ *
+ * This class should be updated whenever new actions on the database are added.
+ */
 public class DatabaseWriteHelper {
     private static final String TAG = DatabaseWriteHelper.class.getSimpleName();
 
+    /**
+     * Add a new book to the Database
+     *
+     * @param owner Owner of the book.
+     * @param newBook Book object to add to Database.
+     */
     public static void addNewBook(User owner, Book newBook) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
         // Atomically update multiple database paths at once by using a multi-path update
@@ -44,6 +60,12 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Removes a book and it's associated data from the Database.
+     *
+     * @param ownerUserID UserID of the book's owner.
+     * @param bookID Unique identifier of the book.
+     */
     public static void deleteBook(String ownerUserID, String bookID) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
         // Atomically update multiple database paths at once by using a multi-path update
@@ -51,9 +73,11 @@ public class DatabaseWriteHelper {
         // strings when doing multi-path updates
         final String bookRef = String.format("books/%s", bookID);
         final String ownerBookRef = String.format("ownerCollection/%s/%s", ownerUserID, bookID);
+        final String bookPhotoRef = String.format("bookPhotos/%s", bookID);
         // Add null to a node to delete it
         updates.put(bookRef, null);
         updates.put(ownerBookRef, null);
+        updates.put(bookPhotoRef, null);
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -61,6 +85,7 @@ public class DatabaseWriteHelper {
                     Log.w(TAG, "Error updating data at " + databaseReference.toString());
                     Log.i(TAG, "bookRef: " + bookRef.toString());
                     Log.i(TAG, "ownerBookRef: " + ownerBookRef.toString());
+                    Log.i(TAG, "bookPhotoRef: " + bookPhotoRef.toString());
                 } else {
                     Log.i(TAG, "Successful update at " + databaseReference.toString());
                 }
@@ -68,14 +93,31 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Removes a book and it's associated data from the Database.
+     *
+     * @param owner Owner of the book.
+     * @param book Book object to remove from the Database.
+     */
     public static void deleteBook(User owner, Book book) {
         deleteBook(owner.getUserID(), book.getBookID());
     }
 
+    /**
+     * Updates a book in the Database.
+     *
+     * @param book New value of Book.
+     */
     public static void updateBook(Book book) {
         BooksRefUtils.getBookRef(book).setValue(book);
     }
 
+    /**
+     * Add an new request to the Database.
+     *
+     * @param request Request to add.
+     * @param notification Notification detailing request.
+     */
     public static void makeRequest(Request request, Notification notification) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
@@ -115,6 +157,13 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Accept a request on a book.
+     *
+     * @param request Request to accept.
+     * @param acceptNotification Notification sent to book's accepted requester.
+     * @param declineNotification Notification sent to users whose requests have been declined.
+     */
     public static void acceptRequest(final Request request,
                                      Notification acceptNotification,
                                      final Notification declineNotification) {
@@ -345,5 +394,38 @@ public class DatabaseWriteHelper {
                 }
             }
         });
+    }
+
+    /**
+     * Add a photo for a particular book to the Database.
+     *
+     * @param bookID Unique identifier for the book that the photo belongs to.
+     * @param newBitmap New picture taken from camera.
+     */
+    public static void addBookPhoto(String bookID, Bitmap newBitmap) {
+        DatabaseReference bookPhotoRef = BookPhotosRefUtils.getBookPhotosRef(bookID).push();
+        bookPhotoRef.setValue(new Photo(bookPhotoRef.getKey(), newBitmap));
+    }
+
+    /**
+     * Update a photo for a book.
+     *
+     * @param bookID Unique identifier for the book that the photo belongs to.
+     * @param photo Photo object representing current state of the photo in the Database.
+     * @param newBitmap New picture taken from camera.
+     */
+    public static void updateBookPhoto(String bookID, Photo photo, Bitmap newBitmap) {
+        photo.setEncodedString(Photo.EncodeBitmapPhotoBase64(newBitmap));
+        BookPhotosRefUtils.getBookPhotoRef(bookID, photo.getPhotoID()).setValue(photo);
+    }
+
+    /**
+     * Delete a photo associated with a book.
+     *
+     * @param bookID Unique identifier for the book that the photo belongs to.
+     * @param photo Photo object.
+     */
+    public static void deleteBookPhoto(String bookID, Photo photo) {
+        BookPhotosRefUtils.getBookPhotoRef(bookID, photo.getPhotoID()).removeValue();
     }
 }

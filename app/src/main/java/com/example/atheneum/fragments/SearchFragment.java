@@ -83,9 +83,7 @@ public class SearchFragment extends Fragment {
         searchUsersViewModel.getUserListLiveData().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(@Nullable List<User> users) {
-                if (users != null) {
-                    userListAdapter.submitList(users);
-                }
+                userListAdapter.submitList(users);
             }
         });
 

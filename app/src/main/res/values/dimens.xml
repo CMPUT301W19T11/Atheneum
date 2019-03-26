@@ -8,4 +8,5 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="edit_profile_image_size">128dp</dimen>
     <dimen name="bookinfo_borrower_profile_image_size">50dp</dimen>
+    <dimen name="item_offset">4dp</dimen>
 </resources>
