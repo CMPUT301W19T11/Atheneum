@@ -17,7 +17,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.AddEditBookActivity;
@@ -66,6 +69,9 @@ public class OwnerPageFragment extends Fragment {
 
     public static final int REQUEST_DELETE_ENTRY = 1;
 
+    private Spinner ownBookSpinner;
+    private ArrayAdapter<String> ownBookSpinnerAdapter;
+
 
     /**
      * Instantiates a new Owner page fragment.
@@ -81,6 +87,13 @@ public class OwnerPageFragment extends Fragment {
         this.view = inflater.inflate(R.layout.fragment_owner_page, container, false);
 
         this.context = getContext();
+
+        //https://developer.android.com/guide/topics/ui/controls/spinner
+        ownBookSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
+        ownBookSpinnerAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.ownBookSpinnerArray));
+        ownBookSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ownBookSpinner.setAdapter(ownBookSpinnerAdapter);
 
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
@@ -112,13 +125,31 @@ public class OwnerPageFragment extends Fragment {
             });
             ownerBooksRecyclerView.setAdapter(ownerBooksListAdapter);
 
-            OwnerBooksViewModel ownerBooksViewModel = ViewModelProviders
-                    .of(getActivity(), new OwnerBooksViewModelFactory(firebaseUser.getUid()))
-                    .get(OwnerBooksViewModel.class);
-            ownerBooksViewModel.ownerBooksLiveData().observe(getActivity(), new Observer<ArrayList<Book>>() {
+//            OwnerBooksViewModel ownerBooksViewModel = ViewModelProviders
+//                    .of(getActivity(), new OwnerBooksViewModelFactory(firebaseUser.getUid()))
+//                    .get(OwnerBooksViewModel.class);
+//            ownerBooksViewModel.ownerBooksLiveData().observe(getActivity(), new Observer<ArrayList<Book>>() {
+//                @Override
+//                public void onChanged(@Nullable ArrayList<Book> ownerBooks) {
+//                    ownerBooksListAdapter.submitList(ownerBooks);
+//                }
+//            });
+
+            //https://stackoverflow.com/questions/2399086/how-to-use-spinner
+            //https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
+            ownBookSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onChanged(@Nullable ArrayList<Book> ownerBooks) {
-                    ownerBooksListAdapter.submitList(ownerBooks);
+                public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
+                    String status = (String) arg0.getSelectedItem().toString();
+                    Log.i(TAG, "use Spinner "+status);
+                    retriveBooks(status);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg1)
+                {
+                    Log.d(TAG,"Nothing Selected");
+
                 }
             });
 
@@ -136,5 +167,32 @@ public class OwnerPageFragment extends Fragment {
         }
 
         return this.view;
+    }
+
+    public void retriveBooks(final String status){
+//        Log.i(TAG, "use Spinner retrive books");
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        OwnerBooksViewModel ownerBooksViewModel = ViewModelProviders
+                .of(getActivity(), new OwnerBooksViewModelFactory(firebaseUser.getUid()))
+                .get(OwnerBooksViewModel.class);
+        ownerBooksViewModel.ownerBooksLiveData().observe(getActivity(), new Observer<ArrayList<Book>>() {
+            @Override
+            public void onChanged(@Nullable ArrayList<Book> ownerBooks) {
+                ArrayList<Book> testBook = new ArrayList<Book>();
+                for(int i=0; i<ownerBooks.size(); i++){
+                    if(status.equals("ALL")){
+                        testBook.add(ownerBooks.get(i));
+                    }
+                    else if(ownerBooks.get(i).getStatus().toString().equals(status)){
+                        testBook.add(ownerBooks.get(i));
+                    }
+
+                }
+                ownerBooksListAdapter.submitList(testBook);
+            }
+        });
+        ownerBooksRecyclerView.setAdapter(ownerBooksListAdapter);
+
+
     }
 }
