@@ -194,7 +194,6 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                 if(transaction != null) {
                                     Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
                                     transaction.setBScan(true);
-//                                    transaction.setOScan(true);
                                     transaction.setOwnerID(ownerID);
                                     FirebaseUser currentUser  = FirebaseAuth.getInstance().getCurrentUser();
                                     Log.i(TAG, "UserID is: " +   currentUser.getUid());
@@ -204,15 +203,18 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                     transactionViewModel.updateTransaction(transaction);
 
 
-                                    if(transaction.getComplete()){
+                                    if(transaction.getBScan() && transaction.getOScan()){
                                         if(transaction.getType().equals("CHECKOUT")) {
                                             bOok.setStatus(Book.Status.BORROWED);
                                             DatabaseWriteHelper.updateBook(bOok);
+                                            transaction.setBScan(false);
+                                            transaction.setOScan(false);
                                             transaction.setType(Transaction.RETURN);
                                             DatabaseWriteHelper.updateTransaction(transaction);
                                         }
                                         else {
                                             bOok.setStatus(Book.Status.AVAILABLE);
+                                            bOok.setBorrowerID("");
                                             DatabaseWriteHelper.updateBook(bOok);
                                             DatabaseWriteHelper.deleteTransaction(transaction);
                                         }
