@@ -79,7 +79,7 @@ public class BorrowerPageFragment extends Fragment {
         requestView = (ListView) this.view.findViewById(R.id.requestView);
 
         //https://developer.android.com/guide/topics/ui/controls/spinner
-        requestSpinner = (Spinner) this.view.findViewById(R.id.requestSpinner);
+        requestSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
         requestSpinnerAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.requestSpinnerArray));
         requestSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

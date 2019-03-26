@@ -22,7 +22,7 @@
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <Spinner
-        android:id="@+id/requestSpinner"
+        android:id="@+id/ownBookSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/requestView"
@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/requestSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/ownBookSpinner"
         app:layout_constraintVertical_bias="0.25" />
 
 </android.support.constraint.ConstraintLayout>
