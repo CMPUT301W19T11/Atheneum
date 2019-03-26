@@ -2,6 +2,7 @@ package com.example.atheneum.viewmodels.FirebaseRefUtils;
 
 import com.example.atheneum.models.Book;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 public class BooksRefUtils extends RootRefUtils {
     public static final DatabaseReference BOOKS_REF = ROOT_REF.child("books");
@@ -12,5 +13,9 @@ public class BooksRefUtils extends RootRefUtils {
 
     public static DatabaseReference getBookRef(String bookID) {
         return BOOKS_REF.child(bookID);
+    }
+
+    public static Query getOwnerBooksRef(String ownerID) {
+        return BOOKS_REF.orderByChild("ownerID").equalTo(ownerID);
     }
 }
