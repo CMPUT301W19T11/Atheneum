@@ -17,6 +17,7 @@ import android.util.Log;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.NotificationIntentProvider;
 import com.example.atheneum.utils.SwipeToDeleteCallback;
 import com.example.atheneum.viewmodels.NotificationsViewModel;
 import com.example.atheneum.viewmodels.NotificationsViewModelFactory;
@@ -97,11 +98,8 @@ public class NotificationsActivity extends AppCompatActivity {
      * Starts BookInfoActivity
      */
     private void showBookInfo(Notification notification) {
-        Intent showBookIntent = new Intent(getApplicationContext(), ShowRequestInfoActivity.class);
-        showBookIntent.putExtra(ShowRequestInfoActivity.BOOK_ID, notification.getBookID());
-        // TODO: rStatus in ShowRequestInfoActivity should be obtained within itself
-        // BELOW IS PLACEHOLDER AND SHOULD BE THE STATUS OF THE REQUEST INSTEAD OF THE NOTIFICATION
-        showBookIntent.putExtra(ShowRequestInfoActivity.RSTATUS, notification.getrNotificationType().toString());
+        Intent showBookIntent = NotificationIntentProvider
+                .obtainIntent(this.getApplicationContext(), notification);
         startActivity(showBookIntent);
     }
 
