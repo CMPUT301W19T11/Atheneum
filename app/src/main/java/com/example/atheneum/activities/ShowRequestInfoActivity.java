@@ -5,14 +5,12 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +29,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -189,6 +184,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                     else{
                         Log.i(TAG, "Updating transaction bScan");
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(bOok.getBookID());
+                        Log.i(TAG, "bOok  bookID is " + bOok.getBookID());
                         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
@@ -198,7 +194,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                 if(transaction != null) {
                                     Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
                                     transaction.setBScan(true);
-                                    transaction.setOScan(true);
+//                                    transaction.setOScan(true);
                                     transaction.setOwnerID(ownerID);
                                     FirebaseUser currentUser  = FirebaseAuth.getInstance().getCurrentUser();
                                     Log.i(TAG, "UserID is: " +   currentUser.getUid());
@@ -208,9 +204,18 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                     transactionViewModel.updateTransaction(transaction);
 
 
-                                    if(transaction.isComplete()){
-                                        bOok.setStatus(Book.Status.BORROWED);
-                                        DatabaseWriteHelper.updateBook(bOok);
+                                    if(transaction.getComplete()){
+                                        if(transaction.getType().equals("CHECKOUT")) {
+                                            bOok.setStatus(Book.Status.BORROWED);
+                                            DatabaseWriteHelper.updateBook(bOok);
+                                            transaction.setType(Transaction.RETURN);
+                                            DatabaseWriteHelper.updateTransaction(transaction);
+                                        }
+                                        else {
+                                            bOok.setStatus(Book.Status.AVAILABLE);
+                                            DatabaseWriteHelper.updateBook(bOok);
+                                            DatabaseWriteHelper.deleteTransaction(transaction);
+                                        }
                                     }
 
                                 }

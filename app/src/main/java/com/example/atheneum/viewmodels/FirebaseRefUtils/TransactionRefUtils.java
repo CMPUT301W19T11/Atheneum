@@ -18,9 +18,9 @@ import com.google.firebase.database.DatabaseReference;
 public class TransactionRefUtils extends RootRefUtils{
     public static final DatabaseReference TRANSACTION_REF = ROOT_REF.child("transactions");
 
-//    public static final DatabaseReference getTransactionRef(Transaction transaction){
-//        return TRANSACTION_REF.child(transaction.getBookID());
-//    }
+    public static final DatabaseReference getTransactionRef(Transaction transaction){
+        return TRANSACTION_REF.child(transaction.getBookID());
+    }
 
     public static DatabaseReference getTransactionRef(String bookID){
         return TRANSACTION_REF.child(bookID);

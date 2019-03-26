@@ -17,16 +17,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
 
 import com.example.atheneum.activities.ShowRequestInfoActivity;
-import com.example.atheneum.activities.ViewProfileActivity;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.Request;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.requestAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,12 +37,11 @@ import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * The Borrower page fragment to list borrower's requested books.
  */
-public class BorrowerPageFragment extends Fragment {
+public class BorrowerRequestsFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
@@ -69,7 +65,7 @@ public class BorrowerPageFragment extends Fragment {
     /**
      * Instantiates a new Borrower page fragment.
      */
-    public BorrowerPageFragment() {
+    public BorrowerRequestsFragment() {
         // required empty constructor
     }
 
@@ -77,10 +73,10 @@ public class BorrowerPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        this.view = inflater.inflate(R.layout.fragment_borrower_page, container, false);
+        this.view = inflater.inflate(R.layout.fragment_borrower_requests, container, false);
 
         this.context = getContext();
-        requestView = (ListView) this.view.findViewById(R.id.requestView);
+        requestView = (ListView) this.view.findViewById(R.id.requestsView);
 
         //https://developer.android.com/guide/topics/ui/controls/spinner
         requestSpinner = (Spinner) this.view.findViewById(R.id.requestSpinner);
@@ -117,7 +113,7 @@ public class BorrowerPageFragment extends Fragment {
             }
         });
 
-        requestAdapter = new requestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
+        requestAdapter = new requestAdapter(BorrowerRequestsFragment.this.context, R.layout.request_list_item, requestList);
         requestView.setAdapter(requestAdapter);
         requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -23,7 +23,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
-import com.example.atheneum.fragments.BorrowerPageFragment;
+import com.example.atheneum.fragments.BorrowedBooksFragment;
+import com.example.atheneum.fragments.BorrowerFragment;
+import com.example.atheneum.fragments.BorrowerRequestsFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).addToBackStack("BorrowerPage").commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerFragment()).addToBackStack("BorrowerPage").commit();
         } else if (id == R.id.nav_search) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
 

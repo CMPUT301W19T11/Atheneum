@@ -12,7 +12,6 @@ package com.example.atheneum.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +46,6 @@ import com.example.atheneum.models.GoodreadsReviewInfo;
 import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.Notification;
 
-import com.example.atheneum.models.Request;
 import com.example.atheneum.models.Transaction;
 
 import com.example.atheneum.models.User;
@@ -77,8 +75,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.UUID;
 
 
 /**
@@ -141,9 +137,14 @@ public class BookInfoActivity extends AppCompatActivity {
 
                     if(barcodeISBN.equals(Long.toString(bOok.getIsbn()))) {
                         Log.i(TAG, "They do equal");
-                        Log.i(TAG, "value of bOokID:" + bOok.getBookID());
+//                        Log.i(TAG, "value of bOokID:" + bOok.getBookID());
+//                        Log.i(TAG, "value of ownerID:" + bOok.getOwnerID());
+//                        Log.i(TAG, "value of borrowerID:" + bOok.getBorrowerID());
+
+
+
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(bOok.getBookID());
-                        transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
+                        transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
                         transactionLiveData.observe(this, new Observer<Transaction>() {
@@ -151,23 +152,39 @@ public class BookInfoActivity extends AppCompatActivity {
                             public void onChanged(@Nullable Transaction transaction) {
                                 if (transaction != null) {
                                     Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
-                                    transaction.setOScan(true);
+                                    Log.i(TAG, "bookID:  "  +  String.valueOf(transaction.getBookID()));
                                     Log.i(TAG, "BScan value:" +  String.valueOf(transaction.getBScan()));
                                     Log.i(TAG, "OScan value:" +  String.valueOf(transaction.getOScan()));
                                     Log.i(TAG, "Owner value:" + transaction.getOwnerID());
                                     Log.i(TAG, "Borrower value:" + transaction.getBorrowerID());
+                                    transaction.setOScan(true);
+//                                    transaction.setBScan(true);
+
                                     transaction.setBorrowerID(borrowerID);
                                     transaction.setOwnerID(loggedInUser.getUserID());
                                     transactionViewModel.updateTransaction(transaction);
 
-                                    if(transaction.isComplete()){
-                                        bOok.setStatus(Book.Status.BORROWED);
-                                        DatabaseWriteHelper.updateBook(bOok);
-
+                                    if(transaction.getComplete()){
+                                        if(transaction.getType().equals("CHECKOUT")) {
+                                            bOok.setStatus(Book.Status.BORROWED);
+                                            DatabaseWriteHelper.updateBook(bOok);
+                                            transaction.setType(Transaction.RETURN);
+                                            transaction.setComplete(false);
+                                            DatabaseWriteHelper.updateTransaction(transaction);
+                                        }
+                                        else {
+                                            bOok.setStatus(Book.Status.AVAILABLE);
+                                            bOok.setBorrowerID("");
+                                            DatabaseWriteHelper.updateBook(bOok);
+                                            DatabaseWriteHelper.deleteTransaction(transaction);
+                                        }
                                     }
                                 }
+                                transactionLiveData.removeObserver(this);
                             }
+
                         });
+
                     }
 
                     else{
@@ -234,15 +251,15 @@ public class BookInfoActivity extends AppCompatActivity {
             public void onChanged(@Nullable Book book) {
                 if (book != null) {
                     bOok = book;
+
                     textTitle.setText(book.getTitle());
                     textAuthor.setText(book.getAuthor());
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
                     status = String.valueOf(book.getStatus());
-//                    Log.i(TAG,  "heeeeeeeeeeeeeerrrrrrrrrrree");
-                    Log.i(TAG, "*********" + status);
-                    if(status.equals("ACCEPTED")){
+
+                    if(status.equals("ACCEPTED")  || status.equals("BORROWED")){
                         Log.i(TAG, "scan button visible");
                         scanBtn.setVisibility(View.VISIBLE);
                         scanBtn.setOnClickListener(new View.OnClickListener() {

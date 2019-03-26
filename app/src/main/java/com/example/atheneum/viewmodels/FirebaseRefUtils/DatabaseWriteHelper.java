@@ -354,7 +354,10 @@ public class DatabaseWriteHelper {
     }
 
     public static void updateTransaction(Transaction transaction){
-//        BooksRefUtils.getBookRef(book).setValue(book);
         TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(transaction);
+    }
+
+    public static void deleteTransaction(Transaction transaction){
+        TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(null);
     }
 }

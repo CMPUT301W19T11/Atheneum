@@ -25,6 +25,7 @@ public class Transaction {
     private String bookID;
     private boolean bScan;
     private boolean oScan;
+    private boolean complete;
 
     /**
      * Creates a new Transaction object using default values for attributes.
@@ -35,6 +36,7 @@ public class Transaction {
         type = CHECKOUT;
         bScan = false;
         oScan = false;
+//        complete =  false;
     }
 
     /**
@@ -144,7 +146,7 @@ public class Transaction {
     /**
      * @return True if borrower has scanned the book, false otherwise
      */
-    @Exclude
+
     @PropertyName("bScan")
     public boolean getBScan() {
         return bScan;
@@ -153,6 +155,7 @@ public class Transaction {
     /**
      * @param bScan New value of bScan
      */
+    @Exclude
     @PropertyName("bScan")
     public void setBScan(boolean bScan) {
         this.bScan = bScan;
@@ -161,7 +164,7 @@ public class Transaction {
     /**
      * @return True if owner has scanned the book, false otherwise
      */
-    @Exclude
+
     @PropertyName("oScan")
     public boolean getOScan() {
         return oScan;
@@ -170,6 +173,7 @@ public class Transaction {
     /**
      * @param oScan New value of oScan
      */
+    @Exclude
     @PropertyName("bScan")
     public void setOScan(boolean oScan) {
         this.oScan = oScan;
@@ -179,7 +183,17 @@ public class Transaction {
      * @return True if the transaction is complete (both owner and borrower have scanned the book,
      * false otherwise
      */
-    public boolean isComplete() {
-        return oScan && bScan;
+    public boolean getComplete() {
+        if(oScan && bScan){
+            complete = true;
+        }
+        else{
+            complete =  false;
+        }
+        return complete;
+    }
+
+    public void setComplete(boolean var){
+        complete = var;
     }
 }
