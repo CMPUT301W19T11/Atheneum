@@ -28,20 +28,16 @@ import com.example.atheneum.viewmodels.UserViewModelFactory;
  * Show details of requests made by current user
  */
 public class ShowRequestInfoActivity extends AppCompatActivity {
+    public static final String BOOK_ID = "bookID";
+    public static final String RSTATUS = "rStatus";
+
     private TextView bookTitle;
-
     private TextView bookAuthor;
-
     private TextView bookISBN;
-
     private TextView bookStatus;
-
     private TextView bookOwner;
-
     private TextView bookDescription;
-
     private TextView RequestStatus;
-
     private Button ownerDetails;
 
     private String bookID;
@@ -51,8 +47,6 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
     private static final String TAG = "ShowRequest";
 
     private BookInfoViewModel bookInfoViewModel;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
