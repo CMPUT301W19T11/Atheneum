@@ -204,14 +204,14 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                             transaction.setBScan(false);
                                             transaction.setOScan(false);
                                             transaction.setType(Transaction.RETURN);
-                                            DatabaseWriteHelper.updateTransaction(transaction);
+                                            transactionViewModel.updateTransaction(transaction);
                                             scanBook.setVisibility(View.INVISIBLE);
                                         }
                                         else {
                                             bOok.setStatus(Book.Status.AVAILABLE);
                                             bOok.setBorrowerID("");
                                             DatabaseWriteHelper.updateBook(bOok);
-                                            DatabaseWriteHelper.deleteTransaction(transaction);
+                                            transactionViewModel.deleteTransction(transaction);
                                         }
                                     }
                                 }

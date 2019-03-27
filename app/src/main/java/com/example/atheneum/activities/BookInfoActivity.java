@@ -191,12 +191,12 @@ public class BookInfoActivity extends AppCompatActivity {
                                             transaction.setBScan(false);
                                             transaction.setOScan(false);
                                             transaction.setType(Transaction.RETURN);
-                                            DatabaseWriteHelper.updateTransaction(transaction);
+                                            transactionViewModel.updateTransaction(transaction);
                                         } else {
                                             book.setStatus(Book.Status.AVAILABLE);
                                             book.setBorrowerID("");
                                             DatabaseWriteHelper.updateBook(book);
-                                            DatabaseWriteHelper.deleteTransaction(transaction);
+                                            transactionViewModel.deleteTransction(transaction);
                                         }
                                     }
                                 }
