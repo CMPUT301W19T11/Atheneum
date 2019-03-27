@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,19 +16,21 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.MapFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.atheneum.utils.GoogleMapConstants.ERROR_DIALOG_REQUEST;
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -45,17 +49,50 @@ public class MapActivity extends AppCompatActivity {
     public static final String TAG = "Map Activity";
     private boolean locationPermissionGiven = false;
 
+    private EditText searchText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "creating Map Activity");
         super.onCreate(savedInstanceState);
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_map);
-        // Get the SupportMapFragment and request notification
-        // when the map is ready to be used.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_map);
-//        mapFragment.getMapAsync(this);
 
-        getSupportActionBar().setTitle("Google Maps");
+        searchText = (EditText) findViewById(R.id.search_text);
+        searchText.setMaxLines(1);
+        initSearchListener();
+    }
+
+    private void initSearchListener() {
+        Log.d(TAG, "initializing search listener");
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    Log.d(TAG, "call getGeo");
+                    getGeoLocation();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void getGeoLocation() {
+        String searchLocation = searchText.getText().toString();
+
+        Geocoder geocoder = new Geocoder(MapActivity.this);
+        List<Address> addressList = new ArrayList<>();
+        try {
+            addressList = geocoder.getFromLocationName(searchLocation, 1);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        if (addressList.size() > 0) {
+            Address address = addressList.get(0);
+            Log.d(TAG, "getGeoLocation got " + address.toString());
+        }
     }
 
     /**
