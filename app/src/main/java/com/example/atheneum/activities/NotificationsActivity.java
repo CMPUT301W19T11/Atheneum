@@ -17,6 +17,7 @@ import android.util.Log;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.NotificationIntentProvider;
 import com.example.atheneum.utils.SwipeToDeleteCallback;
 import com.example.atheneum.viewmodels.NotificationsViewModel;
 import com.example.atheneum.viewmodels.NotificationsViewModelFactory;
@@ -63,7 +64,7 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull Notification notification) {
                 Log.i(TAG, "NOTIFICATION CLICKED: " + notification.getMessage());
-                //showBookInfo(notification);
+                showBookInfo(notification);
                 makeNotificationSeen(notification);
             }
         });
@@ -96,11 +97,11 @@ public class NotificationsActivity extends AppCompatActivity {
     /**
      * Starts BookInfoActivity
      */
-//    private void showBookInfo(Notification notification) {
-//        Intent showBookIntent = new Intent(getApplicationContext(), /* TODO: WAITING ON REFACTORED BOOKINFOACTIVITY */);
-//        showBookIntent.putExtra("bookID", notification.getBookID());
-//        startActivity(showBookIntent);
-//    }
+    private void showBookInfo(Notification notification) {
+        Intent showBookIntent = NotificationIntentProvider
+                .obtainIntent(this.getApplicationContext(), notification);
+        startActivity(showBookIntent);
+    }
 
     /**
      * Make notification seen, used when user taps on notification

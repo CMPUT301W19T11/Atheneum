@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.atheneum.activities.BookInfoActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never">
+
+        <item android:id="@+id/form_edit_book_photos"
+            android:title="Edit Book Photos"/>
+        <item android:id="@+id/form_edit_book"
+            android:title="Edit Book"/>
+        <item android:id="@+id/form_delete_book"
+            android:title="Delete Book"/>
+    </item>
+</menu>

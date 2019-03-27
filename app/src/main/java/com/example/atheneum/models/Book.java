@@ -1,6 +1,7 @@
 package com.example.atheneum.models;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -20,7 +21,6 @@ public class Book {
     private Status status = Status.AVAILABLE;
     private ArrayList<Request> requests = new ArrayList<Request>();
     private String bookID;
-    private ArrayList<String> photos = new ArrayList<String>();
 
     @Override
     public String toString() {
@@ -282,49 +282,6 @@ public class Book {
     public void setBookID(String bookID) { this.bookID = bookID; }
 
     /**
-     * Gets photos for the book
-     *
-     * @return the photos
-     */
-    public ArrayList<String> getPhotos() {
-        return photos;
-    }
-
-    /**
-     * Sets photos for the book
-     *
-     * @param photos the photos
-     */
-    public void setPhotos(ArrayList<String> photos) {
-        this.photos = photos;
-    }
-
-    /**
-     * Add photo to the book
-     *
-     * @param photo the photo
-     */
-    public void addPhoto(String photo) {
-        this.photos.add(photo);
-    }
-
-    /**
-     * Delete photo from the book
-     *
-     * @param photo the photo
-     */
-    public void deletePhoto(String photo) {
-        this.photos.remove(photo);
-    }
-
-    /**
-     * Delete all photos from the book
-     */
-    public void deletePhotos() {
-        this.photos.clear();
-    }
-
-    /**
      * Returns whether or not two Book objects are equal. For the purposes of determining equality,
      * only the UUID(bookID) is checked, as the UUID should be unique across different copies of the
      * same book.
@@ -335,8 +292,23 @@ public class Book {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Book)) return false;
         Book book = (Book) o;
-        return (this.getBookID().equals(book.getBookID()));
+        return getIsbn() == book.getIsbn() &&
+                Objects.equals(getTitle(), book.getTitle()) &&
+                Objects.equals(getDescription(), book.getDescription()) &&
+                Objects.equals(getAuthor(), book.getAuthor()) &&
+                Objects.equals(getOwnerID(), book.getOwnerID()) &&
+                Objects.equals(getBorrowerID(), book.getBorrowerID()) &&
+                getStatus() == book.getStatus() &&
+                Objects.equals(getBookID(), book.getBookID());
+    }
+
+    /**
+     * @return Hash of the book object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIsbn(), getTitle(), getDescription(), getAuthor(), getOwnerID(), getBorrowerID(), getStatus(), getBookID());
     }
 }

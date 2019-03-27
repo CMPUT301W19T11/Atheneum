@@ -25,6 +25,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".activities.ViewEditBookPhotosActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
             android:name=".activities.NotificationsActivity"
             android:label="@string/title_activity_notifications"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -85,11 +89,14 @@
         <activity
             android:name=".activities.GoodreadsReviewsActivity"
             android:label="Goodreads Reviews"
-            android:theme="@style/AppTheme" />
+
+            android:theme="@style/AppTheme"></activity>
+
         <activity
             android:name=".activities.ShowRequestInfoActivity"
             android:label="@string/RequestInfo"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.AvailableBookInfoActivity"
             android:label="@string/AvailableBookInfo"

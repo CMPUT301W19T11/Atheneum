@@ -25,7 +25,7 @@ import com.example.atheneum.activities.NewRequestActivity;
 import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
-import com.example.atheneum.utils.requestAdapter;
+import com.example.atheneum.utils.RequestAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +50,7 @@ public class BorrowerRequestsFragment extends Fragment {
     private Spinner requestSpinner;
 
     private static ArrayList<Pair<Book, String>> requestList = new ArrayList<Pair<Book, String>>();
-    private requestAdapter requestAdapter;
+    private RequestAdapter RequestAdapter;
     private ArrayAdapter<String> requestSpinnerAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
@@ -79,7 +79,7 @@ public class BorrowerRequestsFragment extends Fragment {
         requestView = (ListView) this.view.findViewById(R.id.requestsView);
 
         //https://developer.android.com/guide/topics/ui/controls/spinner
-        requestSpinner = (Spinner) this.view.findViewById(R.id.requestSpinner);
+        requestSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
         requestSpinnerAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.requestSpinnerArray));
         requestSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -113,8 +113,10 @@ public class BorrowerRequestsFragment extends Fragment {
             }
         });
 
-        requestAdapter = new requestAdapter(BorrowerRequestsFragment.this.context, R.layout.request_list_item, requestList);
-        requestView.setAdapter(requestAdapter);
+
+        RequestAdapter = new RequestAdapter(BorrowerRequestsFragment.this.context, R.layout.request_list_item, requestList);
+        requestView.setAdapter(RequestAdapter);
+
         requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -154,7 +156,7 @@ public class BorrowerRequestsFragment extends Fragment {
             }
         });
 //        requestList.clear();
-//        requestAdapter.notifyDataSetChanged();
+//        RequestAdapter.notifyDataSetChanged();
 
 
 
@@ -220,7 +222,7 @@ public class BorrowerRequestsFragment extends Fragment {
                                         requestList.add(new Pair(book, rStatus));
                                     }
                                 }
-                                requestAdapter.notifyDataSetChanged();
+                                RequestAdapter.notifyDataSetChanged();
 //                                requestList.clear();
 
                             }

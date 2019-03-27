@@ -55,6 +55,9 @@
     <string name="user_email_prompt">E-mail</string>
     <string name="prompt_user_phone">Phone Number</string>
     <string name="user_profile_picture_prompt">Profile Picture (click image to change)</string>
+    <string name="sensitive_operation_snackbar_message">Changing your email is a sensitive operation and you have been logged in too long! Please re-login and try again!</string>
+    <string name="unknown_error_snackbar_message">Unknown error! Please try again!</string>
+    <string name="lost_connection_snackbar_message">Can\'t change email while connection is lost! Re-connect and try again!</string>
     <!--End of Strings for edit profile-->
 
     <!-- Strings for adding/editing books -->
@@ -68,7 +71,14 @@
 
     <string name="action_save">Save</string>
     <string name="scanBtnPrompt">Scan</string>
+
+    <string name="activity_title_add_book">Add Book</string>
+    <string name="activity_title_edit_book">Edit Book</string>
     <!-- End of Strings for adding/editing books -->
+
+    <!--Strings for book information-->
+    <string name="activity_book_info">Book Information</string>
+    <!--End of Strings for book information-->
 
     <!--Strings for owner page-->
     <string name="owner_page_title">Owner Page</string>
@@ -95,6 +105,13 @@
         <item>DECLINED</item>
     </string-array>
     <!--End of Strings for borrower page-->
+    <string-array name="ownBookSpinnerArray">
+        <item>ALL</item>
+        <item>AVAILABLE</item>
+        <item>REQUESTED</item>
+        <item>ACCEPTED</item>
+        <item>BORROWED</item>
+    </string-array>
 
     <!--Strings for search page-->
     <string name="search_page_title">Search</string>
@@ -109,6 +126,24 @@
     <string name="editbooktest_newtitle">New Title</string>
     <string name="editbooktest_newdesc">Some different text here</string>
     <!--End of Strings for Add/edit/delete book tests-->
+
+    <!--Strings for ViewEditBookPhotosActivity-->
+    <!--<string name="title_activity_view_edit_book_photos">View Book Photos</string>-->
+    <string name="activity_title_view_book_photos">View Book Photos</string>
+    <string name="activity_title_edit_book_photos">Edit Book Photos</string>
+    <string name="book_photo_dialog_delete_prompt">Are you sure you want to delete this photo?</string>
+    <string name="book_photo_dialog_edit_prompt">Are you sure you want to edit this photo?</string>
+    <!--End of Strings for ViewEditBookPhotosActivity-->
+
+    <!--Strings for BookInfoActivity-->
+    <string name="delete_book_dialog_prompt">Are you sure you want to delete this book?</string>
+    <!--End of Strings for BookInfoActivity-->
+
+    <!--Strings for Generic Dialog Actions-->
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_edit">Edit</string>
+    <string name="dialog_cancel">Cancel</string>
+    <!--End of Strings for Generic Dialog Actions-->
 
     <!--Goodreds API Key-->
     <string name="GoodreadsAPI">6HCjeCCd22d7FunOF3vcA</string>

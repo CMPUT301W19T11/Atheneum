@@ -20,14 +20,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.atheneum.R;
-import com.example.atheneum.controllers.PictureController;
+import com.example.atheneum.activities.CompleteRegistrationActivity;
+import com.example.atheneum.utils.CameraHandler;
 import com.example.atheneum.models.User;
+import com.example.atheneum.utils.ConnectionChecker;
+import com.example.atheneum.utils.EmailValidator;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -39,10 +46,12 @@ public class EditProfileFragment extends Fragment {
     private static final String TAG = EditProfileFragment.class.getSimpleName();
 
     private View view;
+    private TextView emailAddressPrompt;
+    private EditText emailAddressField;
     private EditText phoneNumberField;
     private ImageView profilePicture;
-
-    private PictureController pictureController;
+    private EmailValidator emailValidator;
+    private CameraHandler cameraHandler;
     private Bitmap bitmapPhoto;
     private OnEditProfileCompleteListener editProfileCompleteListener;
     private UserViewModel userViewModel;
@@ -75,7 +84,7 @@ public class EditProfileFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Log.i(TAG, "Profile image clicked!");
-            pictureController.dispatchTakePictureIntent();
+            cameraHandler.dispatchTakePictureIntent();
         }
     }
 
@@ -96,13 +105,18 @@ public class EditProfileFragment extends Fragment {
                 Log.i(TAG, "Save unsuccessful!");
                 Snackbar.make(v, "Phone number can't be empty!", Snackbar.LENGTH_SHORT).show();
                 return;
+            } else if (emailValidator != null && !emailValidator.validate(emailAddressField)) {
+                Log.i(TAG, "Save unsuccessful!");
+                return;
             }
-            Log.i(TAG, "Save successful!");
 
-            if (userViewModel != null) {
-                User user = userViewModel.getUserLiveData().getValue();
+            if (FirebaseAuthUtils.isCurrentUserAuthenticated() && userViewModel != null) {
+                final User user = userViewModel.getUserLiveData().getValue();
                 // Update the user based on form input
                 user.setPhoneNumber(phoneNumberField.getText().toString());
+                if (emailAddressField.getVisibility() != View.GONE) {
+                    user.setUserName(emailAddressField.getText().toString());
+                }
                 if (bitmapPhoto != null) {
                     String encodedPhoto = PhotoUtils.EncodeBitmapPhotoBase64(bitmapPhoto);
                     ArrayList<String> photos = user.getPhotos();
@@ -113,10 +127,43 @@ public class EditProfileFragment extends Fragment {
                     }
                     user.setPhotos(photos);
                 }
-                // Send updated user to Firebase
-                userViewModel.setUser(user);
-                if (editProfileCompleteListener != null) {
-                    editProfileCompleteListener.onSuccess(EditProfileFragment.this);
+
+                FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
+                if (!firebaseUser.getEmail().equals(user.getUserName())) {
+                    ConnectionChecker connectionChecker = new ConnectionChecker(getContext());
+                    if (!connectionChecker.isNetworkConnected()) {
+                        Snackbar.make(v, R.string.lost_connection_snackbar_message , Snackbar.LENGTH_LONG).show();
+                        Log.w(TAG, "Lost internet connection");
+                        return;
+                    }
+
+                    firebaseUser.updateEmail(emailAddressField.getText().toString())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            // Send updated user to Firebase
+                                            userViewModel.setUser(user);
+                                            if (editProfileCompleteListener != null) {
+                                                editProfileCompleteListener.onSuccess(EditProfileFragment.this);
+                                            }
+                                        } else {
+                                            Log.e(TAG, task.getException().toString());
+                                            if (task.getException() instanceof FirebaseAuthRecentLoginRequiredException) {
+                                                // See: https://firebase.google.com/docs/auth/android/manage-users#re-authenticate_a_user
+                                                Snackbar.make(v, R.string.sensitive_operation_snackbar_message , Snackbar.LENGTH_LONG).show();
+                                            } else {
+                                                Snackbar.make(v, R.string.unknown_error_snackbar_message, Snackbar.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    }
+                                });
+                } else {
+                    // Send updated user to Firebase
+                    userViewModel.setUser(user);
+                    if (editProfileCompleteListener != null) {
+                        editProfileCompleteListener.onSuccess(EditProfileFragment.this);
+                    }
                 }
             } else {
                 Log.w(TAG, "If the user is in this fragment, they should already be logged in!");
@@ -130,7 +177,7 @@ public class EditProfileFragment extends Fragment {
     /**
      * Handles image taken from external camera app
      */
-    private class PictureTakenListener implements PictureController.OnPictureTakenListener {
+    private class PictureTakenListener implements CameraHandler.OnPictureTakenListener {
 
         @Override
         public void onPictureTaken(Bitmap bitmap) {
@@ -173,14 +220,27 @@ public class EditProfileFragment extends Fragment {
         phoneNumberField = view.findViewById(R.id.edit_phone_number);
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
+        emailAddressField = view.findViewById(R.id.edit_email_address);
+        emailAddressPrompt = view.findViewById(R.id.email_address_prompt);
+        if (getActivity() instanceof CompleteRegistrationActivity) {
+            // Don't allow user to change right after registration
+            emailAddressField.setVisibility(View.GONE);
+            emailAddressPrompt.setVisibility(View.GONE);
+        } else {
+            emailValidator = new EmailValidator(emailAddressField);
+            // Validate initial values
+            emailValidator.validate(emailAddressField);
+            emailAddressField.addTextChangedListener(emailValidator);
+        }
+
         FloatingActionButton saveProfileButton = view.findViewById(R.id.save_profile_button);
         saveProfileButton.setOnClickListener(new SaveProfileOnClickListener());
 
         profilePicture = view.findViewById(R.id.user_profile_picture);
         profilePicture.setOnClickListener(new ProfilePictureOnClickListener());
 
-        pictureController = PictureController.newInstance(this);
-        pictureController.setPictureTakenListener(new PictureTakenListener());
+        cameraHandler = CameraHandler.newInstance(this);
+        cameraHandler.setPictureTakenListener(new PictureTakenListener());
 
         if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
             FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
@@ -199,6 +259,11 @@ public class EditProfileFragment extends Fragment {
                         if (!photos.isEmpty()) {
                             Bitmap image = PhotoUtils.DecodeBase64BitmapPhoto(photos.get(0));
                             profilePicture.setImageBitmap(image);
+                        }
+                        if (emailAddressField.getVisibility() != View.GONE) {
+                            Log.i(TAG, "auto-fill email!");
+                            emailAddressField.setText(user.getUserName());
+                            emailValidator.validate(emailAddressField);
                         }
                     }
                     // Remove the observer after auto-fill so that the image view is properly
@@ -225,7 +290,7 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        pictureController.onActivityResult(requestCode, resultCode, data);
+        cameraHandler.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -238,6 +303,6 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        pictureController.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        cameraHandler.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

@@ -35,20 +35,16 @@ import com.google.firebase.auth.FirebaseUser;
  * Show details of requests made by current user
  */
 public class ShowRequestInfoActivity extends AppCompatActivity {
+    public static final String BOOK_ID = "bookID";
+    public static final String RSTATUS = "rStatus";
+
     private TextView bookTitle;
-
     private TextView bookAuthor;
-
     private TextView bookISBN;
-
     private TextView bookStatus;
-
     private TextView bookOwner;
-
     private TextView bookDescription;
-
     private TextView RequestStatus;
-
     private Button ownerDetails;
 
     private Button scanBook;
@@ -63,8 +59,6 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
 
     private BookInfoViewModel bookInfoViewModel;
     private User loggedInUser;
-
-
 
 
     @Override

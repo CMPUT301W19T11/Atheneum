@@ -2,7 +2,9 @@ package com.example.atheneum.services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -16,8 +18,10 @@ import android.util.Log;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MainActivity;
+import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseAuthUtils;
+import com.example.atheneum.utils.NotificationIntentProvider;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
 import com.google.firebase.auth.FirebaseUser;
@@ -67,7 +71,7 @@ public class PushNotificationsService extends Service {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Notification notification = dataSnapshot.getValue(Notification.class);
-                    sendNotification(notification.getMessage());
+                    sendNotification(notification);
                     DatabaseWriteHelper.deletePushNotification(notification);
                 }
 
@@ -119,12 +123,24 @@ public class PushNotificationsService extends Service {
      * See: https://developer.android.com/guide/topics/ui/notifiers/notifications
      * See: https://developer.android.com/training/notify-user/build-notification
      * See: https://developer.android.com/training/notify-user/expanded
+     * See: https://developer.android.com/training/notify-user/navigation#java
      *
-     * @param notificationMessage
+     * @param notification
      */
-    private void sendNotification(String notificationMessage) {
-        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    private void sendNotification(Notification notification) {
+
+        Intent notifyIntent = NotificationIntentProvider
+                .obtainIntent(this.getApplicationContext(), notification);
+        // Set the Activity to start in a new, empty task
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Create the TaskStackBuilder and add the intent, which inflates the back stack
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(notifyIntent);
+        // Get the PendingIntent containing the entire back stack
+        PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+                this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
 
         String channelId = getString(R.string.profile_title);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -132,11 +148,12 @@ public class PushNotificationsService extends Service {
                 new NotificationCompat.Builder(getBaseContext(), channelId)
                         .setSmallIcon(R.drawable.ic_book_black_24dp)
                         .setContentTitle(getString(R.string.app_name))
-                        .setContentText(notificationMessage)
+                        .setContentText(notification.getMessage())
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(notificationMessage))
+                                .bigText(notification.getMessage()))
                         .setAutoCancel(true)
-                        .setSound(defaultSoundUri);
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(notifyPendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
