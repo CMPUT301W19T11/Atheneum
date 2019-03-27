@@ -55,6 +55,9 @@
     <string name="user_email_prompt">E-mail</string>
     <string name="prompt_user_phone">Phone Number</string>
     <string name="user_profile_picture_prompt">Profile Picture (click image to change)</string>
+    <string name="sensitive_operation_snackbar_message">Changing your email is a sensitive operation and you have been logged in too long! Please re-login and try again!</string>
+    <string name="unknown_error_snackbar_message">Unknown error! Please try again!</string>
+    <string name="lost_connection_snackbar_message">Can\'t change email while connection is lost! Re-connect and try again!</string>
     <!--End of Strings for edit profile-->
 
     <!-- Strings for adding/editing books -->
