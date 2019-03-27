@@ -41,6 +41,10 @@
             android:inputType="text"/>
     </RelativeLayout>
 
+
+
+
+
     <include layout="@layout/content_map" />
 
 </android.support.design.widget.CoordinatorLayout>

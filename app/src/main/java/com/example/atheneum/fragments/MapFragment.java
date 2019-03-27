@@ -2,6 +2,7 @@ package com.example.atheneum.fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,17 +18,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MapActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
+import static com.example.atheneum.activities.MapActivity.isLocationPermissionGiven;
+import static com.example.atheneum.utils.GoogleMapConstants.DEFAULT_ZOOM;
 import static com.example.atheneum.utils.GoogleMapConstants.MAPVIEW_BUNDLE_KEY;
 
 
@@ -38,8 +47,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "Map Fragment";
 
+    private ImageView centerLocation;
     private MapView mMapView;
     private static GoogleMap googleMap;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     /**
      * Create a new instance of the map fragment.
@@ -54,10 +65,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
 
         Log.d(TAG, "on Create called");
-
-//        if (getArguments() != null) {
-//            mUserList = getArguments().getParcelableArrayList(getString(R.string.intent_user_list));
-//        }
     }
 
     @Nullable
@@ -65,6 +72,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         mMapView = view.findViewById(R.id.google_map_view);
+        centerLocation = (ImageView) view.findViewById(R.id.center_location);
+        centerLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDeviceLocation();
+            }
+        });
 
         Log.d(TAG, "initializing Google Map");
         initGoogleMap(savedInstanceState);
@@ -157,8 +171,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public static void moveCamera(LatLng latLng, float zoom, String title) {
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
-        googleMap.addMarker(markerOptions);
+        if (!title.equals("My Location")) {
+            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
+            googleMap.addMarker(markerOptions);
+        }
+    }
+
+    private void getDeviceLocation(){
+        Log.d(TAG, "getDeviceLocation: getting the devices current location");
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        try{
+            if(isLocationPermissionGiven()){
+
+                final Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: found location!");
+                            Location currentLocation = (Location) task.getResult();
+
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM,
+                                    "My Location");
+
+                        }else{
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }catch (SecurityException e){
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
+        }
     }
 
 }

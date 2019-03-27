@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,9 +18,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,13 +30,18 @@ import com.example.atheneum.R;
 import com.example.atheneum.fragments.MapFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.atheneum.fragments.MapFragment.moveCamera;
 import static com.example.atheneum.utils.GoogleMapConstants.DEFAULT_ZOOM;
 import static com.example.atheneum.utils.GoogleMapConstants.ERROR_DIALOG_REQUEST;
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -50,9 +58,11 @@ public class MapActivity extends AppCompatActivity {
      * The constant TAG.
      */
     public static final String TAG = "Map Activity";
-    private boolean locationPermissionGiven = false;
+
+    private static boolean locationPermissionGiven = false;
 
     private EditText searchText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +93,8 @@ public class MapActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+
     }
 
     //TODO: persistent location data - Firebase
@@ -102,11 +114,13 @@ public class MapActivity extends AppCompatActivity {
             Log.d(TAG, "getGeoLocation got " + address.toString());
 
             //TODO: replace meeting location placeholder with owner/requester name
-            MapFragment.moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
 
 //            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
     }
+
+
 
     @Override
     protected void onResume() {
@@ -257,6 +271,10 @@ public class MapActivity extends AppCompatActivity {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, new MapFragment()).addToBackStack("MapFragment").commit();
+    }
+
+    public static boolean isLocationPermissionGiven(){
+        return locationPermissionGiven;
     }
 
 }
