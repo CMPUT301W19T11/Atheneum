@@ -110,7 +110,6 @@ public class BookInfoActivity extends AppCompatActivity {
     String desc;
     private String bookID;
     private String borrowerID;
-    private Book bOok;
     private String status;
     private BookInfoViewModel bookInfoViewModel;
     private TransactionViewModel transactionViewModel;
