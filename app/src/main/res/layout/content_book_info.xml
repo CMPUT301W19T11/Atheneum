@@ -92,6 +92,39 @@
                 android:text="BOOK STATUS GOES HERE"/>
 
             <TextView
+                android:id="@+id/ownerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Owner:"
+                android:textColor="@color/design_default_color_primary_dark" />
+
+            <LinearLayout
+                android:id="@+id/owner_prof_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/owner_profile_pic"
+                    android:layout_width="@dimen/bookinfo_borrower_profile_image_size"
+                    android:layout_height="@dimen/bookinfo_borrower_profile_image_size"
+                    android:src="@drawable/ic_account_circle_black_24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/book_owner_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="OWNEREMAIL"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
                 android:id="@+id/rStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

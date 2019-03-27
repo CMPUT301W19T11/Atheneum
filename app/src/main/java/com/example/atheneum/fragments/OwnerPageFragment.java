@@ -117,6 +117,7 @@ public class OwnerPageFragment extends Fragment {
                 public void onClick(View v, Book book) {
                     Log.i("OwnerBook", "clicked on a book");
                     Intent intent = new Intent(context, BookInfoActivity.class);
+                    intent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.OWNER_VIEW);
                     intent.putExtra("bookID", book.getBookID());
                     if (mainActivity != null) {
                         mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
