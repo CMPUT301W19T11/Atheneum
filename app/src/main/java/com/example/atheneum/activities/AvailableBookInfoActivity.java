@@ -154,7 +154,7 @@ public class AvailableBookInfoActivity extends AppCompatActivity {
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent new_request_intent = new Intent(AvailableBookInfoActivity.this, MainActivity.class);
+                final Intent new_request_intent = new Intent(AvailableBookInfoActivity.this, NewRequestActivity.class);
 
                 currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 db = FirebaseDatabase.getInstance();
@@ -179,8 +179,10 @@ public class AvailableBookInfoActivity extends AppCompatActivity {
                                     "");
                             notification.constructMessage(requester.getUserName(), shownBook.getTitle());
                             DatabaseWriteHelper.makeRequest(newRequest, notification);
-
+//                            finishActivity(AvailableBookInfoActivity);
+//                            new_request_intent.putExtra("from available book info activity","End Available book activity");
                             startActivity(new_request_intent);
+                            finish();
                         }
                     }
 

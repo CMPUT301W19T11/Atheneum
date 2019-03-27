@@ -127,6 +127,7 @@ public class BorrowerPageFragment extends Fragment {
                 requestInfoIndent.putExtra("rStatus", (String) listItemPair.second);
                 startActivity(requestInfoIndent);
 
+
 //                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
 //                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
 //                        .child(currentUser.getUid()).child(listItem.getBookID());
