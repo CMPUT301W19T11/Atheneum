@@ -291,4 +291,10 @@ public class MapActivity extends AppCompatActivity {
         return locationPermissionGiven;
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        startActivity(mainActivityIntent);
+    }
+
 }

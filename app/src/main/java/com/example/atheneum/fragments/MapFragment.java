@@ -1,6 +1,7 @@
 package com.example.atheneum.fragments;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.MapActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -209,5 +211,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }
+
 
 }
