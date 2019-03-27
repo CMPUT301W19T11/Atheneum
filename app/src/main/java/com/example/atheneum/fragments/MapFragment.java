@@ -16,13 +16,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.MapActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.example.atheneum.utils.GoogleMapConstants.MAPVIEW_BUNDLE_KEY;
 
@@ -35,6 +39,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "Map Fragment";
 
     private MapView mMapView;
+    private static GoogleMap googleMap;
 
     /**
      * Create a new instance of the map fragment.
@@ -128,6 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
         map.setMyLocationEnabled(true);
+        googleMap = map;
     }
 
     @Override
@@ -148,59 +154,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMapView.onLowMemory();
     }
 
-//    /**
-//     * Create the search menu when activity is loaded
-//     * @param savedInstanceState Bundle environment data
-//     */
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//        setHasOptionsMenu(true);
-//    }
-//
-//    @Override
-//    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
-//
-//        inflater.inflate(R.menu.search_menu, menu);
-//        MenuItem item = menu.findItem(R.id.search_menu);
-//
-//        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-//            @Override
-//            public boolean onMenuItemActionExpand(MenuItem item) {
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onMenuItemActionCollapse(MenuItem item) {
-//                return true;
-//            }
-//        });
-//
-//        SearchView sv = new SearchView(((MapActivity) getActivity()).getSupportActionBar().getThemedContext());
-//        MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-//        MenuItemCompat.setActionView(item, sv);
-//        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                Log.d(TAG, "On Query Text Submit was Called");
-//                searchUsersViewModel.setUserNameQuery(query);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String s) {
-//                // Dynamically update search results as the user is typing
-//                searchUsersViewModel.setUserNameQuery(s);
-//                return false;
-//            }
-//        });
-//        sv.setIconifiedByDefault(false);
-//        sv.setOnSearchClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//            }
-//        });
-//
-//        super.onCreateOptionsMenu(menu,inflater);
-//    }
+    public static void moveCamera(LatLng latLng, float zoom, String title) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
+        googleMap.addMarker(markerOptions);
+    }
+
 }

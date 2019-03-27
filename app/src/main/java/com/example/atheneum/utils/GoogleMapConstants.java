@@ -10,4 +10,7 @@ public class GoogleMapConstants {
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
 
     public static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+
+    //default zoom for google map
+    public static final float DEFAULT_ZOOM = 15f;
 }

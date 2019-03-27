@@ -17,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,12 +27,14 @@ import com.example.atheneum.R;
 import com.example.atheneum.fragments.MapFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.model.LatLng;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.atheneum.utils.GoogleMapConstants.DEFAULT_ZOOM;
 import static com.example.atheneum.utils.GoogleMapConstants.ERROR_DIALOG_REQUEST;
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ENABLE_GPS;
@@ -63,6 +66,10 @@ public class MapActivity extends AppCompatActivity {
         initSearchListener();
     }
 
+    /**
+     * Initializes editor action listener for searched text
+     * See: https://stackoverflow.com/questions/15901863/oneditoractionlistener-not-working
+     */
     private void initSearchListener() {
         Log.d(TAG, "initializing search listener");
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -78,6 +85,7 @@ public class MapActivity extends AppCompatActivity {
         });
     }
 
+    //TODO: persistent location data - Firebase
     private void getGeoLocation() {
         String searchLocation = searchText.getText().toString();
 
@@ -92,23 +100,13 @@ public class MapActivity extends AppCompatActivity {
         if (addressList.size() > 0) {
             Address address = addressList.get(0);
             Log.d(TAG, "getGeoLocation got " + address.toString());
+
+            //TODO: replace meeting location placeholder with owner/requester name
+            MapFragment.moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
+
+//            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
     }
-
-    /**
-     * Manipulates the map when it's available.
-     * The API invokes this callback when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     * If Google Play services is not installed on the device, the user receives a prompt to install
-     * Play services inside the SupportMapFragment. The API invokes this method after the user has
-     * installed Google Play services and returned to the app.
-     */
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//        LatLng edmonton = new LatLng(53.544, -113.491);
-//        googleMap.addMarker(new MarkerOptions().position(edmonton).title("Edmonton"));
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(edmonton));
-//    }
 
     @Override
     protected void onResume() {
