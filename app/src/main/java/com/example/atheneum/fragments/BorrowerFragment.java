@@ -33,17 +33,12 @@ public class BorrowerFragment extends Fragment {
     private View view;
     private Context context;
     private ViewPager mPager;
-    private PagerAdapter pagerAdapter;
 
-    private  static  final int NUM_PAGES = 2;
 
-//    private OnFragmentInteractionListener mListener;
 
     public BorrowerFragment() {
         // Required empty public constructor
     }
-
-
 
 
     @Override
@@ -58,7 +53,6 @@ public class BorrowerFragment extends Fragment {
 
         TabLayout tabs = (TabLayout) view.findViewById(R.id.borrowerTabLayout);
         tabs.setupWithViewPager(mPager);
-//        pagerAdapter  = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         return this.view;
     }
@@ -71,44 +65,6 @@ public class BorrowerFragment extends Fragment {
 
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
 
     private class TabsAdapter extends FragmentStatePagerAdapter{
         private final List<Fragment>  mFragmentList = new ArrayList<>();
@@ -136,28 +92,5 @@ public class BorrowerFragment extends Fragment {
         public CharSequence getPageTitle(int position){
             return mFragmnetTitleList.get(position);
         }
-//        int mNumOfTabs;
-//        public TabsAdapter(FragmentManager fm, int NoofTabs){
-//            super(fm);
-//            this.mNumOfTabs = NoofTabs;
-//        }
-//        @Override
-//        public int getCount() {
-//            return mNumOfTabs;
-//        }
-//        @Override
-//        public Fragment getItem(int position){
-//            switch (position){
-//                case 0:
-//                    BorrowedBooksFragment borrowedBooksFragment = new BorrowedBooksFragment();
-//                    return borrowedBooksFragment;
-//                case 1:
-//                    BorrowerRequestsFragment borrowerRequestsFragment = new BorrowerRequestsFragment();
-//                    return borrowerRequestsFragment;
-//
-//                default:
-//                    return null;
-//            }
-//        }
     }
 }

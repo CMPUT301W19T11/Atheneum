@@ -26,7 +26,6 @@ import com.example.atheneum.R;
  */
 public class BorrowedBooksFragment extends Fragment {
 
-//    private OnFragmentInteractionListener mListener;
 
     public BorrowedBooksFragment() {
         // Required empty public constructor

@@ -154,15 +154,15 @@ public class BookInfoActivity extends AppCompatActivity {
         Log.i(TAG, "Return from scan ISBN");
         if (requestCode == 0) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
-                if (data != null && bOok != null) {
+                if (data != null && book != null) {
                     Barcode barcode = data.getParcelableExtra("Barcode");
                     String barcodeISBN = String.valueOf(barcode.displayValue);
 
-                    if (barcodeISBN.equals(Long.toString(bOok.getIsbn()))) {
+                    if (barcodeISBN.equals(Long.toString(book.getIsbn()))) {
                         Log.i(TAG, "They do equal");
 
 
-                        TransactionViewModelFactory factory = new TransactionViewModelFactory(bOok.getBookID());
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
                         transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
@@ -186,7 +186,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                     if (transaction.getBScan() && transaction.getOScan()) {
                                         if (transaction.getType().equals("CHECKOUT")) {
-                                            bOok.setStatus(Book.Status.BORROWED);
+                                            book.setStatus(Book.Status.BORROWED);
                                             DatabaseWriteHelper.updateBook(bOok);
 
                                             transaction.setBScan(false);
@@ -194,9 +194,9 @@ public class BookInfoActivity extends AppCompatActivity {
                                             transaction.setType(Transaction.RETURN);
                                             DatabaseWriteHelper.updateTransaction(transaction);
                                         } else {
-                                            bOok.setStatus(Book.Status.AVAILABLE);
-                                            bOok.setBorrowerID("");
-                                            DatabaseWriteHelper.updateBook(bOok);
+                                            book.setStatus(Book.Status.AVAILABLE);
+                                            book.setBorrowerID("");
+                                            DatabaseWriteHelper.updateBook(book);
                                             DatabaseWriteHelper.deleteTransaction(transaction);
                                         }
                                     }
@@ -291,8 +291,6 @@ public class BookInfoActivity extends AppCompatActivity {
             public void onChanged(final @Nullable Book book) {
                 if (book != null) {
 
-                    bOok = book;
-
                     BookInfoActivity.this.book = book;
 
                     textTitle.setText(book.getTitle());
@@ -300,9 +298,9 @@ public class BookInfoActivity extends AppCompatActivity {
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
-                    status = String.valueOf(book.getStatus());
+//                    status = String.valueOf(book.getStatus());
 
-                    if (status.equals("ACCEPTED") || status.equals("BORROWED")) {
+                    if (book.getStatus().equals("ACCEPTED") || book.getStatus().equals("BORROWED")) {
                         Log.i(TAG, "scan button visible");
                         scanBtn.setVisibility(View.VISIBLE);
                         scanBtn.setOnClickListener(new View.OnClickListener() {

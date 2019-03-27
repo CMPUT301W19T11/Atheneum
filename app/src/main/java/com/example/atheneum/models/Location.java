@@ -62,7 +62,7 @@ public class Location {
         this.lon = lon;
     }
 
-//    @androidx.annotation.NonNull
+
     @Override
     public String toString() {
         return "lat:"+getLat() +" lon:"+getLon();

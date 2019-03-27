@@ -214,7 +214,7 @@ public class DatabaseWriteHelper {
 
 
     public static void deleteRequest(Request request){
-        RequestCollectionRefUtils.getBookRequestCollectionRef(request.getBookID()).setValue(null);
+        RequestCollectionRefUtils.getSpecifiedOwnerRequest(request.getRequesterID(), request.getBookID()).setValue(null);
     }
 
     /**
