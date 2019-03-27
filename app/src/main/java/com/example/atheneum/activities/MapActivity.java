@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
+import com.example.atheneum.fragments.MapFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,23 +37,25 @@ import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_
  *
  * See: https://gist.github.com/mitchtabian/2b9a3dffbfdc565b81f8d26b25d059bf
  */
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity {
 
     /**
      * The constant TAG.
      */
-    public static final String TAG = "MapActivity";
+    public static final String TAG = "Map Activity";
     private boolean locationPermissionGiven = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Retrieve the content view that renders the map.
-        setContentView(R.layout.fragment_map);
+        setContentView(R.layout.activity_map);
         // Get the SupportMapFragment and request notification
         // when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_map);
-        mapFragment.getMapAsync(this);
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_map);
+//        mapFragment.getMapAsync(this);
+
+        getSupportActionBar().setTitle("Google Maps");
     }
 
     /**
@@ -62,19 +66,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      * Play services inside the SupportMapFragment. The API invokes this method after the user has
      * installed Google Play services and returned to the app.
      */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        LatLng edmonton = new LatLng(53.544, -113.491);
-        googleMap.addMarker(new MarkerOptions().position(edmonton).title("Edmonton"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(edmonton));
-    }
+//    @Override
+//    public void onMapReady(GoogleMap googleMap) {
+//        LatLng edmonton = new LatLng(53.544, -113.491);
+//        googleMap.addMarker(new MarkerOptions().position(edmonton).title("Edmonton"));
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(edmonton));
+//    }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (checkMapServices()) {
             if (locationPermissionGiven) {
-                getChatRooms();
+                inflateMapFragment();
             }
             else {
                 getLocationPermission();
@@ -146,7 +150,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGiven = true;
-            getChatrooms();
+            inflateMapFragment();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -170,8 +174,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return true;
         }
         else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occured but we can resolve it
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            //an error occurred but we can resolve it
+            Log.d(TAG, "isServicesOK: an error occurred but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         }else{
@@ -199,17 +203,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: called.");
+        Log.d(TAG, "onActivityResult called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(locationPermissionGiven){
-                    getChatrooms();
+                    inflateMapFragment();
                 }
                 else{
                     getLocationPermission();
                 }
             }
         }
+    }
+
+    private void inflateMapFragment() {
+//        MapFragment mapFragment = MapFragment.newInstance();
+        Log.d(TAG, "inflate Map Fragment Called");
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, new MapFragment()).addToBackStack("MapFragment").commit();
     }
 
 }
