@@ -147,6 +147,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
         map.setMyLocationEnabled(true);
+        getDeviceLocation();
         googleMap = map;
     }
 
