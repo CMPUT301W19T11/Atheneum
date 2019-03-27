@@ -193,6 +193,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
         } else if (id == R.id.nav_map) {
             Intent mapIntent = new Intent(this, MapActivity.class);
+            mapIntent.putExtra("ViewOnly", false);
+//            mapIntent.putExtra("ViewOnly", true);
             startActivity(mapIntent);
         } else if (id == R.id.nav_logout) {
             Log.i(TAG, "logging out");

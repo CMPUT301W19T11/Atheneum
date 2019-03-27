@@ -22,15 +22,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <ImageView
-                android:id="@+id/center_location"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="60dp"
-                android:layout_marginRight="10dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_center_location" />
+            <!--<ImageView-->
+                <!--android:id="@+id/center_location"-->
+                <!--android:layout_width="40dp"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_marginTop="60dp"-->
+                <!--android:layout_marginRight="10dp"-->
+                <!--android:scaleType="centerCrop"-->
+                <!--android:src="@drawable/ic_center_location" />-->
         </RelativeLayout>
 
     </LinearLayout>

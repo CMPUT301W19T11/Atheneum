@@ -47,7 +47,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "Map Fragment";
 
-    private ImageView centerLocation;
+//    private ImageView centerLocation;
     private MapView mMapView;
     private static GoogleMap googleMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -72,13 +72,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         mMapView = view.findViewById(R.id.google_map_view);
-        centerLocation = (ImageView) view.findViewById(R.id.center_location);
-        centerLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDeviceLocation();
-            }
-        });
+//        centerLocation = (ImageView) view.findViewById(R.id.center_location);
+//        centerLocation.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getDeviceLocation();
+//            }
+//        });
 
         Log.d(TAG, "initializing Google Map");
         initGoogleMap(savedInstanceState);
@@ -168,9 +168,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMapView.onLowMemory();
     }
 
-    public static void moveCamera(LatLng latLng, float zoom, String title) {
+    public static void moveCamera(LatLng latLng, float zoom) {
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+    }
 
+    public static void addMarker(LatLng latLng, float zoom, String title) {
         if (!title.equals("My Location")) {
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
             googleMap.addMarker(markerOptions);
@@ -182,7 +184,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        try{
+        try {
             if(isLocationPermissionGiven()){
 
                 final Task location = mFusedLocationProviderClient.getLastLocation();
@@ -193,9 +195,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
 
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM,
-                                    "My Location");
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
@@ -204,7 +204,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 });
             }
-        }catch (SecurityException e){
+        } catch (SecurityException e){
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }

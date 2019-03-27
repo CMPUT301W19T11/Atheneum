@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,11 +42,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.atheneum.fragments.MapFragment.addMarker;
 import static com.example.atheneum.fragments.MapFragment.moveCamera;
 import static com.example.atheneum.utils.GoogleMapConstants.DEFAULT_ZOOM;
 import static com.example.atheneum.utils.GoogleMapConstants.ERROR_DIALOG_REQUEST;
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ENABLE_GPS;
+import static com.example.atheneum.viewmodels.LocationViewModel.addLocation;
 
 /**
  * An activity that displays a Google map with a marker (pin) to indicate a particular location.
@@ -73,7 +76,16 @@ public class MapActivity extends AppCompatActivity {
 
         searchText = (EditText) findViewById(R.id.search_text);
         searchText.setMaxLines(1);
-        initSearchListener();
+
+        Intent mapIntent = getIntent();
+        boolean viewOnly = mapIntent.getExtras().getBoolean("ViewOnly");
+        if (viewOnly == true) {
+            RelativeLayout searchBar = (RelativeLayout) findViewById(R.id.search_bar);
+            searchBar.setVisibility(View.INVISIBLE);
+        } else {
+            initSearchListener();
+        }
+
     }
 
     /**
@@ -98,6 +110,8 @@ public class MapActivity extends AppCompatActivity {
     }
 
     //TODO: persistent location data - Firebase
+    //TODO: delete location data on completion of transaction
+    //TODO: integrate transaction
     private void getGeoLocation() {
         String searchLocation = searchText.getText().toString();
 
@@ -114,9 +128,9 @@ public class MapActivity extends AppCompatActivity {
             Log.d(TAG, "getGeoLocation got " + address.toString());
 
             //TODO: replace meeting location placeholder with owner/requester name
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
-
-//            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
+            addMarker(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
+            addLocation(new LatLng(address.getLatitude(), address.getLongitude()));
         }
     }
 
