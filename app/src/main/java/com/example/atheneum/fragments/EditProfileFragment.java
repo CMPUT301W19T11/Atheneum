@@ -114,6 +114,9 @@ public class EditProfileFragment extends Fragment {
                 final User user = userViewModel.getUserLiveData().getValue();
                 // Update the user based on form input
                 user.setPhoneNumber(phoneNumberField.getText().toString());
+                if (emailAddressField.getVisibility() != View.GONE) {
+                    user.setUserName(emailAddressField.getText().toString());
+                }
                 if (bitmapPhoto != null) {
                     String encodedPhoto = PhotoUtils.EncodeBitmapPhotoBase64(bitmapPhoto);
                     ArrayList<String> photos = user.getPhotos();
@@ -126,7 +129,7 @@ public class EditProfileFragment extends Fragment {
                 }
 
                 FirebaseUser firebaseUser = FirebaseAuthUtils.getCurrentUser();
-                if (firebaseUser.getEmail() != user.getUserName()) {
+                if (!firebaseUser.getEmail().equals(user.getUserName())) {
                     ConnectionChecker connectionChecker = new ConnectionChecker(getContext());
                     if (!connectionChecker.isNetworkConnected()) {
                         Snackbar.make(v, R.string.lost_connection_snackbar_message , Snackbar.LENGTH_LONG).show();
@@ -134,7 +137,6 @@ public class EditProfileFragment extends Fragment {
                         return;
                     }
 
-                    user.setUserName(emailAddressField.getText().toString());
                     firebaseUser.updateEmail(emailAddressField.getText().toString())
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
