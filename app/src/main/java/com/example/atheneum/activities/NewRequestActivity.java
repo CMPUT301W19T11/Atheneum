@@ -76,7 +76,6 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
 
         intentNewRequest = getIntent();
-        intentRequestList = new Intent(this, AvailableBookInfoActivity.class);
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -84,15 +83,26 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
         retriveBook();
 
+//        intentRequestList = new Intent(this, AvailableBookInfoActivity.class);
+//        availableBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                final Book book = (Book) availableBookList.getItemAtPosition(position);
+//                Log.i(TAG, "Request added, id=" + book.getBookID());
+//                intentRequestList.putExtra("availableBookID", book.getBookID());
+//                startActivity(intentRequestList);
+//            }
+//        });
+
+        intentRequestList = new Intent(this, BookInfoActivity.class);
         availableBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Book book = (Book) availableBookList.getItemAtPosition(position);
-                Log.i(TAG, "Request added, id=" + book.getBookID());
-                intentRequestList.putExtra("availableBookID", book.getBookID());
+                Log.i(TAG, "Opening request book info for id=" + book.getBookID());
+                intentRequestList.putExtra("bookID", book.getBookID());
+                intentRequestList.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.BORROWER_VIEW);
                 startActivity(intentRequestList);
-
-
             }
         });
     }

@@ -727,7 +727,13 @@ public class BookInfoActivity extends AppCompatActivity {
         }
     }
 
+    private void hideBorrowerProfArea() {
+        borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
+        borrowerProfileArea.setVisibility(View.GONE);
+    }
+
     private void showBorrowerProfArea(final Book book) {
+        borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
         borrowerID = book.getBorrowerID();
 
         // using borrowerID, show borrower email and profile image, or "None"
@@ -791,19 +797,20 @@ public class BookInfoActivity extends AppCompatActivity {
             return;
         }
 
-        // all should show borrower profile
-
-
         if (view_type.equals(OWNER_VIEW)) {
             // owner view shouldn't show owner or request button
             hideRequestBtn();
             hideOwnerProfArea();
+            showBorrowerProfArea(book);
         }
         else if (view_type.equals(BORROWER_VIEW)) {
             showRequestBtn(book);
+            hideBorrowerProfArea();
+
         }
         else if (view_type.equals(REQUSET_VIEW)) {
             hideRequestBtn();
+            showBorrowerProfArea(book);
         }
         else {
             Log.e(TAG, "invalid view type, shouldn't be happening");

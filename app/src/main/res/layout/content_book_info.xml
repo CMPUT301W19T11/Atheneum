@@ -157,19 +157,18 @@
 
             </LinearLayout>
 
-
-            <TextView
-                android:id="@+id/rStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Borrower:"
-                android:textColor="@color/design_default_color_primary_dark" />
-
             <LinearLayout
                 android:id="@+id/borrower_prof_area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/borrowerPrompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Borrower:"
+                    android:textColor="@color/design_default_color_primary_dark" />
 
                 <ImageView
                     android:id="@+id/borrower_profile_pic"
