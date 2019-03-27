@@ -92,6 +92,7 @@ public class BookInfoActivity extends AppCompatActivity {
     public static final String VIEW_TYPE = "view_type";
     public static final String OWNER_VIEW = "owner_view_book_info";
     public static final String BORROWER_VIEW = "borrower_view_book_info";
+    public static final String REQUSET_VIEW = "request_view_book_info";
     private String view_type;
 
     String title;
@@ -216,114 +217,8 @@ public class BookInfoActivity extends AppCompatActivity {
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
                     setStatusTextColor(book);
-                    borrowerID = book.getBorrowerID();
-                    ownerID = book.getOwnerID();
 
-                    // using borrowerID, show borrower email and profile image, or "None"
-                    final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
-                    final ImageView borrowerPicture = (ImageView) findViewById(R.id.borrower_profile_pic);
-                    // retrieve the User's email
-                    if (!(borrowerID == null || borrowerID.equals(""))) {
-                        Log.i(TAG, "Valid borrowerID");
-
-                        // retrieve email
-                        String borrowerProviderKey = UserViewModel.generateViewModelProviderKey(borrowerID);
-                        UserViewModel borrowerViewModel = ViewModelProviders
-                                .of(BookInfoActivity.this, new UserViewModelFactory(borrowerID))
-                                .get(borrowerProviderKey, UserViewModel.class);
-                        final LiveData<User> borrowerLiveData = borrowerViewModel.getUserLiveData();
-
-                        borrowerLiveData.observe(BookInfoActivity.this, new Observer<User>() {
-                            @Override
-                            public void onChanged(@Nullable User user) {
-                                Log.i(TAG, "in Observer!");
-                                // update borrower email
-                                borrowerEmailTextView.setText(user.getUserName());
-                                Log.i(TAG, "User email*** " + user.getUserName());
-                                if (user.getPhotos().size() > 0) {
-                                    String userPic = user.getPhotos().get(0);
-                                    Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
-                                    borrowerPicture.setImageBitmap(bitmapPhoto);
-                                }
-                                else {
-                                    borrowerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
-                                }
-                                borrowerPicture.setVisibility(View.VISIBLE);
-                                // show image
-                                // Remove the observer after update
-                                borrowerLiveData.removeObserver(this);
-                            }
-                        });
-
-                        // set clickable profile area
-                        borrowerProfileArea.setClickable(true);
-                        borrowerProfileArea.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i(TAG, "Borrower Profile clicked");
-                                viewUserProfile(borrowerID);
-                            }
-                        });
-
-                    }
-                    else { // no borrower;
-                        Log.i(TAG, "No borrower");
-                        borrowerEmailTextView.setText("None");
-                        borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
-                        borrowerProfileArea.setClickable(false);
-                    }
-
-                    // setup and show owner username and picture
-                    final TextView ownererEmailTextView = (TextView) findViewById(R.id.book_owner_email);
-                    final ImageView ownerPicture = (ImageView) findViewById(R.id.owner_profile_pic);
-                    // retrieve the User's email
-                    if (!(ownerID == null || ownerID.equals(""))) {
-                        Log.i(TAG, "Valid ownerID, this is expected");
-
-                        // retrieve email
-                        String ownerProviderKey = UserViewModel.generateViewModelProviderKey(ownerID);
-                        UserViewModel ownerViewModel = ViewModelProviders
-                                .of(BookInfoActivity.this, new UserViewModelFactory(ownerID))
-                                .get(ownerProviderKey, UserViewModel.class);
-                        final LiveData<User> ownerLiveData = ownerViewModel.getUserLiveData();
-
-                        ownerLiveData.observe(BookInfoActivity.this, new Observer<User>() {
-                            @Override
-                            public void onChanged(@Nullable User user) {
-                                Log.i(TAG, "in Observer!");
-                                // update borrower email
-                                ownererEmailTextView.setText(user.getUserName());
-                                Log.i(TAG, "User email*** " + user.getUserName());
-                                if (user.getPhotos().size() > 0) {
-                                    String userPic = user.getPhotos().get(0);
-                                    Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
-                                    ownerPicture.setImageBitmap(bitmapPhoto);
-                                } else {
-                                    ownerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
-                                }
-                                ownerPicture.setVisibility(View.VISIBLE);
-                                // show image
-                                // Remove the observer after update
-                                ownerLiveData.removeObserver(this);
-                            }
-                        });
-
-                        // set clickable profile area
-                        ownerProfileArea.setClickable(true);
-                        ownerProfileArea.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i(TAG, "Owner Profile clicked");
-                                viewUserProfile(ownerID);
-                            }
-                        });
-
-                        ownerProfileArea.setVisibility(View.VISIBLE);
-                    }
-                    else { // shouldn't be here
-                        Log.e(TAG, "Error, no ownerID found");
-                        ownerProfileArea.setVisibility(View.GONE);
-                    }
+                    setupViewComponents(book);
                 }
             }
         });
@@ -441,7 +336,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
         hideGoodreadsReview();
         showGoodreadsReviewError("Loading...\n");
-        // TODO deal with goodreads reviews
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
@@ -463,7 +357,19 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_book_info, menu);
+        if (getIntent().getStringExtra(VIEW_TYPE).equals(OWNER_VIEW)){
+            getMenuInflater().inflate(R.menu.menu_book_info, menu);
+        }
+        else if(getIntent().getStringExtra(VIEW_TYPE).equals(BORROWER_VIEW)) {
+            // TODO
+        }
+        else if (getIntent().getStringExtra(VIEW_TYPE).equals(REQUSET_VIEW)) {
+
+        }
+        else {
+            Log.e(TAG, "ERROR in view type onCreateOptionsMenu");
+            return false;
+        }
         return true;
     }
 
@@ -708,5 +614,200 @@ public class BookInfoActivity extends AppCompatActivity {
         com.example.atheneum.models.Request request = new com.example.atheneum.models.Request(requester.getUserID(), bookID);
         request.setrStatus(com.example.atheneum.models.Request.Status.ACCEPTED);
         DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
+    }
+
+    private void hideRequestBtn() {
+        LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
+        requestBtnArea.setVisibility(View.GONE);
+    }
+
+    private void showRequestBtn(final Book book_to_request) {
+        LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
+        Button requestBookBtn = (Button) findViewById(R.id.requestBookBtn);
+
+        requestBookBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // taken from the old AvailableBookInfoActivity
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                DatabaseReference ref = db.getReference()
+                        .child(getString(R.string.db_users)).child(currentUser.getUid());
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            User requester = dataSnapshot.getValue(User.class);
+
+                            com.example.atheneum.models.Request newRequest = new com.example.atheneum.models.Request(requester.getUserID(), book_to_request.getBookID());
+
+                            Notification notification = new Notification(
+                                    requester.getUserID(),
+                                    book_to_request.getOwnerID(),
+                                    book_to_request.getOwnerID(),
+                                    book_to_request.getBookID(),
+                                    Notification.NotificationType.REQUEST,
+                                    "");
+                            notification.constructMessage(requester.getUserName(), book_to_request.getTitle());
+                            DatabaseWriteHelper.makeRequest(newRequest, notification);
+
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        requestBookBtn.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOwnerProfArea() {
+        ownerProfileArea = (LinearLayout) findViewById(R.id.owner_prof_area);
+        ownerProfileArea.setVisibility(View.GONE);
+    }
+
+    private void showOwnerProfArea(final Book book) {
+        ownerID = book.getBorrowerID();
+
+        // setup and show owner username and picture
+        final TextView ownererEmailTextView = (TextView) findViewById(R.id.book_owner_email);
+        final ImageView ownerPicture = (ImageView) findViewById(R.id.owner_profile_pic);
+        // retrieve the User's email
+        if (!(ownerID == null || ownerID.equals(""))) {
+            Log.i(TAG, "Valid ownerID, this is expected");
+
+            // retrieve email
+            String ownerProviderKey = UserViewModel.generateViewModelProviderKey(ownerID);
+            UserViewModel ownerViewModel = ViewModelProviders
+                    .of(BookInfoActivity.this, new UserViewModelFactory(ownerID))
+                    .get(ownerProviderKey, UserViewModel.class);
+            final LiveData<User> ownerLiveData = ownerViewModel.getUserLiveData();
+
+            ownerLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    // update borrower email
+                    ownererEmailTextView.setText(user.getUserName());
+                    Log.i(TAG, "User email*** " + user.getUserName());
+                    if (user.getPhotos().size() > 0) {
+                        String userPic = user.getPhotos().get(0);
+                        Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                        ownerPicture.setImageBitmap(bitmapPhoto);
+                    } else {
+                        ownerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
+                    }
+                    ownerPicture.setVisibility(View.VISIBLE);
+                    // show image
+                    // Remove the observer after update
+                    ownerLiveData.removeObserver(this);
+                }
+            });
+
+            // set clickable profile area
+            ownerProfileArea.setClickable(true);
+            ownerProfileArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "Owner Profile clicked");
+                    viewUserProfile(ownerID);
+                }
+            });
+
+            ownerProfileArea.setVisibility(View.VISIBLE);
+        }
+        else { // shouldn't be here
+            Log.e(TAG, "Error, no ownerID found");
+            ownerProfileArea.setVisibility(View.GONE);
+        }
+    }
+
+    private void showBorrowerProfArea(final Book book) {
+        borrowerID = book.getBorrowerID();
+
+        // using borrowerID, show borrower email and profile image, or "None"
+        final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
+        final ImageView borrowerPicture = (ImageView) findViewById(R.id.borrower_profile_pic);
+        // retrieve the User's email
+        if (!(borrowerID == null || borrowerID.equals(""))) {
+            Log.i(TAG, "Valid borrowerID");
+
+            // retrieve email
+            String borrowerProviderKey = UserViewModel.generateViewModelProviderKey(borrowerID);
+            UserViewModel borrowerViewModel = ViewModelProviders
+                    .of(BookInfoActivity.this, new UserViewModelFactory(borrowerID))
+                    .get(borrowerProviderKey, UserViewModel.class);
+            final LiveData<User> borrowerLiveData = borrowerViewModel.getUserLiveData();
+
+            borrowerLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    // update borrower email
+                    borrowerEmailTextView.setText(user.getUserName());
+                    Log.i(TAG, "User email*** " + user.getUserName());
+                    if (user.getPhotos().size() > 0) {
+                        String userPic = user.getPhotos().get(0);
+                        Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                        borrowerPicture.setImageBitmap(bitmapPhoto);
+                    }
+                    else {
+                        borrowerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
+                    }
+                    borrowerPicture.setVisibility(View.VISIBLE);
+                    // show image
+                    // Remove the observer after update
+                    borrowerLiveData.removeObserver(this);
+                }
+            });
+
+            // set clickable profile area
+            borrowerProfileArea.setClickable(true);
+            borrowerProfileArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "Borrower Profile clicked");
+                    viewUserProfile(borrowerID);
+                }
+            });
+            borrowerProfileArea.setVisibility(View.VISIBLE);
+        }
+        else { // no borrower;
+            Log.i(TAG, "No borrower");
+            borrowerEmailTextView.setText("None");
+            borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
+            borrowerProfileArea.setClickable(false);
+        }
+    }
+
+    private void setupViewComponents(final Book book) {
+        if (this.view_type == null || this.view_type.equals("")){
+            Log.e(TAG, "No view type, shouldn't be happening");
+            return;
+        }
+
+        // all should show borrower profile
+
+
+        if (view_type.equals(OWNER_VIEW)) {
+            // owner view shouldn't show owner or request button
+            hideRequestBtn();
+            hideOwnerProfArea();
+        }
+        else if (view_type.equals(BORROWER_VIEW)) {
+            showRequestBtn(book);
+        }
+        else if (view_type.equals(REQUSET_VIEW)) {
+            hideRequestBtn();
+        }
+        else {
+            Log.e(TAG, "invalid view type, shouldn't be happening");
+        }
+
     }
 }

@@ -104,7 +104,7 @@
             android:text="BOOK STATUS GOES HERE"/>
 
         <TextView
-            android:id="@+id/rStatus"
+            android:id="@+id/descrptionheader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Description:"
