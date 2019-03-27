@@ -171,8 +171,7 @@ public class Transaction {
     /**
      * @param oScan New value of oScan
      */
-    @Exclude
-    @PropertyName("bScan")
+    @PropertyName("oScan")
     public void setOScan(boolean oScan) {
         this.oScan = oScan;
     }
