@@ -154,7 +154,6 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
         else{
             Log.i(TAG, "scan button visible");
             scanBook.setVisibility(View.VISIBLE);
-
             scanBook.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -202,6 +201,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                     Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
                                     transactionViewModel.updateTransaction(transaction);
 
+//                                    scanBook.setVisibility(View.INVISIBLE);
 
                                     if(transaction.getBScan() && transaction.getOScan()){
                                         if(transaction.getType().equals("CHECKOUT")) {
@@ -211,6 +211,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                             transaction.setOScan(false);
                                             transaction.setType(Transaction.RETURN);
                                             DatabaseWriteHelper.updateTransaction(transaction);
+                                            scanBook.setVisibility(View.INVISIBLE);
                                         }
                                         else {
                                             bOok.setStatus(Book.Status.AVAILABLE);
@@ -219,13 +220,10 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                             DatabaseWriteHelper.deleteTransaction(transaction);
                                         }
                                     }
-
                                 }
                                 transactionLiveData.removeObserver(this);
                             }
                         });
-
-
                     }
 
                 }
@@ -234,13 +232,22 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
             }
-
         }
         else{
             Log.i(TAG, "in else");
             super.onActivityResult(requestCode, resultCode, data);
         }
         Log.i(TAG, "leaving onActivityResult");
-
     }
+
+    //TODO
+//    @Override
+//    public void onBackPressed() {
+//        Log.i(TAG, "back button pressed");
+//        if(String.valueOf(bOok.getStatus()).equals("BORROWED")){
+//            Log.i(TAG, "deleting the request");
+//            DatabaseWriteHelper.deleteRequest();
+//        }
+//        finish();
+//    }
 }

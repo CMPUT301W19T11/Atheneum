@@ -163,6 +163,11 @@ public class DatabaseWriteHelper {
         });
     }
 
+
+    public static void deleteRequest(Request request){
+        RequestCollectionRefUtils.getBookRequestCollectionRef(request.getBookID()).setValue(null);
+    }
+
     /**
      * Triggers when a request is accepted
      * Used only by other DatabaseWriteHelper methods

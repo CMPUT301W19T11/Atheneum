@@ -137,10 +137,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
                     if(barcodeISBN.equals(Long.toString(bOok.getIsbn()))) {
                         Log.i(TAG, "They do equal");
-//                        Log.i(TAG, "value of bOokID:" + bOok.getBookID());
-//                        Log.i(TAG, "value of ownerID:" + bOok.getOwnerID());
-//                        Log.i(TAG, "value of borrowerID:" + bOok.getBorrowerID());
-
 
 
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(bOok.getBookID());
@@ -158,11 +154,13 @@ public class BookInfoActivity extends AppCompatActivity {
                                     Log.i(TAG, "Owner value:" + transaction.getOwnerID());
                                     Log.i(TAG, "Borrower value:" + transaction.getBorrowerID());
                                     transaction.setOScan(true);
-//                                    transaction.setBScan(true);
+
 
                                     transaction.setBorrowerID(borrowerID);
                                     transaction.setOwnerID(loggedInUser.getUserID());
                                     transactionViewModel.updateTransaction(transaction);
+
+
 
                                     if(transaction.getBScan() && transaction.getOScan()){
                                         if(transaction.getType().equals("CHECKOUT")) {
@@ -488,41 +486,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
         scanBtn = (Button) findViewById(R.id.scanISBN);
 
-//        TransactionViewModelFactory factory1 = new TransactionViewModelFactory(bookID);
-//        TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory1).get(TransactionViewModel.class);
-//        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
-//
-//        transactionLiveData.observe(this, new Observer<Transaction>() {
-//            @Override
-//            public void onChanged(@Nullable Transaction transaction) {
-//                if(transaction != null){
-//                    Log.i(TAG, "transaction exists");
-//                    scanBtn.setVisibility(View.VISIBLE);
-//                }
-//                else{
-//                    Log.i(TAG, "scan button not visible");
-//                    scanBtn.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//        });
-//        Log.i (TAG, "))))))))))))((((((" + status);
-//        Log.i(TAG, "**********" + textStatus.getText().toString());
-//        if(status.equals("ACCEPTED")){
-//            Log.i(TAG, "scan button visible");
-//            scanBtn.setVisibility(View.VISIBLE);
-//            scanBtn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Log.i(TAG, "ISBN scan requested");
-//                    Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
-//                    startActivityForResult(intent, 0);
-//                }
-//            });
-//        }
-//        else{
-//            Log.i(TAG, "scan button not visible");
-//            scanBtn.setVisibility(View.INVISIBLE);
-//        }
     }
 
 
