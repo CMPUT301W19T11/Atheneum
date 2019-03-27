@@ -186,7 +186,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                     if (transaction.getBScan() && transaction.getOScan()) {
                                         if (transaction.getType().equals("CHECKOUT")) {
                                             book.setStatus(Book.Status.BORROWED);
-                                            DatabaseWriteHelper.updateBook(bOok);
+                                            DatabaseWriteHelper.updateBook(book);
 
                                             transaction.setBScan(false);
                                             transaction.setOScan(false);
