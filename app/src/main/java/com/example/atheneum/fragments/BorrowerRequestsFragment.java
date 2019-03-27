@@ -76,7 +76,7 @@ public class BorrowerRequestsFragment extends Fragment {
         this.view = inflater.inflate(R.layout.fragment_borrower_requests, container, false);
 
         this.context = getContext();
-        requestView = (ListView) this.view.findViewById(R.id.requestsView);
+        requestView = (ListView) this.view.findViewById(R.id.requestView);
 
         //https://developer.android.com/guide/topics/ui/controls/spinner
         requestSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
