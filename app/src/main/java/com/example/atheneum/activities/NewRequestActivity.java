@@ -91,7 +91,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                 Log.i(TAG, "Request added, id=" + book.getBookID());
                 intentRequestList.putExtra("availableBookID", book.getBookID());
                 startActivity(intentRequestList);
-//                finish();
+                //finish();
 
 
             }
