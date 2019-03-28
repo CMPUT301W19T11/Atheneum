@@ -21,24 +21,29 @@
         app:rippleColor="@android:color/background_light"
         app:srcCompat="@android:drawable/ic_input_add" />
 
-    <Spinner
-        android:id="@+id/ownBookSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/requestView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/requestView"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="551dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ownBookSpinner"
-        app:layout_constraintVertical_bias="0.25" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Spinner
+            android:id="@+id/ownBookSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/requestView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ListView
+            android:id="@+id/requestView"
+            android:layout_width="wrap_content"
+            android:layout_height="551dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ownBookSpinner"
+            app:layout_constraintVertical_bias="0.25" /></LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
