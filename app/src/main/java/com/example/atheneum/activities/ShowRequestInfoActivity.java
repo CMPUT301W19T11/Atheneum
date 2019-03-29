@@ -53,7 +53,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
     private String rStaus;
     private String ownerID;
 
-    private Book bOok;
+    private Book book;
 
     private static final String TAG = "ShowRequestInfoActivity";
 
@@ -89,7 +89,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable Book book) {
                 if (book != null) {
-                    bOok = book;
+                    ShowRequestInfoActivity.this.book = book;
                     bookTitle.setText(book.getTitle());
                     bookAuthor.setText(book.getAuthor());
                     bookISBN.setText(String.valueOf(book.getIsbn()));
@@ -176,8 +176,8 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                     }
                     else{
                         Log.i(TAG, "Updating transaction bScan");
-                        TransactionViewModelFactory factory = new TransactionViewModelFactory(bOok.getBookID());
-                        Log.i(TAG, "bOok  bookID is " + bOok.getBookID());
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                        Log.i(TAG, "bOok  bookID is " + book.getBookID());
                         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 

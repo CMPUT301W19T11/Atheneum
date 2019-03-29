@@ -182,19 +182,21 @@ public class BookInfoActivity extends AppCompatActivity {
                                         transaction.setBorrowerID(borrowerID);
                                         transaction.setOwnerID(loggedInUser.getUserID());
                                         transactionViewModel.updateTransaction(transaction);
-                                        Log.i(TAG, "first if*****");
+
                                     }
                                     else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
+                                        transaction.setBorrowerID(borrowerID);
                                        transactionViewModel.updateTransactionBorrowed(book, transaction);
+//                                        transactionViewModel.deleteRequest(transaction);
                                         transactionLiveData.removeObserver(this);
                                         scanBtn.setClickable(true);
-                                        Log.i(TAG, "second if*****");
+
                                     }
                                     else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
                                         transactionViewModel.updateTransactionReturned(book);
                                         transactionLiveData.removeObserver(this);
                                         scanBtn.setClickable(true);
-                                        Log.i(TAG, "third if*****");
+
                                     }
                                 }
 

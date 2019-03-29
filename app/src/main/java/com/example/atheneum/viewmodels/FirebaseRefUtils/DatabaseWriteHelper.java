@@ -213,8 +213,8 @@ public class DatabaseWriteHelper {
     }
 
 
-    public static void deleteRequest(Request request){
-        RequestCollectionRefUtils.getSpecifiedOwnerRequest(request.getRequesterID(), request.getBookID()).setValue(null);
+    public static void deleteRequest(Transaction transaction){
+        RequestCollectionRefUtils.getSpecifiedOwnerRequest(transaction.getBorrowerID(), transaction.getBookID()).removeValue();
     }
 
     /**
@@ -427,10 +427,14 @@ public class DatabaseWriteHelper {
         final String bookStatusRef = String.format("books/%s/status",
                 book.getBookID());
 
+        final String requestRef = String.format("requestCollection/%s/%s",
+                transaction.getBorrowerID(), transaction.getBookID());
+
         updates.put(transactionTypeRef, Transaction.RETURN);
         updates.put(transactionOScanRef, false);
         updates.put(transactionBScanRef, false);
         updates.put(bookStatusRef, Book.Status.BORROWED);
+        updates.put(requestRef, null);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
@@ -444,6 +448,7 @@ public class DatabaseWriteHelper {
                     Log.i(TAG, "oscan type: "  + transactionOScanRef);
                     Log.i(TAG, "bscantype: " + transactionBScanRef);
                     Log.i(TAG, "book Status: " + bookStatusRef);
+                    Log.i(TAG, "request:" + requestRef);
                 }
             }
         });
