@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.atheneum.models.Location;
 import com.example.atheneum.utils.FirebaseQueryLiveData;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RootRefUtils;
+import com.example.atheneum.viewmodels.FirebaseRefUtils.TransactionRefUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,14 +19,22 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.HashMap;
 
+import static com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper.writeLocation;
+import static com.example.atheneum.viewmodels.FirebaseRefUtils.TransactionRefUtils.getTransactionRef;
+
 public class LocationViewModel extends ViewModel {
     private static final String TAG = "Location View Model";
 
     private FirebaseQueryLiveData queryLiveData;
+
+    public LiveData<Location> getLocationLiveData() {
+        return locationLiveData;
+    }
+
     private LiveData<Location> locationLiveData;
 
-    public LocationViewModel() {
-        queryLiveData = new FirebaseQueryLiveData(RootRefUtils.ROOT_REF);
+    public LocationViewModel(String BookID) {
+        queryLiveData = new FirebaseQueryLiveData(getTransactionRef(BookID).child("location"));
         locationLiveData = Transformations.map(queryLiveData, new Deserializer());
     }
 
@@ -36,26 +45,28 @@ public class LocationViewModel extends ViewModel {
         }
     }
 
-    public static void addLocation(LatLng latLng) {
+    public static void addLocation(String BookID, LatLng latLng) {
         Log.d(TAG, "adding new location");
-        final String locationRef = String.format("locations/%s", latLng.toString());
+//        final String locationRef = String.format("locations/%s", latLng.toString());
 
         Location newLocation = new Location(latLng.toString(), latLng.latitude, latLng.longitude);
 
-        HashMap<String, Object> updates = new HashMap<String, Object>();
-        updates.put(locationRef, newLocation);
+//        HashMap<String, Object> updates = new HashMap<String, Object>();
+//        updates.put(locationRef, newLocation);
+//
+//        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+//            @Override
+//            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+//                if (databaseError != null) {
+//                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+//                    Log.i(TAG, "locationRef: " + locationRef.toString());
+//                } else {
+//                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+//                }
+//            }
+//        });
 
-        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
-                    Log.i(TAG, "locationRef: " + locationRef.toString());
-                } else {
-                    Log.i(TAG, "Successful update at " + databaseReference.toString());
-                }
-            }
-        });
+        writeLocation(BookID, newLocation);
     }
 
     public static void deleteLocation(LatLng latLng) {

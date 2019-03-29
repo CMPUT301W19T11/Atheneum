@@ -75,7 +75,7 @@
             android:text="BOOK ISBN GOES HERE"/>
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/rStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Status:"
@@ -88,6 +88,12 @@
             android:paddingLeft="15dp"
             android:paddingBottom="15dp"
             android:text="BOOK STATUS GOES HERE"/>
+
+        <Button
+            android:id="@+id/scanBook"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="SCAN" />
 
         <TextView
             android:id="@+id/Owner"
@@ -111,7 +117,7 @@
             android:text="owner details" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/rStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Description:"

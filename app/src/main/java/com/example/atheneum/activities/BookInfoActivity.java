@@ -10,10 +10,15 @@
 
 package com.example.atheneum.activities;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -26,19 +31,41 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.request.RequestOptions;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.atheneum.R;
 import com.example.atheneum.models.Book;
+import com.example.atheneum.utils.GoodreadsReviewAdapter;
+import com.example.atheneum.models.GoodreadsReviewInfo;
+import com.example.atheneum.models.SingletonRequestQueue;
 import com.example.atheneum.models.Notification;
-import com.example.atheneum.models.Request;
+
+
+import com.example.atheneum.models.Transaction;
+
+
+import com.example.atheneum.models.Photo;
+//import com.example.atheneum.models.Request;
+
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
+import com.example.atheneum.utils.ConnectionChecker;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.BookInfoViewModel;
@@ -46,11 +73,20 @@ import com.example.atheneum.viewmodels.BookInfoViewModelFactory;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.RequestCollectionRefUtils;
 import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
+
+import com.example.atheneum.viewmodels.TransactionViewModel;
+import com.example.atheneum.viewmodels.TransactionViewModelFactory;
+
+import com.example.atheneum.viewmodels.FirstBookPhotoViewModel;
+import com.example.atheneum.viewmodels.FirstBookPhotoViewModelFactory;
+
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -66,6 +102,7 @@ import com.google.firebase.database.ValueEventListener;
  * Provides the UI fields and buttons for deleting and editing a book.
  */
 public class BookInfoActivity extends AppCompatActivity {
+    private Context ctx;
 
     String title;
     String author;
@@ -73,7 +110,9 @@ public class BookInfoActivity extends AppCompatActivity {
     String desc;
     private String bookID;
     private String borrowerID;
+    private String status;
     private BookInfoViewModel bookInfoViewModel;
+    private TransactionViewModel transactionViewModel;
 
     private User loggedInUser;
     private DatabaseReference loggedInUserRef;
@@ -84,15 +123,24 @@ public class BookInfoActivity extends AppCompatActivity {
     private TextView textIsbn;
     private TextView textDesc;
     private TextView textStatus;
+    private ImageView bookImage;
 
     private RecyclerView requestsRecyclerView;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private RecyclerView.LayoutManager requestsLayoutManager;
 
-    private Button deleteBtn;
-    private Button editBtn;
-    private Button setLocBtn;
-    private Button viewLocBtn;
+    // temporary initialization
+    private GoodreadsReviewInfo goodreadsReviewInfo =
+            new GoodreadsReviewInfo(Book.INVALILD_ISBN, GoodreadsReviewInfo.INVALID_RATING, null);
+    private RatingBar goodreadsAvgRatingbar;
+    private Button getReviewsBtn;
+
+
+    private Button setLoc;
+    private Button getLoc;
+    private Button scanBtn;
+
+    private Book book;
 
     private LinearLayout borrowerProfileArea;
 
@@ -101,6 +149,76 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Log.i(TAG, "Return from scan ISBN");
+        if (requestCode == 0) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null && book != null) {
+                    Barcode barcode = data.getParcelableExtra("Barcode");
+                    String barcodeISBN = String.valueOf(barcode.displayValue);
+
+                    if (barcodeISBN.equals(Long.toString(book.getIsbn()))) {
+                        Log.i(TAG, "They do equal");
+
+
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                        transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+                        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+
+                        if (!transactionLiveData.hasObservers())  {
+                            transactionLiveData.observe(this, new Observer<Transaction>() {
+                                @Override
+                                public void onChanged(@Nullable Transaction transaction) {
+                                    if (transaction != null && transaction.getBScan() && !transaction.getOScan()) {
+                                        Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
+                                        Log.i(TAG, "bookID:  " + String.valueOf(transaction.getBookID()));
+                                        Log.i(TAG, "BScan value:" + String.valueOf(transaction.getBScan()));
+                                        Log.i(TAG, "OScan value:" + String.valueOf(transaction.getOScan()));
+                                        Log.i(TAG, "Owner value:" + transaction.getOwnerID());
+                                        Log.i(TAG, "Borrower value:" + transaction.getBorrowerID());
+                                        transaction.setOScan(true);
+
+                                        scanBtn.setClickable(false);
+                                        transaction.setBorrowerID(borrowerID);
+                                        transaction.setOwnerID(loggedInUser.getUserID());
+                                        transactionViewModel.updateTransaction(transaction);
+
+                                    }
+                                    else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
+                                        transaction.setBorrowerID(borrowerID);
+                                        transactionViewModel.updateTransactionBorrowed(book, transaction);
+//                                        transactionViewModel.deleteRequest(transaction);
+                                        transactionLiveData.removeObserver(this);
+                                        scanBtn.setClickable(true);
+
+                                    }
+                                    else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
+                                        transactionViewModel.updateTransactionReturned(book);
+                                        transactionLiveData.removeObserver(this);
+                                        scanBtn.setClickable(true);
+
+                                    }
+                                }
+
+                            });
+                        }
+                    } else {
+                        Toast.makeText(this, "Error: The ISBN does not match that of the requested book",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } else {
+                    Toast.makeText(this, "Error: Barcode not found",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        } else {
+            Log.i(TAG, "in else");
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        Log.i(TAG, "leaving onActivityResult");
     }
 
     @Override
@@ -117,12 +235,29 @@ public class BookInfoActivity extends AppCompatActivity {
         loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
+    public void setLocation() {
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        mapIntent.putExtra("BookID", bookID);
+        mapIntent.putExtra("ViewOnly", false);
+        startActivity(mapIntent);
+    }
+
+    public void getLocation() {
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        mapIntent.putExtra("BookID", bookID);
+        mapIntent.putExtra("ViewOnly", true);
+        startActivity(mapIntent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        setTitle(R.string.activity_book_info);
+        ctx = this;
 
         bookID = getIntent().getStringExtra("bookID");
         Log.i("bookid value: ", bookID);
@@ -131,21 +266,101 @@ public class BookInfoActivity extends AppCompatActivity {
         textIsbn = (TextView) findViewById(R.id.bookISBN);
         textDesc = (TextView) findViewById(R.id.bookDescription);
         textStatus = (TextView) findViewById(R.id.bookStatus);
+        bookImage = (ImageView) findViewById(R.id.bookImage);
+
 
         borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
+
+        setLoc = findViewById(R.id.set_location);
+        setLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation();
+            }
+        });
+
+        getLoc = findViewById(R.id.get_location);
+        getLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLocation();
+            }
+        });
+
+
+        FirstBookPhotoViewModelFactory bookPhotoViewModelFactory = new FirstBookPhotoViewModelFactory(bookID);
+        FirstBookPhotoViewModel bookPhotoViewModel = ViewModelProviders
+                .of(this, bookPhotoViewModelFactory)
+                .get(FirstBookPhotoViewModel.class);
+        bookPhotoViewModel.getBookPhotoLiveData().observe(this, new Observer<Photo>() {
+            @Override
+            public void onChanged(@Nullable Photo photo) {
+                Bitmap bitmapPhoto = (photo != null)
+                        ? Photo.DecodeBase64BitmapPhoto(photo.getEncodedString())
+                        : null;
+                // The fallback image will be displayed if bitmapPhoto is null
+                Glide.with(getApplicationContext())
+                        .load(bitmapPhoto)
+                        .apply(new RequestOptions()
+                                .fallback(R.drawable.ic_book_black_150dp)
+                                .centerCrop()
+                                .format(DecodeFormat.PREFER_ARGB_8888))
+                        .into(bookImage);
+            }
+        });
 
         BookInfoViewModelFactory factory = new BookInfoViewModelFactory(bookID);
         bookInfoViewModel = ViewModelProviders.of(this, factory).get(BookInfoViewModel.class);
         final LiveData<Book> bookLiveData = bookInfoViewModel.getBookLiveData();
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
-            public void onChanged(@Nullable Book book) {
+            public void onChanged(final @Nullable Book book) {
                 if (book != null) {
+
+                    BookInfoActivity.this.book = book;
+
                     textTitle.setText(book.getTitle());
                     textAuthor.setText(book.getAuthor());
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
+//                    status = String.valueOf(book.getStatus());
+
+                    if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
+                        Log.i(TAG, "***//scan button visible");
+                        scanBtn.setVisibility(View.VISIBLE);
+                        scanBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                                TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+                                final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+
+                                transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
+                                    @Override
+                                    public void onChanged(@Nullable Transaction transaction) {
+                                        Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+                                        Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+                                        if (!transaction.getBScan()){
+                                            Toast.makeText(BookInfoActivity.this, "Borrower must scan first!",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                        else{
+                                            Log.i(TAG, "***//ISBN scan requested");
+                                            Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+                                            startActivityForResult(intent, 0);
+                                        }
+                                        transactionLiveData.removeObserver(this);
+                                    }
+                                });
+
+                            }
+                        });
+                    } else {
+                        Log.i(TAG, "scan button not visible");
+                        scanBtn.setVisibility(View.INVISIBLE);
+                    }
+                    setStatusTextColor(book);
                     borrowerID = book.getBorrowerID();
 
                     // using borrowerID, show borrower email and profile image, or "None"
@@ -171,8 +386,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                     String userPic = user.getPhotos().get(0);
                                     Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
                                     borrowerPicture.setImageBitmap(bitmapPhoto);
-                                }
-                                else {
+                                } else {
                                     borrowerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
                                 }
                                 borrowerPicture.setVisibility(View.VISIBLE);
@@ -192,13 +406,13 @@ public class BookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                    }
-                    else { // no borrower;
+                    } else { // no borrower;
                         Log.i(TAG, "No borrower");
                         borrowerEmailTextView.setText("None");
                         borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
                         borrowerProfileArea.setClickable(false);
                     }
+
                 }
             }
         });
@@ -264,7 +478,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-							Log.e(TAG, databaseError.getMessage());
+                            Log.e(TAG, databaseError.getMessage());
                         }
                     });
 
@@ -312,49 +526,87 @@ public class BookInfoActivity extends AppCompatActivity {
             requestsRecyclerView.setNestedScrollingEnabled(false);
             requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
                     DividerItemDecoration.VERTICAL));
-
         }
 
-        deleteBtn = findViewById(R.id.buttonDelete);
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
+        hideGoodreadsReview();
+        showGoodreadsReviewError("Loading...\n");
+        // TODO deal with goodreads reviews
+        bookLiveData.observe(this, new Observer<Book>() {
             @Override
-            public void onClick(View v) {
-                deleteBook();
+            public void onChanged(@Nullable Book book) {
+
+                if (book != null) {
+
+                    long isbn = book.getIsbn();
+                    getGoodreadsReviewInfo(isbn);
+
+                    getReviewsBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            gotoReviewsActivity(goodreadsReviewInfo.getReviews_widget_url());
+                        }
+                    });
+                }
             }
         });
+        scanBtn = (Button) findViewById(R.id.scanISBN);
+    }
 
-        editBtn = findViewById(R.id.buttonEdit);
-        editBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_book_info, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.form_edit_book_photos:
+                Log.i(TAG, "edit photos clicked!");
+                if (book != null) {
+                    Intent intent = new Intent(BookInfoActivity.this, ViewEditBookPhotosActivity.class);
+                    intent.putExtra(ViewEditBookPhotosActivity.INTENT_BOOK_ID, bookID);
+                    intent.putExtra(ViewEditBookPhotosActivity.INTENT_OWNER_USER_ID, book.getOwnerID());
+                    startActivity(intent);
+                }
+                return true;
+
+            case R.id.form_edit_book:
+                Log.i(TAG, "edit book clicked!");
                 editBook();
-            }
-        });
 
-        setLocBtn = findViewById(R.id.location);
-        setLocBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setLocation();
-            }
-        });
+                return true;
 
-        viewLocBtn = findViewById(R.id.viewlocation);
-        viewLocBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewLocation();
-            }
-        });
+            case R.id.form_delete_book:
+                Log.i(TAG, "delete book clicked!");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.delete_book_dialog_prompt))
+                        .setPositiveButton(getString(R.string.dialog_delete), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteBook();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do Nothing
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
-    public void setLocation() {
-        
-    }
-
-    public void viewLocation() {
-
-    }
 
     /**
      * Start activity for a user's profile
@@ -370,7 +622,7 @@ public class BookInfoActivity extends AppCompatActivity {
      * Start activity for editing the book
      */
     public void editBook(){
-        Log.i(TAG, "Edit book button pressed");
+        Log.i(TAG, "in editBook()");
         Intent intent = new Intent(this, AddEditBookActivity.class);
 //        intent.putExtra("ADD_EDIT_BOOK_MODE", EDIT_BOOK);
         intent.putExtra("BookID", bookID);
@@ -384,13 +636,121 @@ public class BookInfoActivity extends AppCompatActivity {
      * Triggers bookInfoViewModel to delete book
      */
     public void deleteBook(){
-        Log.i(TAG, "Delete book button pressed");
+        Log.i(TAG, "in deleteBook()");
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
         if (firebaseUser != null) {
             bookInfoViewModel.deleteBook(firebaseUser.getUid());
             finish();
+        }
+    }
+
+    /**
+     * Attempt to get information from goodreads
+     */
+    public void getGoodreadsReviewInfo(long isbn) {
+        // show error instead if there is no internet connection
+        ConnectionChecker connectionChecker = new ConnectionChecker(this);
+        if (!connectionChecker.isNetworkConnected()) {
+            hideGoodreadsReview();
+            showGoodreadsReviewError("Ratings and reviews unavailable while offline. \n");
+            return;
+        }
+
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        String apiRequestURL = null;
+
+
+        // null check for ISBN
+        if (textIsbn.getText() != null && !textIsbn.getText().toString().equals("")) {
+            apiRequestURL = "https://www.goodreads.com/book/isbn/" + String.valueOf(isbn) +
+                    "?key=" + getString(R.string.GoodreadsAPI);
+        }
+
+        if (apiRequestURL != null) {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, apiRequestURL,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
+                            goodreadsReviewInfo = reviewAdapter.getReviewInfo();
+
+                            hideGoodreadsReviewError();
+                            showGoodreadsReview();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, "API Response error");
+                            hideGoodreadsReview();
+                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                        }
+                    });
+
+            SingletonRequestQueue.getInstance(this).getRequestQueue().add(stringRequest);
+
+        }
+    }
+
+    private void hideGoodreadsReviewError() {
+        // hide the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setVisibility(View.GONE);
+    }
+
+    private void showGoodreadsReviewError(String errorMessage) {
+        // show the error textview
+        TextView goodreadsErrorTextView = findViewById(R.id.goodreads_unavailable_textview);
+        goodreadsErrorTextView.setText(errorMessage);
+        goodreadsErrorTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideGoodreadsReview() {
+        // hide the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.GONE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.GONE);
+    }
+
+    private void showGoodreadsReview() {
+        Log.i(TAG, "Rating: " + goodreadsReviewInfo.getAvg_rating());
+        // show the rating bar and reviews button
+        goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
+        goodreadsAvgRatingbar.setVisibility(View.VISIBLE);
+        getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
+        getReviewsBtn.setVisibility(View.VISIBLE);
+
+        if (goodreadsReviewInfo != null){
+            goodreadsAvgRatingbar.setRating(goodreadsReviewInfo.getAvg_rating());
+        }
+    }
+
+    private void gotoReviewsActivity(String widgetURL) {
+        Intent intent = new Intent(this, GoodreadsReviewsActivity.class);
+
+        intent.putExtra(GoodreadsReviewsActivity.WEBVIEW_URL, widgetURL);
+        startActivity(intent);
+    }
+
+    /**
+     * Set color of TextView for book status
+     *
+     * @param book
+     */
+    public void setStatusTextColor(@Nullable Book book) {
+        Book.Status bkStatus = book.getStatus();
+        if (bkStatus == Book.Status.ACCEPTED) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookAccepted));
+        } else if (bkStatus == Book.Status.AVAILABLE) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookAvailable));
+        } else if (bkStatus == Book.Status.REQUESTED) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookRequested));
+        } else if (bkStatus == Book.Status.BORROWED) {
+            textStatus.setTextColor(getResources().getColor(R.color.bookBorrowed));
         }
     }
 
@@ -410,7 +770,7 @@ public class BookInfoActivity extends AppCompatActivity {
         );
         notification.constructMessage(loggedInUser.getUserName(),
                 bookInfoViewModel.getBookLiveData().getValue().getTitle());
-        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification);
+        DatabaseWriteHelper.declineRequest(requester.getUserID(), bookID, notification, true);
     }
 
     /**
@@ -439,8 +799,11 @@ public class BookInfoActivity extends AppCompatActivity {
         );
         declineNotification.constructMessage(loggedInUser.getUserName(),
                 bookInfoViewModel.getBookLiveData().getValue().getTitle());
-        Request request = new Request(requester.getUserID(), bookID);
-        request.setrStatus(Request.Status.ACCEPTED);
+        com.example.atheneum.models.Request request = new com.example.atheneum.models.Request(requester.getUserID(), bookID);
+        request.setrStatus(com.example.atheneum.models.Request.Status.ACCEPTED);
         DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
+
+        Transaction transaction = new Transaction(Transaction.CHECKOUT, null, requester.getUserID(), loggedInUser.getUserID(), bookID, false, false);
+        DatabaseWriteHelper.addNewTransaction(transaction);
     }
 }

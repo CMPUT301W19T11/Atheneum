@@ -49,10 +49,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "Map Fragment";
 
-//    private ImageView centerLocation;
     private MapView mMapView;
     private static GoogleMap googleMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+
+//    private boolean viewOnly;
+//    private LatLng latLng;
 
     /**
      * Create a new instance of the map fragment.
@@ -74,15 +76,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         mMapView = view.findViewById(R.id.google_map_view);
-//        centerLocation = (ImageView) view.findViewById(R.id.center_location);
-//        centerLocation.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                getDeviceLocation();
-//            }
-//        });
 
         Log.d(TAG, "initializing Google Map");
+
+//        viewOnly = getArguments().getBoolean("viewonly");
+//
+//        if (viewOnly) {
+//            double lat = getArguments().getDouble("lat");
+//            double lon = getArguments().getDouble("lon");
+//            latLng = new LatLng(lat, lon);
+//        }
+
         initGoogleMap(savedInstanceState);
 
         return view;
@@ -142,7 +146,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
         map.setMyLocationEnabled(true);
-        getDeviceLocation();
+
+//        if (viewOnly) {
+//            moveCamera(latLng, DEFAULT_ZOOM);
+//        } else {
+//            getDeviceLocation();
+//        }
+
         googleMap = map;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }

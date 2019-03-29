@@ -32,6 +32,7 @@ public class EmailValidator extends TextValidator {
             textView.setError("Invalid email address!");
             return false;
         }
+        textView.setError(null);
         return true;
     }
 }

@@ -1,8 +1,7 @@
-package com.example.atheneum.controllers;
+package com.example.atheneum.utils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,13 +15,13 @@ import android.util.Log;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Controller that handles requests to the external camera and provides callbacks to handle the
+ * Handles requests to the external camera and provides callbacks to handle the
  * result of these requests.
  *
- * @param <T> Generic type that controller handles. Restricted to Fragment or Activity.
+ * @param <T> Generic type of view that the handler bind to. Restricted to Fragment or Activity.
  */
-public class PictureController<T> {
-    private static final String TAG = PictureController.class.getSimpleName();
+public class CameraHandler<T> {
+    private static final String TAG = CameraHandler.class.getSimpleName();
     private static final int REQUEST_IMAGE_CAPTURE = 7093;
     private static final int REQUEST_CAMERA_PERMISSION = 6149;
 
@@ -30,7 +29,7 @@ public class PictureController<T> {
     private OnPictureTakenListener pictureTakenListener;
 
     /**
-     * Provides an interface of callback(s) for handling events from the PictureController
+     * Provides an interface of callback(s) for handling events from the CameraHandler
      */
     public interface OnPictureTakenListener {
         /**
@@ -42,27 +41,27 @@ public class PictureController<T> {
     }
 
     /**
-     * Factory method to create a new instance of PictureController given an Activity.
+     * Factory method to create a new instance of CameraHandler given an Activity.
      *
      * @param activity Activity that needs to handle camera requests
      * @return
      */
-    public static PictureController<Activity> newInstance(Activity activity) {
-        return new PictureController<Activity>(activity);
+    public static CameraHandler<Activity> newInstance(Activity activity) {
+        return new CameraHandler<Activity>(activity);
     }
 
     /**
-     * Factory method to create a new instance of PictureController given an Fragment.
+     * Factory method to create a new instance of CameraHandler given an Fragment.
      *
      * @param fragment Fragment that needs to handle camera requests
      * @return
      */
-    public static PictureController<Fragment> newInstance(Fragment fragment) {
-        return new PictureController<Fragment>(fragment);
+    public static CameraHandler<Fragment> newInstance(Fragment fragment) {
+        return new CameraHandler<Fragment>(fragment);
     }
 
     /**
-     * Instantiates a new PictureController instance using the specified generic object.
+     * Instantiates a new CameraHandler instance using the specified generic object.
      *
      * To restrict the types that can be passed into this class, we make this constructor private so
      * this forces the use of the provided factory methods to instantiate an instance of the class.
@@ -71,17 +70,27 @@ public class PictureController<T> {
      *
      * @param fragmentOrActivity Instance of either Fragment or Activity that needs the image taken
      */
-    private PictureController(T fragmentOrActivity) {
+    private CameraHandler(T fragmentOrActivity) {
         this.fragmentOrActivity = fragmentOrActivity;
     }
 
     /**
-     * Sets the interface of callback(s) to handle events from controller
+     * Sets the interface of callback(s) to handle events from camera
      *
      * @param pictureTakenListener
      */
     public void setPictureTakenListener(OnPictureTakenListener pictureTakenListener) {
         this.pictureTakenListener = pictureTakenListener;
+    }
+
+    /**
+     * Removes the interfade of callback(s) used to handle events from camera.
+     *
+     * Useful when trying to handle multiple camera events in the same activity/fragment since the
+     * handler can be immediately removed after called.
+     */
+    public void removePictureTakenListener() {
+        this.pictureTakenListener = null;
     }
 
     /**

@@ -12,8 +12,10 @@ package com.example.atheneum.utils;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +39,7 @@ import java.util.List;
  * The type Request adapter handles displaying arrays.
  */
 //refer from https://www.sitepoint.com/custom-data-layouts-with-your-own-android-arrayadapter/ on Mar 2, 2019
-public class requestAdapter extends ArrayAdapter {
+public class RequestAdapter extends ArrayAdapter {
     private int resource_id;
     private static User owner;
     private static final String TAG = "FindOwner";
@@ -49,7 +51,7 @@ public class requestAdapter extends ArrayAdapter {
      * @param resource the resource
      * @param objects  the objects
      */
-    public requestAdapter(Context context, int resource, List objects) {
+    public RequestAdapter(Context context, int resource, List objects) {
         super(context, resource, objects);
         resource_id = resource;
     }
@@ -59,10 +61,12 @@ public class requestAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        Book book = (Book) getItem(position);
+        Pair pair = (Pair) getItem(position);
+        Book book = (Book) pair.first;
+        String status = (String) pair.second;
         View view;
         class ViewHolder{
-            TextView show_description;
+            TextView rStatus;
             TextView show_owner;
             TextView show_title;
 
@@ -72,7 +76,7 @@ public class requestAdapter extends ArrayAdapter {
         if(convertView == null){
             view = LayoutInflater.from(getContext()).inflate(resource_id, null);
             viewHolder = new ViewHolder();
-            viewHolder.show_description = (TextView) view.findViewById(R.id.show_description);
+            viewHolder.rStatus = (TextView) view.findViewById(R.id.rStatus);
             viewHolder.show_owner = (TextView) view.findViewById(R.id.show_owner);
             viewHolder.show_title = (TextView) view.findViewById(R.id.show_title);
 
@@ -103,7 +107,17 @@ public class requestAdapter extends ArrayAdapter {
             }
         });
 
-        viewHolder.show_description.setText(book.getDescription());
+        viewHolder.rStatus.setText(status);
+        if(status.equals("PENDING")){
+            viewHolder.rStatus.setTextColor(Color.RED);
+        }
+        else if(status.equals("ACCEPTED")){
+            viewHolder.rStatus.setTextColor(Color.BLUE);
+
+        }
+        else if(status.equals("DECLINED")){
+            viewHolder.rStatus.setTextColor(Color.GREEN);
+        }
 
         viewHolder.show_title.setText(book.getTitle());
 

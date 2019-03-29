@@ -81,4 +81,10 @@ public class Location {
     public void setLon(double lon) {
         this.lon = lon;
     }
+
+
+    @Override
+    public String toString() {
+        return "lat:"+getLat() +" lon:"+getLon();
+    }
 }

@@ -1,23 +1,16 @@
 package com.example.atheneum.activities;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,22 +23,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.atheneum.R;
-import com.example.atheneum.fragments.BorrowerPageFragment;
+import com.example.atheneum.fragments.BorrowedBooksFragment;
+import com.example.atheneum.fragments.BorrowerFragment;
+import com.example.atheneum.fragments.BorrowerRequestsFragment;
 import com.example.atheneum.fragments.HomeFragment;
 import com.example.atheneum.fragments.OwnerPageFragment;
 import com.example.atheneum.fragments.SearchFragment;
-import com.example.atheneum.models.Book;
-import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.User;
-import com.example.atheneum.services.NotificationsService;
+import com.example.atheneum.services.PushNotificationsService;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.PhotoUtils;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.NotificationsRefUtils;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
-import com.example.atheneum.viewmodels.UserNotificationsViewModel;
-import com.example.atheneum.viewmodels.UserNotificationsViewModelFactory;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
@@ -53,7 +40,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -119,8 +105,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             // start service for receiving notifications throughout app
             // https://stackoverflow.com/a/27842496
-            Intent service = new Intent(this.getApplicationContext(), NotificationsService.class);
-            startService(service);
+            Intent pushNotificationsService = new Intent(this.getApplicationContext(),
+                    PushNotificationsService.class);
+            startService(pushNotificationsService);
         } else {
             Log.w(TAG, "Shouldn't happen!");
         }
@@ -184,11 +171,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             });
-
+        } else if (id == R.id.nav_notifications) {
+            final Intent notifications_intent =
+                    new Intent(this, NotificationsActivity.class);
+            startActivity(notifications_intent);
         } else if (id == R.id.nav_owner) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new OwnerPageFragment()).addToBackStack("OwnerPage").commit();
         } else if (id == R.id.nav_borrower) {
-            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerPageFragment()).addToBackStack("BorrowerPage").commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerFragment()).addToBackStack("BorrowerPage").commit();
         } else if (id == R.id.nav_search) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
         } else if (id == R.id.nav_map) {
@@ -196,14 +186,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mapIntent.putExtra("ViewOnly", false);
 //            mapIntent.putExtra("ViewOnly", true);
 
-
-
             startActivity(mapIntent);
         } else if (id == R.id.nav_logout) {
             Log.i(TAG, "logging out");
             // stop notifications service
-            Intent service = new Intent(this.getApplicationContext(), NotificationsService.class);
-            stopService(service);
+            Intent pushNotificationsService = new Intent(this.getApplicationContext(),
+                    PushNotificationsService.class);
+            stopService(pushNotificationsService);
             // Sign out of account and go back to authentication screen
             AuthUI.getInstance()
                     .signOut(this)
@@ -212,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // ...
                             Intent intent = new Intent(getApplicationContext(), FirebaseUIAuthActivity.class);
                             startActivity(intent);
+                            finish();
                         }
                     });
         }

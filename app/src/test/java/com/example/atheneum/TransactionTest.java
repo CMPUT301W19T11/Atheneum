@@ -115,7 +115,7 @@ public class TransactionTest {
             for (boolean bScanVal : bScanValues) {
                 transaction.setOScan(oScanVal);
                 transaction.setBScan(bScanVal);
-                assertEquals(transaction.isComplete(), oScanVal && bScanVal);
+                assertEquals(transaction.getComplete(), oScanVal && bScanVal);
             }
         }
     }

@@ -1,16 +1,19 @@
 package com.example.atheneum.activities;
 
 import android.app.Dialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -19,24 +22,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.MapFragment;
+import com.example.atheneum.models.Location;
+import com.example.atheneum.viewmodels.LocationViewModel;
+import com.example.atheneum.viewmodels.LocationViewModelFactory;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,6 +65,13 @@ public class MapActivity extends AppCompatActivity {
 
     private EditText searchText;
 
+    private String bookID;
+
+    LocationViewModel locationViewModel;
+
+    LatLng locationToView;
+
+//    Bundle mapBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +84,18 @@ public class MapActivity extends AppCompatActivity {
         searchText.setMaxLines(1);
 
         Intent mapIntent = getIntent();
+
+        bookID = mapIntent.getExtras().getString("BookID");
+        Log.d(TAG, "bookID is: " + bookID);
+
+        locationViewModel = ViewModelProviders
+                .of(this, new LocationViewModelFactory(bookID))
+                .get(LocationViewModel.class);
         boolean viewOnly = mapIntent.getExtras().getBoolean("ViewOnly");
         if (viewOnly == true) {
             RelativeLayout searchBar = (RelativeLayout) findViewById(R.id.search_bar);
             searchBar.setVisibility(View.INVISIBLE);
+            viewLocation();
         } else {
             initSearchListener();
         }
@@ -99,20 +113,67 @@ public class MapActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     Log.d(TAG, "call getGeo");
-                    getGeoLocation();
+                    setNewLocation();
                     return true;
                 }
                 return false;
             }
         });
-
-
     }
 
-    //TODO: persistent location data - Firebase
-    //TODO: delete location data on completion of transaction
-    //TODO: integrate transaction
-    private void getGeoLocation() {
+    /**
+     * Get the meetinglocation
+     * from Firebase
+     */
+    private void viewLocation() {
+
+        Log.d(TAG, "Getting location in MapActivity");
+
+        final LiveData<Location> locationLiveData = locationViewModel.getLocationLiveData();
+        if (!locationLiveData.hasObservers()) {
+            locationLiveData.observe(this, new Observer<Location>() {
+                @Override
+                public void onChanged(@Nullable Location loc) {
+                    if (loc != null) {
+                        Log.i(TAG, "location is not null loc != null!");
+                        Log.i(TAG, "printing location in MA loc: " + loc.toString());
+                        locationToView = new LatLng(loc.getLat(), loc.getLon());
+                    }
+                    locationLiveData.removeObserver(this);
+
+                    Log.d(TAG, "inflate Map locationtoview is " + locationToView.toString());
+
+//                    mapBundle.putDouble("lat", locationToView.latitude);
+//                    mapBundle.putDouble("lon", locationToView.longitude);
+//                    mapBundle.putBoolean("viewonly", true);
+                }
+            });
+        }
+        goToViewLocation();
+    }
+
+    /**
+     * View a meeting location based on lat/lon from firebase
+     * go to the place
+     * add a marker
+     */
+    private void goToViewLocation() {
+        Log.d(TAG, "goto viewlocation");
+        moveCamera(locationToView, DEFAULT_ZOOM);
+        addMarker(locationToView, DEFAULT_ZOOM, "Meeting Location");
+    }
+
+    /**
+     * Sets a new geo location for the meeting
+     * go to the place
+     * add a marker
+     * add it to firebase
+     */
+    private void setNewLocation() {
+        Log.d(TAG, "Setting location in MapActivity");
+
+//        mapBundle.putBoolean("viewonly", false);
+
         String searchLocation = searchText.getText().toString();
 
         Geocoder geocoder = new Geocoder(MapActivity.this);
@@ -125,22 +186,21 @@ public class MapActivity extends AppCompatActivity {
 
         if (addressList.size() > 0) {
             Address address = addressList.get(0);
-            Log.d(TAG, "getGeoLocation got " + address.toString());
+            Log.d(TAG, "setNewLocation got " + address.toString());
 
-            //TODO: replace meeting location placeholder with owner/requester name
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
             addMarker(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
-            addLocation(new LatLng(address.getLatitude(), address.getLongitude()));
+
+            addLocation(bookID, new LatLng(address.getLatitude(), address.getLongitude()));
         }
     }
-
-
 
     @Override
     protected void onResume() {
         super.onResume();
         if (checkMapServices()) {
             if (locationPermissionGiven) {
+                Log.d(TAG, "inflate Map onResume");
                 inflateMapFragment();
             }
             else {
@@ -170,7 +230,7 @@ public class MapActivity extends AppCompatActivity {
     /**
      * Ask for user to enable GPS in dialog box
      * Create activity/intent to enable GPS
-     * User response captured in onActivityResult method
+     * User response captured in on ActivityResult method
      */
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -213,6 +273,7 @@ public class MapActivity extends AppCompatActivity {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGiven = true;
+            Log.d(TAG, "inflate Map after getting location permission");
             inflateMapFragment();
         } else {
             ActivityCompat.requestPermissions(this,
@@ -265,11 +326,13 @@ public class MapActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(locationPermissionGiven){
+                    Log.d(TAG, "inflate Map onActivityResult");
                     inflateMapFragment();
                 }
                 else{
@@ -279,22 +342,21 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * create map fragment
+     */
     private void inflateMapFragment() {
-//        MapFragment mapFragment = MapFragment.newInstance();
-        Log.d(TAG, "inflate Map Fragment Called");
+        MapFragment mapFragment = MapFragment.newInstance();
+
+//        mapFragment.setArguments(mapBundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_frame, new MapFragment()).addToBackStack("MapFragment").commit();
+//        transaction.replace(R.id.content_frame, new MapFragment()).commit();
+        transaction.replace(R.id.content_frame, mapFragment).commit();
     }
 
     public static boolean isLocationPermissionGiven(){
         return locationPermissionGiven;
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent mainActivityIntent = new Intent(this, MainActivity.class);
-        startActivity(mainActivityIntent);
     }
 
 }
