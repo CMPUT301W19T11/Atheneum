@@ -54,6 +54,7 @@ public class BorrowerPageFragment extends Fragment {
     private ArrayAdapter<String> requestSpinnerAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
+    private String rStatus;
     FirebaseUser currentUser;
     /**
      * The Book object borrowed.
@@ -96,9 +97,9 @@ public class BorrowerPageFragment extends Fragment {
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
-                String rstatus = (String) arg0.getSelectedItem().toString();
-                Log.d(TAG, "use Spinner "+rstatus);
-                retriveRequest(rstatus);
+                 rStatus = (String) arg0.getSelectedItem().toString();
+                Log.d(TAG, "use Spinner "+rStatus);
+                retriveRequest();
             }
 
             @Override
@@ -144,7 +145,7 @@ public class BorrowerPageFragment extends Fragment {
         return this.view;
     }
 
-    public void retriveRequest(final String conditions){
+    public void retriveRequest(){
         /**
          * Retrieve request list
          */
@@ -166,7 +167,7 @@ public class BorrowerPageFragment extends Fragment {
 
 
                     String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
-                    final String rStatus = item.child(getString(R.string.db_book_request_status)).getValue(String.class);
+                    final String Status = item.child(getString(R.string.db_book_request_status)).getValue(String.class);
 
                     DatabaseReference ref_book = db.getReference().child("books").child(bookID);
                     ref_book.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -177,14 +178,14 @@ public class BorrowerPageFragment extends Fragment {
                                 book = dataSnapshot.getValue(Book.class);
                                 Log.d(TAG, "find book " + book.getTitle());
                                 Log.d(TAG, "find book with rStatus " + rStatus);
-                                if(!requestList.contains(book)){
-                                    if(conditions.equals("ALL")){
-                                        requestList.add(new Pair(book, rStatus));
+                                if(!requestList.contains(new Pair(book, Status))){
+                                    if(rStatus.equals("ALL")){
+                                        requestList.add(new Pair(book, Status));
 
 
                                     }
-                                    else if(conditions.equals(rStatus)){
-                                        requestList.add(new Pair(book, rStatus));
+                                    else if(rStatus.equals(Status)){
+                                        requestList.add(new Pair(book, Status));
                                     }
                                 }
                                 RequestAdapter.notifyDataSetChanged();

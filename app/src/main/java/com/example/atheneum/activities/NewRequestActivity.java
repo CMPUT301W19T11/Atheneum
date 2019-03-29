@@ -92,6 +92,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                 intentRequestList.putExtra(BookInfoActivity.BOOK_ID, book.getBookID());
                 intentRequestList.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.BORROWER_VIEW);
                 startActivity(intentRequestList);
+                //finish();
             }
         });
     }
