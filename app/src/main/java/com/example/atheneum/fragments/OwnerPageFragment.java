@@ -5,11 +5,9 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.example.atheneum.R;
@@ -27,24 +24,12 @@ import com.example.atheneum.activities.AddEditBookActivity;
 import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.User;
 import com.example.atheneum.views.adapters.OwnerBooksListAdapter;
 import com.example.atheneum.utils.FirebaseAuthUtils;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.BooksRefUtils;
-import com.example.atheneum.viewmodels.FirebaseRefUtils.OwnerCollectionRefUtils;
 import com.example.atheneum.viewmodels.OwnerBooksViewModel;
 import com.example.atheneum.viewmodels.OwnerBooksViewModelFactory;
-import com.example.atheneum.viewmodels.UserViewModel;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -142,7 +127,7 @@ public class OwnerPageFragment extends Fragment {
                 public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
                     String status = (String) arg0.getSelectedItem().toString();
                     Log.i(TAG, "use Spinner "+status);
-                    retriveBooks(status);
+                    retrieveBooks(status);
                 }
 
                 @Override
@@ -169,7 +154,7 @@ public class OwnerPageFragment extends Fragment {
         return this.view;
     }
 
-    public void retriveBooks(final String status){
+    public void retrieveBooks(final String status){
 //        Log.i(TAG, "use Spinner retrive books");
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         OwnerBooksViewModel ownerBooksViewModel = ViewModelProviders
@@ -178,6 +163,9 @@ public class OwnerPageFragment extends Fragment {
         ownerBooksViewModel.ownerBooksLiveData().observe(getActivity(), new Observer<ArrayList<Book>>() {
             @Override
             public void onChanged(@Nullable ArrayList<Book> ownerBooks) {
+                if (ownerBooks == null) {
+                    return;
+                }
                 ArrayList<Book> testBook = new ArrayList<Book>();
                 for(int i=0; i<ownerBooks.size(); i++){
                     if(status.equals("ALL")){
