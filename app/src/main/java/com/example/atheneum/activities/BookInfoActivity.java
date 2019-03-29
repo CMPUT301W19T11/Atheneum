@@ -21,6 +21,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -616,6 +617,66 @@ public class BookInfoActivity extends AppCompatActivity {
         DatabaseWriteHelper.acceptRequest(request, acceptNotification, declineNotification);
     }
 
+    private void hideRequestStatus() {
+        LinearLayout requestStatusArea = (LinearLayout) findViewById(R.id.request_status_area);
+        requestStatusArea.setVisibility(View.GONE);
+    }
+
+    private void showRequestStatus(final Book book) {
+        LinearLayout requestStatusArea = (LinearLayout) findViewById(R.id.request_status_area);
+        // set the request status text
+        final TextView requestStatusTextView = (TextView) findViewById(R.id.requestStatus);
+
+        final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        if (userID != null && !userID.equals("")) {
+            // get the request on this book
+            final FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference ref = db.getReference()
+                    .child(getString(R.string.db_requestCollection))
+                    .child(userID)
+                    .child(book.getBookID())
+                    .child("rStatus");
+
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    Log.i(TAG, "The request snapshot " + dataSnapshot.getValue());
+                    String requestStatus = dataSnapshot.getValue(String.class);
+                    Log.i(TAG, "Request status: " + requestStatus);
+                    // update the request status text
+                    requestStatusTextView.setText((String) requestStatus);
+                    // set color
+                    if(requestStatus.equals("PENDING")){
+                        requestStatusTextView.setTextColor(Color.BLUE);
+                    }
+                    else if(requestStatus.equals("ACCEPTED")){
+                        requestStatusTextView.setTextColor(Color.GREEN);
+
+                    }
+                    else if(requestStatus.equals("DECLINED")){
+                        requestStatusTextView.setTextColor(Color.RED);
+                    }
+                    else {
+                        Log.e(TAG, "Bad request status, shouldn't be here");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.i(TAG, "cancelled reading for requests.");
+                }
+            });
+
+            requestStatusArea.setVisibility(View.VISIBLE);
+        }
+        else {
+            Log.e(TAG, "No logged in user, shouldn't be here");
+        }
+
+
+    }
+
     private void hideRequestBtn() {
         LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
         requestBtnArea.setVisibility(View.GONE);
@@ -672,7 +733,7 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     private void showOwnerProfArea(final Book book) {
-        ownerID = book.getBorrowerID();
+        ownerID = book.getOwnerID();
 
         // setup and show owner username and picture
         final TextView ownererEmailTextView = (TextView) findViewById(R.id.book_owner_email);
@@ -799,17 +860,21 @@ public class BookInfoActivity extends AppCompatActivity {
 
         if (view_type.equals(OWNER_VIEW)) {
             // owner view shouldn't show owner or request button
+            hideRequestStatus();
             hideRequestBtn();
             hideOwnerProfArea();
             showBorrowerProfArea(book);
         }
         else if (view_type.equals(BORROWER_VIEW)) {
+            hideRequestStatus();
             showRequestBtn(book);
+            showOwnerProfArea(book);
             hideBorrowerProfArea();
-
         }
         else if (view_type.equals(REQUSET_VIEW)) {
+            showRequestStatus(book);
             hideRequestBtn();
+            showOwnerProfArea(book);
             showBorrowerProfArea(book);
         }
         else {

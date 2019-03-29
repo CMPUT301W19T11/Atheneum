@@ -109,14 +109,14 @@ public class RequestAdapter extends ArrayAdapter {
 
         viewHolder.rStatus.setText(status);
         if(status.equals("PENDING")){
-            viewHolder.rStatus.setTextColor(Color.RED);
+            viewHolder.rStatus.setTextColor(Color.BLUE);
         }
         else if(status.equals("ACCEPTED")){
-            viewHolder.rStatus.setTextColor(Color.BLUE);
+            viewHolder.rStatus.setTextColor(Color.GREEN);
 
         }
         else if(status.equals("DECLINED")){
-            viewHolder.rStatus.setTextColor(Color.GREEN);
+            viewHolder.rStatus.setTextColor(Color.RED);
         }
 
         viewHolder.show_title.setText(book.getTitle());

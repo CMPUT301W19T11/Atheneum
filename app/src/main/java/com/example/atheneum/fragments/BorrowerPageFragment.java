@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
 
@@ -59,8 +60,6 @@ public class BorrowerPageFragment extends Fragment {
      * The Book object borrowed.
      */
     Book book;
-    private Intent requestInfoIndent;
-
 
     /**
      * Instantiates a new Borrower page fragment.
@@ -85,8 +84,6 @@ public class BorrowerPageFragment extends Fragment {
         requestSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         requestSpinner.setAdapter(requestSpinnerAdapter);
 
-
-        requestInfoIndent = new Intent(getActivity(), ShowRequestInfoActivity.class);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (getActivity() instanceof  MainActivity) {
@@ -120,12 +117,14 @@ public class BorrowerPageFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Pair listItemPair = (Pair) requestView.getItemAtPosition(position);
                 Book listItem = (Book) listItemPair.first;
-
-                requestInfoIndent.putExtra("bookID", listItem.getBookID());
-
+                Intent requestBookInfoIntent = new Intent(getActivity(), BookInfoActivity.class);
                 Log.d(TAG, "find requested book1 " + listItem.getBookID());
-                requestInfoIndent.putExtra("rStatus", (String) listItemPair.second);
-                startActivity(requestInfoIndent);
+
+                requestBookInfoIntent.putExtra("bookID", listItem.getBookID());
+                requestBookInfoIntent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.REQUSET_VIEW);
+
+//                requestBookInfoIntent.putExtra("rStatus", (String) listItemPair.second);
+                startActivity(requestBookInfoIntent);
 
 //                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
 //                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
