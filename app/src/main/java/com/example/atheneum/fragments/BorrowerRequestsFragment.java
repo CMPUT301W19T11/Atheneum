@@ -61,6 +61,7 @@ public class BorrowerRequestsFragment extends Fragment {
      */
     Book book;
     private Intent requestInfoIndent;
+    DatabaseReference ref;
 
 
     /**
@@ -128,6 +129,7 @@ public class BorrowerRequestsFragment extends Fragment {
 
                 Log.d(TAG, "find requested book1 " + listItem.getBookID());
                 requestInfoIndent.putExtra("rStatus", (String) listItemPair.second);
+//                ref.removeEventListener();
                 startActivity(requestInfoIndent);
 
 

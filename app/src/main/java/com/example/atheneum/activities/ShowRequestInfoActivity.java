@@ -143,7 +143,7 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
         if (!rStaus.equals("ACCEPTED")){
             Log.i(TAG, "scan button not visible");
             Log.i(TAG, rStaus);
-            scanBook.setVisibility(View.INVISIBLE);
+            scanBook.setVisibility(View.GONE);
         }
         else{
             Log.i(TAG, "scan button visible");
@@ -151,10 +151,37 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
             scanBook.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "ISBN scan requested");
-                    Intent intent = new Intent(ShowRequestInfoActivity.this, ScanBarcodeActivity.class);
 
-                    startActivityForResult(intent, 0);
+                    TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                    TransactionViewModel transactionViewModel = ViewModelProviders.of(ShowRequestInfoActivity.this, factory).get(TransactionViewModel.class);
+                    final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+
+                    transactionLiveData.observe(ShowRequestInfoActivity.this, new Observer<Transaction>() {
+                        @Override
+                        public void onChanged(@Nullable Transaction transaction) {
+                            if(transaction != null){
+
+                                Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+                                Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+
+                                if(transaction.getType().equals(Transaction.CHECKOUT) && !transaction.getOScan()){
+                                    Toast.makeText(ShowRequestInfoActivity.this, "To borrow, owner must scan first!",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    Log.i(TAG, "ISBN scan requested");
+                                    Intent intent = new Intent(ShowRequestInfoActivity.this, ScanBarcodeActivity.class);
+
+                                    startActivityForResult(intent, 0);
+                                }
+                            }
+                            else{
+                                Log.d(TAG, "Error transaction is null");
+                            }
+                            transactionLiveData.removeObserver(this);
+                        }
+                    });
+
                 }
             });
 
@@ -185,19 +212,39 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                             transactionLiveData.observe(this,  new Observer<Transaction>() {
                                 @Override
                                 public void onChanged(@Nullable Transaction transaction) {
-                                    if (transaction != null && !transaction.getOScan() && !transaction.getBScan()) {
-                                        Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
-                                        transaction.setBScan(true);
+                                    if (transaction != null){
+
                                         transaction.setOwnerID(ownerID);
-                                        FirebaseUser currentUser  = FirebaseAuth.getInstance().getCurrentUser();
-                                        Log.i(TAG, "UserID is: " +   currentUser.getUid());
+                                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                        Log.i(TAG, "UserID is: " + currentUser.getUid());
                                         transaction.setBorrowerID(currentUser.getUid());
+                                        transaction.setBScan(true);
+                                        transactionViewModel.updateTransaction(transaction);
+                                        Log.i(TAG, "*******borrower's scan completed");
                                         Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
                                         Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
-                                        transactionViewModel.updateTransaction(transaction);
+                                        Log.i(TAG, "transaction type: " + String.valueOf(transaction.getType()));
 
+
+                                        if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Log.i(TAG, "***borrowing scan completed");
+                                            transaction.setBorrowerID(currentUser.getUid());
+                                            transactionViewModel.updateTransactionBorrowed(book, transaction);
+                                            transactionLiveData.removeObserver(this);
+                                        }
+                                        if(transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Toast.makeText(ShowRequestInfoActivity.this, "Scan successful! Book borrowed.",
+                                                    Toast.LENGTH_SHORT).show();
+                                            scanBook.setVisibility(View.GONE);
+                                        }
+                                        else{
+                                            Toast.makeText(ShowRequestInfoActivity.this, "Scan successful! Waiting for owner to scan.",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                    transactionLiveData.removeObserver(this);
+                                    else{
+                                        Log.d(TAG, "Error transaction is null");
+                                    }
                                 }
                             });
                         }

@@ -160,7 +160,6 @@ public class BookInfoActivity extends AppCompatActivity {
                     if (barcodeISBN.equals(Long.toString(book.getIsbn()))) {
                         Log.i(TAG, "They do equal");
 
-
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
                         transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
@@ -169,7 +168,7 @@ public class BookInfoActivity extends AppCompatActivity {
                             transactionLiveData.observe(this, new Observer<Transaction>() {
                                 @Override
                                 public void onChanged(@Nullable Transaction transaction) {
-                                    if (transaction != null && transaction.getBScan() && !transaction.getOScan()) {
+                                    if (transaction != null){
                                         Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
                                         Log.i(TAG, "bookID:  " + String.valueOf(transaction.getBookID()));
                                         Log.i(TAG, "BScan value:" + String.valueOf(transaction.getBScan()));
@@ -183,34 +182,33 @@ public class BookInfoActivity extends AppCompatActivity {
                                         transaction.setOwnerID(loggedInUser.getUserID());
                                         transactionViewModel.updateTransaction(transaction);
 
-                                    }
-                                    else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
-                                        transaction.setBorrowerID(borrowerID);
-                                       transactionViewModel.updateTransactionBorrowed(book, transaction);
-//                                        transactionViewModel.deleteRequest(transaction);
-                                        transactionLiveData.removeObserver(this);
-                                        scanBtn.setClickable(true);
+                                        if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
+                                            transactionViewModel.updateTransactionReturned(book);
+                                            transactionLiveData.removeObserver(this);
+                                            scanBtn.setClickable(true);
+                                        }
 
-                                    }
-                                    else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
-                                        transactionViewModel.updateTransactionReturned(book);
-                                        transactionLiveData.removeObserver(this);
-                                        scanBtn.setClickable(true);
+                                        if(transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Waiting for borrower to scan.",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                        else {
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Book returned.",
+                                                    Toast.LENGTH_SHORT).show();
 
+                                        }
                                     }
                                 }
-
                             });
                         }
-                    } else {
+                    }
+                    else {
                         Toast.makeText(this, "Error: The ISBN does not match that of the requested book",
                                 Toast.LENGTH_SHORT).show();
                     }
-
-
-                } else {
-                    Toast.makeText(this, "Error: Barcode not found",
-                            Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Error: Barcode not found", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -303,24 +301,30 @@ public class BookInfoActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-                                TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
-                                final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+                                transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+                                final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
 
-                                transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
+                                transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
                                     @Override
                                     public void onChanged(@Nullable Transaction transaction) {
-                                        Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
-                                        Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
-                                        if (!transaction.getBScan()){
-                                            Toast.makeText(BookInfoActivity.this, "Borrower must scan first!",
-                                                    Toast.LENGTH_SHORT).show();
+                                        if(transaction != null) {
+
+                                            Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+                                            Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+
+                                            if (transaction.getType().equals(Transaction.RETURN) && !transaction.getBScan()) {
+                                                Toast.makeText(BookInfoActivity.this, "To return a book, borrower must scan first!",
+                                                        Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Log.i(TAG, "***//ISBN scan requested");
+                                                Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+                                                startActivityForResult(intent, 0);
+                                            }
                                         }
                                         else{
-                                            Log.i(TAG, "***//ISBN scan requested");
-                                            Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
-                                            startActivityForResult(intent, 0);
+                                            Log.d(TAG, "Error transaction is null");
                                         }
-                                        transactionLiveData.removeObserver(this);
+                                        transactionLiveData1.removeObserver(this);
                                     }
                                 });
 
@@ -328,7 +332,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         });
                     } else {
                         Log.i(TAG, "scan button not visible");
-                        scanBtn.setVisibility(View.INVISIBLE);
+                        scanBtn.setVisibility(View.GONE);
                     }
                     setStatusTextColor(book);
                     borrowerID = book.getBorrowerID();

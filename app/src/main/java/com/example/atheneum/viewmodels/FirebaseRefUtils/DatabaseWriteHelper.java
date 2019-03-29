@@ -213,10 +213,6 @@ public class DatabaseWriteHelper {
     }
 
 
-    public static void deleteRequest(Transaction transaction){
-        RequestCollectionRefUtils.getSpecifiedOwnerRequest(transaction.getBorrowerID(), transaction.getBookID()).removeValue();
-    }
-
     /**
      * Triggers when a request is accepted
      * Used only by other DatabaseWriteHelper methods
