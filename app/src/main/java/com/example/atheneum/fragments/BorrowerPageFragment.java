@@ -123,40 +123,9 @@ public class BorrowerPageFragment extends Fragment {
                 requestBookInfoIntent.putExtra("bookID", listItem.getBookID());
                 requestBookInfoIntent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.REQUSET_VIEW);
 
-//                requestBookInfoIntent.putExtra("rStatus", (String) listItemPair.second);
                 startActivity(requestBookInfoIntent);
-
-//                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
-//                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
-//                        .child(currentUser.getUid()).child(listItem.getBookID());
-//                ref_request.addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if (dataSnapshot.exists()) {
-//
-//                            String request1 = dataSnapshot.child("bookID").getValue(String.class);
-//                            Request.Status status = dataSnapshot.child("rStatus").getValue(Request.Status.class);
-////                            String request1 = dataSnapshot.getValue(String.class).toString();
-//                            Log.d(TAG, "find requested book2 " + request1);
-//
-//
-//                            requestInfoIndent.putExtra("rStatus", status.toString());
-//                            startActivity(requestInfoIndent);
-//                        }
-//
-//                    }
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
             }
         });
-//        requestList.clear();
-//        RequestAdapter.notifyDataSetChanged();
-
-
-
 
         /**
          * go to request generation activity

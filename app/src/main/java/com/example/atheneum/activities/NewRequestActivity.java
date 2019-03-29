@@ -83,17 +83,6 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
         retriveBook();
 
-//        intentRequestList = new Intent(this, AvailableBookInfoActivity.class);
-//        availableBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                final Book book = (Book) availableBookList.getItemAtPosition(position);
-//                Log.i(TAG, "Request added, id=" + book.getBookID());
-//                intentRequestList.putExtra("availableBookID", book.getBookID());
-//                startActivity(intentRequestList);
-//            }
-//        });
-
         intentRequestList = new Intent(this, BookInfoActivity.class);
         availableBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
