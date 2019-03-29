@@ -89,7 +89,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Book book = (Book) availableBookList.getItemAtPosition(position);
                 Log.i(TAG, "Opening request book info for id=" + book.getBookID());
-                intentRequestList.putExtra("bookID", book.getBookID());
+                intentRequestList.putExtra(BookInfoActivity.BOOK_ID, book.getBookID());
                 intentRequestList.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.BORROWER_VIEW);
                 startActivity(intentRequestList);
             }

@@ -96,6 +96,8 @@ public class BookInfoActivity extends AppCompatActivity {
     public static final String REQUSET_VIEW = "request_view_book_info";
     private String view_type;
 
+    public static final String BOOK_ID = "bookID";
+
     String title;
     String author;
     long isbn;

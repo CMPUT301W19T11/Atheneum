@@ -120,7 +120,7 @@ public class BorrowerPageFragment extends Fragment {
                 Intent requestBookInfoIntent = new Intent(getActivity(), BookInfoActivity.class);
                 Log.d(TAG, "find requested book1 " + listItem.getBookID());
 
-                requestBookInfoIntent.putExtra("bookID", listItem.getBookID());
+                requestBookInfoIntent.putExtra(BookInfoActivity.BOOK_ID, listItem.getBookID());
                 requestBookInfoIntent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.REQUSET_VIEW);
 
                 startActivity(requestBookInfoIntent);
