@@ -89,11 +89,6 @@
             android:name=".activities.GoodreadsReviewsActivity"
             android:label="Goodreads Reviews"
             android:theme="@style/AppTheme"></activity>
-        <activity
-            android:name=".activities.ShowRequestInfoActivity"
-            android:label="@string/RequestInfo"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>

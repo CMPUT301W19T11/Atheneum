@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.atheneum.activities.BookInfoActivity;
-import com.example.atheneum.activities.ShowRequestInfoActivity;
-import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 
 public class NotificationIntentProvider {

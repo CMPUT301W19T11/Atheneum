@@ -23,7 +23,6 @@ import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
 
-import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.RequestAdapter;
