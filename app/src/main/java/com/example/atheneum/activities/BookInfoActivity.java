@@ -409,6 +409,10 @@ public class BookInfoActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e(TAG, "API Response error");
+                            if (error != null && error.getMessage() != null && !error.getMessage().equals("")) {
+                                Log.e(TAG, error.getMessage());
+                                Log.e(TAG, error.toString());
+                            }
                             hideGoodreadsReview();
                             showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
                         }
