@@ -94,10 +94,6 @@
             android:label="@string/RequestInfo"
             android:theme="@style/AppTheme"
             android:parentActivityName=".activities.MainActivity" />
-        <activity
-            android:name=".activities.AvailableBookInfoActivity"
-            android:label="@string/AvailableBookInfo"
-            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
