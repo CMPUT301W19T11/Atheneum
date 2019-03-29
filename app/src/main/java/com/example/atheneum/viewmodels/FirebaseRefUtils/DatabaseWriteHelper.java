@@ -412,8 +412,71 @@ public class DatabaseWriteHelper {
         TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(transaction);
     }
 
-    public static void deleteTransaction(Transaction transaction) {
-        TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(null);
+    public static void updateTransactionBookBorrow(Book book, Transaction transaction){
+        HashMap<String, Object> updates = new HashMap<>();
+
+        final String transactionTypeRef = String.format("transactions/%s/type",
+                book.getBookID());
+
+        final String transactionOScanRef = String.format("transactions/%s/oScan",
+                book.getBookID());
+
+        final String transactionBScanRef = String.format("transactions/%s/bScan",
+                book.getBookID());
+
+        final String bookStatusRef = String.format("books/%s/status",
+                book.getBookID());
+
+        updates.put(transactionTypeRef, Transaction.RETURN);
+        updates.put(transactionOScanRef, false);
+        updates.put(transactionBScanRef, false);
+        updates.put(bookStatusRef, Book.Status.BORROWED);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null){
+                    Log.w(TAG, "Error updating data at" + databaseReference.toString());
+                }
+                else{
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                    Log.i(TAG, "transaction type: " + transactionTypeRef);
+                    Log.i(TAG, "oscan type: "  + transactionOScanRef);
+                    Log.i(TAG, "bscantype: " + transactionBScanRef);
+                    Log.i(TAG, "book Status: " + bookStatusRef);
+                }
+            }
+        });
+    }
+
+    public static void updateTransactionBookReturn(Book book){
+        HashMap<String, Object> updates = new HashMap<>();
+
+        final String transactionTypeRef = String.format("transactions/%s",
+                book.getBookID());
+
+        final String bookStatusRef = String.format("books/%s/status",
+                book.getBookID());
+
+        final String bookBorrowerIDRef = String.format("books/%s/borrowerID",
+                book.getBookID());
+
+
+        updates.put(transactionTypeRef, null);
+        updates.put(bookStatusRef, Book.Status.AVAILABLE);
+        updates.put(bookBorrowerIDRef, "");
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null){
+                    Log.w(TAG, "Error updating data at" + databaseReference.toString());
+                }
+                else{
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
     }
 
     /**

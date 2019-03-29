@@ -54,15 +54,16 @@ public class TransactionViewModel extends ViewModel {
     @NonNull
     public LiveData<Transaction> getTransactionLiveData(){return transactionLiveData;}
 
-    public void addTransaction(Transaction transaction){
-        DatabaseWriteHelper.addNewTransaction(transaction);
-    }
 
     public void updateTransaction(Transaction transaction){
         DatabaseWriteHelper.updateTransaction(transaction);
     }
 
-    public void deleteTransction(Transaction transaction){
-        DatabaseWriteHelper.deleteTransaction(transaction);
+
+    public void updateTransactionBorrowed(Book book, Transaction transaction){
+        DatabaseWriteHelper.updateTransactionBookBorrow(book, transaction);
+    }
+    public void updateTransactionReturned( Book book){
+        DatabaseWriteHelper.updateTransactionBookReturn(book);
     }
 }

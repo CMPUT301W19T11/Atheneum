@@ -181,43 +181,27 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
-                        transactionLiveData.observe(this,  new Observer<Transaction>() {
-                            @Override
-                            public void onChanged(@Nullable Transaction transaction) {
-                                if(transaction != null) {
-                                    Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
-                                    transaction.setBScan(true);
-                                    transaction.setOwnerID(ownerID);
-                                    FirebaseUser currentUser  = FirebaseAuth.getInstance().getCurrentUser();
-                                    Log.i(TAG, "UserID is: " +   currentUser.getUid());
-                                    transaction.setBorrowerID(currentUser.getUid());
-                                    Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
-                                    Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
-                                    transactionViewModel.updateTransaction(transaction);
+                        if (!transactionLiveData.hasObservers()) {
+                            transactionLiveData.observe(this,  new Observer<Transaction>() {
+                                @Override
+                                public void onChanged(@Nullable Transaction transaction) {
+                                    if (transaction != null && !transaction.getOScan() && !transaction.getBScan()) {
+                                        Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
+                                        transaction.setBScan(true);
+                                        transaction.setOwnerID(ownerID);
+                                        FirebaseUser currentUser  = FirebaseAuth.getInstance().getCurrentUser();
+                                        Log.i(TAG, "UserID is: " +   currentUser.getUid());
+                                        transaction.setBorrowerID(currentUser.getUid());
+                                        Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
+                                        Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
+                                        transactionViewModel.updateTransaction(transaction);
 
-//                                    scanBook.setVisibility(View.INVISIBLE);
-
-                                    if(transaction.getBScan() && transaction.getOScan()){
-                                        if(transaction.getType().equals("CHECKOUT")) {
-                                            bOok.setStatus(Book.Status.BORROWED);
-                                            DatabaseWriteHelper.updateBook(bOok);
-                                            transaction.setBScan(false);
-                                            transaction.setOScan(false);
-                                            transaction.setType(Transaction.RETURN);
-                                            transactionViewModel.updateTransaction(transaction);
-                                            scanBook.setVisibility(View.INVISIBLE);
-                                        }
-                                        else {
-                                            bOok.setStatus(Book.Status.AVAILABLE);
-                                            bOok.setBorrowerID("");
-                                            DatabaseWriteHelper.updateBook(bOok);
-                                            transactionViewModel.deleteTransction(transaction);
-                                        }
                                     }
+                                    transactionLiveData.removeObserver(this);
                                 }
-                                transactionLiveData.removeObserver(this);
-                            }
-                        });
+                            });
+                        }
+
                     }
 
                 }
