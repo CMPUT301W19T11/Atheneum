@@ -67,7 +67,4 @@ public class TransactionViewModel extends ViewModel {
         DatabaseWriteHelper.updateTransactionBookReturn(book);
     }
 
-//    public void deleteRequest(Transaction transaction){
-////        DatabaseWriteHelper.deleteRequest(transaction);
-//    }
 }
