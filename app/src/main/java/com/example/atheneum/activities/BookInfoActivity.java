@@ -398,11 +398,14 @@ public class BookInfoActivity extends AppCompatActivity {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
-                            goodreadsReviewInfo = reviewAdapter.getReviewInfo();
+                            // null check in case of exiting activity
+                            if (BookInfoActivity.this != null) {
+                                GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
+                                goodreadsReviewInfo = reviewAdapter.getReviewInfo();
 
-                            hideGoodreadsReviewError();
-                            showGoodreadsReview();
+                                hideGoodreadsReviewError();
+                                showGoodreadsReview();
+                            }
                         }
                     },
                     new Response.ErrorListener() {
@@ -413,8 +416,10 @@ public class BookInfoActivity extends AppCompatActivity {
                                 Log.e(TAG, error.getMessage());
                                 Log.e(TAG, error.toString());
                             }
-                            hideGoodreadsReview();
-                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                            if (BookInfoActivity.this != null) {
+                                hideGoodreadsReview();
+                                showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                            }
                         }
                     });
 
