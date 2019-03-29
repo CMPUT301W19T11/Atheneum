@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // ...
                             Intent intent = new Intent(getApplicationContext(), FirebaseUIAuthActivity.class);
                             startActivity(intent);
+                            finish();
                         }
                     });
         }

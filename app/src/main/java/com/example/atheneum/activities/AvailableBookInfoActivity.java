@@ -51,17 +51,12 @@ import com.google.firebase.database.ValueEventListener;
  * And new request is generated in this activity
  */
 public class AvailableBookInfoActivity extends AppCompatActivity {
-    String title;
-    String author;
-    long isbn;
-    String desc;
+
     private String bookID;
     private String borrowerID;
     private BookInfoViewModel bookInfoViewModel;
 
-    private User loggedInUser;
-    private DatabaseReference loggedInUserRef;
-    private ValueEventListener loggedInUserFirebaseListener;
+
 
     private TextView textTitle;
     private TextView textAuthor;
@@ -154,7 +149,7 @@ public class AvailableBookInfoActivity extends AppCompatActivity {
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent new_request_intent = new Intent(AvailableBookInfoActivity.this, MainActivity.class);
+                final Intent new_request_intent = new Intent(AvailableBookInfoActivity.this, NewRequestActivity.class);
 
                 currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 db = FirebaseDatabase.getInstance();
@@ -168,8 +163,7 @@ public class AvailableBookInfoActivity extends AppCompatActivity {
 
                             Request newRequest = new Request(requester.getUserID(), shownBook.getBookID());
                             // add book to the owner's collection
-//                            Log.i(TAG, "send added, id=" + newRequest.getBookID());
-//
+
                             Notification notification = new Notification(
                                     requester.getUserID(),
                                     shownBook.getOwnerID(),
@@ -179,8 +173,8 @@ public class AvailableBookInfoActivity extends AppCompatActivity {
                                     "");
                             notification.constructMessage(requester.getUserName(), shownBook.getTitle());
                             DatabaseWriteHelper.makeRequest(newRequest, notification);
-
-                            startActivity(new_request_intent);
+                            //startActivity(new_request_intent);
+                            finish();
                         }
                     }
 
