@@ -91,6 +91,8 @@ public class BookInfoActivity extends AppCompatActivity {
 
     private Button deleteBtn;
     private Button editBtn;
+    private Button setLocBtn;
+    private Button viewLocBtn;
 
     private LinearLayout borrowerProfileArea;
 
@@ -328,6 +330,30 @@ public class BookInfoActivity extends AppCompatActivity {
                 editBook();
             }
         });
+
+        setLocBtn = findViewById(R.id.location);
+        setLocBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation();
+            }
+        });
+
+        viewLocBtn = findViewById(R.id.viewlocation);
+        viewLocBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewLocation();
+            }
+        });
+    }
+
+    public void setLocation() {
+        
+    }
+
+    public void viewLocation() {
+
     }
 
     /**
