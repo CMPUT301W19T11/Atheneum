@@ -17,7 +17,7 @@ public class NotificationIntentProvider {
             notifyIntent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.OWNER_VIEW);
         } else {
             // this notification is received by borrower
-            notifyIntent = new Intent(c, ShowRequestInfoActivity.class);
+            notifyIntent = new Intent(c, BookInfoActivity.class);
             notifyIntent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.REQUSET_VIEW);
         }
 
