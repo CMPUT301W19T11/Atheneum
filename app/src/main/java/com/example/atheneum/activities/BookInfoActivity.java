@@ -145,14 +145,18 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseRecyclerAdapter.startListening();
+//        firebaseRecyclerAdapter.startListening();
         loggedInUserRef.addListenerForSingleValueEvent(loggedInUserFirebaseListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        firebaseRecyclerAdapter.stopListening();
+        if (firebaseRecyclerAdapter != null) {
+            // null check because this isn't always initialized
+            firebaseRecyclerAdapter.stopListening();
+        }
+
         loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
@@ -239,101 +243,6 @@ public class BookInfoActivity extends AppCompatActivity {
         loggedInUserRef = UsersRefUtils.getUsersRef(FirebaseAuthUtils.getCurrentUser().getUid());
 
         Log.v(TAG, bookID);
-
-        // get list of requesters
-        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
-
-            FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
-                    .setQuery(query, new SnapshotParser<String>() {
-                        //@Nonnull is removed, it doesn't work when introduced for some reason
-                        @Override
-                        public String parseSnapshot(DataSnapshot snapshot) {
-                            return snapshot.getKey();
-                        }
-                    }).build();
-
-            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
-                @Override
-                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder,
-                                                int position, @NonNull final String requesterID) {
-                    //Bind Book object to BookViewHolder
-                    Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
-
-                    //get user object from requesterID
-                    DatabaseReference requesterRef = UsersRefUtils.getUsersRef(requesterID);
-                    requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            final User requester = dataSnapshot.getValue(User.class);
-                            holder.requesterNameTextView.setText(requester.getUserName());
-                            holder.declineRequestImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Log.i(TAG, "decline request button pressed");
-                                    declineRequest(requester);
-                                }
-                            });
-                            holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Log.i(TAG, "accept request button pressed");
-                                    acceptRequest(requester);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-							Log.e(TAG, databaseError.getMessage());
-                        }
-                    });
-
-                    // set on click to take you to the user's profile page
-                    holder.requestItem.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            viewUserProfile(requesterID);
-                        }
-                    });
-                }
-
-                @Override
-                public BookRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                    // Create a new instance of the ViewHolder, in this case we are using a custom
-                    // layout called R.layout.message for each item
-                    // create a new view
-                    LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.request_on_book_card, parent, false);
-                    final BookRequestViewHolder vh = new BookRequestViewHolder(v);
-
-                    return vh;
-                }
-
-                @Override
-                public void onDataChanged() {
-                    // Called each time there is a new data snapshot. You may want to use this method
-                    // to hide a loading spinner or check for the "no documents" state and update your UI.
-                    // ...
-                }
-
-                @Override
-                public void onError(DatabaseError e) {
-                    // Called when there is an error getting data. You may want to update
-                    // your UI to display an error message to the user.
-                    // ...
-                    Log.i(TAG, e.getMessage());
-                }
-            };
-
-            requestsRecyclerView = (RecyclerView) findViewById(R.id.book_requests_recycler_view);
-            requestsLayoutManager = new LinearLayoutManager(this);
-            requestsRecyclerView.setLayoutManager(requestsLayoutManager);
-            requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
-            requestsRecyclerView.setNestedScrollingEnabled(false);
-            requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
-                    DividerItemDecoration.VERTICAL));
-        }
 
         hideGoodreadsReview();
         showGoodreadsReviewError("Loading...\n");
@@ -641,7 +550,6 @@ public class BookInfoActivity extends AppCompatActivity {
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    Log.i(TAG, "The request snapshot " + dataSnapshot.getValue());
                     String requestStatus = dataSnapshot.getValue(String.class);
                     Log.i(TAG, "Request status: " + requestStatus);
                     // update the request status text
@@ -652,7 +560,6 @@ public class BookInfoActivity extends AppCompatActivity {
                     }
                     else if(requestStatus.equals("ACCEPTED")){
                         requestStatusTextView.setTextColor(Color.GREEN);
-
                     }
                     else if(requestStatus.equals("DECLINED")){
                         requestStatusTextView.setTextColor(Color.RED);
@@ -852,6 +759,113 @@ public class BookInfoActivity extends AppCompatActivity {
         }
     }
 
+    private void hideRequesterList(){
+        LinearLayout requesterListArea = (LinearLayout) findViewById(R.id.requesterListArea);
+        requesterListArea.setVisibility(View.GONE);
+    }
+
+    private void showRequesterList() {
+        LinearLayout requesterListArea = (LinearLayout) findViewById(R.id.requesterListArea);
+
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
+
+            FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
+                    .setQuery(query, new SnapshotParser<String>() {
+                        //@Nonnull is removed, it doesn't work when introduced for some reason
+                        @Override
+                        public String parseSnapshot(DataSnapshot snapshot) {
+                            return snapshot.getKey();
+                        }
+                    }).build();
+
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
+                @Override
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder,
+                                                int position, @NonNull final String requesterID) {
+                    //Bind Book object to BookViewHolder
+                    Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
+
+                    //get user object from requesterID
+                    DatabaseReference requesterRef = UsersRefUtils.getUsersRef(requesterID);
+                    requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final User requester = dataSnapshot.getValue(User.class);
+                            holder.requesterNameTextView.setText(requester.getUserName());
+                            holder.declineRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "decline request button pressed");
+                                    declineRequest(requester);
+                                }
+                            });
+                            holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "accept request button pressed");
+                                    acceptRequest(requester);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, databaseError.getMessage());
+                        }
+                    });
+
+                    // set on click to take you to the user's profile page
+                    holder.requestItem.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            viewUserProfile(requesterID);
+                        }
+                    });
+                }
+
+                @Override
+                public BookRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    // Create a new instance of the ViewHolder, in this case we are using a custom
+                    // layout called R.layout.message for each item
+                    // create a new view
+                    LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.request_on_book_card, parent, false);
+                    final BookRequestViewHolder vh = new BookRequestViewHolder(v);
+
+                    return vh;
+                }
+
+                @Override
+                public void onDataChanged() {
+                    // Called each time there is a new data snapshot. You may want to use this method
+                    // to hide a loading spinner or check for the "no documents" state and update your UI.
+                    // ...
+                }
+
+                @Override
+                public void onError(DatabaseError e) {
+                    // Called when there is an error getting data. You may want to update
+                    // your UI to display an error message to the user.
+                    // ...
+                    Log.i(TAG, e.getMessage());
+                }
+            };
+
+            firebaseRecyclerAdapter.startListening();
+
+            requestsRecyclerView = (RecyclerView) findViewById(R.id.book_requests_recycler_view);
+            requestsLayoutManager = new LinearLayoutManager(this);
+            requestsRecyclerView.setLayoutManager(requestsLayoutManager);
+            requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+            requestsRecyclerView.setNestedScrollingEnabled(false);
+            requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
+                    DividerItemDecoration.VERTICAL));
+        }
+
+        requesterListArea.setVisibility(View.VISIBLE);
+    }
+
     private void setupViewComponents(final Book book) {
         if (this.view_type == null || this.view_type.equals("")){
             Log.e(TAG, "No view type, shouldn't be happening");
@@ -864,18 +878,21 @@ public class BookInfoActivity extends AppCompatActivity {
             hideRequestBtn();
             hideOwnerProfArea();
             showBorrowerProfArea(book);
+            showRequesterList();
         }
         else if (view_type.equals(BORROWER_VIEW)) {
             hideRequestStatus();
             showRequestBtn(book);
             showOwnerProfArea(book);
             hideBorrowerProfArea();
+            hideRequesterList();
         }
         else if (view_type.equals(REQUSET_VIEW)) {
             showRequestStatus(book);
             hideRequestBtn();
             showOwnerProfArea(book);
             showBorrowerProfArea(book);
+            hideRequesterList();
         }
         else {
             Log.e(TAG, "invalid view type, shouldn't be happening");
