@@ -430,7 +430,7 @@ public class DatabaseWriteHelper {
         updates.put(transactionOScanRef, false);
         updates.put(transactionBScanRef, false);
         updates.put(bookStatusRef, Book.Status.BORROWED);
-        updates.put(requestRef, null);
+//        updates.put(requestRef, null);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override

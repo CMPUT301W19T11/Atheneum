@@ -217,14 +217,17 @@ public class ShowRequestInfoActivity extends AppCompatActivity {
                                         transaction.setOwnerID(ownerID);
                                         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                                         Log.i(TAG, "UserID is: " + currentUser.getUid());
-                                        transaction.setBorrowerID(currentUser.getUid());
-                                        transaction.setBScan(true);
-                                        transactionViewModel.updateTransaction(transaction);
-                                        Log.i(TAG, "*******borrower's scan completed");
-                                        Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
-                                        Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
-                                        Log.i(TAG, "transaction type: " + String.valueOf(transaction.getType()));
 
+                                        if ((transaction.getOScan() && transaction.getType().equals(Transaction.CHECKOUT)) ||
+                                                (!transaction.getOScan() && transaction.getType().equals(Transaction.RETURN))) {
+                                            transaction.setBorrowerID(currentUser.getUid());
+                                            transaction.setBScan(true);
+                                            transactionViewModel.updateTransaction(transaction);
+                                            Log.i(TAG, "*******borrower's scan completed");
+                                            Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
+                                            Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
+                                            Log.i(TAG, "transaction type: " + String.valueOf(transaction.getType()));
+                                        }
 
                                         if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
                                             Log.i(TAG, "***borrowing scan completed");

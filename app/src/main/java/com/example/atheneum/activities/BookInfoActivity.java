@@ -175,16 +175,25 @@ public class BookInfoActivity extends AppCompatActivity {
                                         Log.i(TAG, "OScan value:" + String.valueOf(transaction.getOScan()));
                                         Log.i(TAG, "Owner value:" + transaction.getOwnerID());
                                         Log.i(TAG, "Borrower value:" + transaction.getBorrowerID());
-                                        transaction.setOScan(true);
 
-                                        scanBtn.setClickable(false);
-                                        transaction.setBorrowerID(borrowerID);
-                                        transaction.setOwnerID(loggedInUser.getUserID());
-                                        transactionViewModel.updateTransaction(transaction);
+                                        if ((!transaction.getOScan() && !transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)) ||
+                                                (transaction.getBScan() && transaction.getType().equals(Transaction.RETURN))) {
+
+                                            transaction.setOScan(true);
+
+                                            scanBtn.setClickable(false);
+                                            transaction.setBorrowerID(borrowerID);
+                                            transaction.setOwnerID(loggedInUser.getUserID());
+
+                                            transactionLiveData.removeObserver(this);
+                                            transactionViewModel.updateTransaction(transaction);
+                                        }
+
 
                                         if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
-                                            transactionViewModel.updateTransactionReturned(book);
                                             transactionLiveData.removeObserver(this);
+                                            transactionViewModel.updateTransactionReturned(book);
+
                                             scanBtn.setClickable(true);
                                         }
 
@@ -192,7 +201,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                             Toast.makeText(BookInfoActivity.this, "Scan successful! Waiting for borrower to scan.",
                                                     Toast.LENGTH_SHORT).show();
                                         }
-                                        else {
+                                        else if (transaction.getType().equals(Transaction.RETURN)) {
                                             Toast.makeText(BookInfoActivity.this, "Scan successful! Book returned.",
                                                     Toast.LENGTH_SHORT).show();
 
