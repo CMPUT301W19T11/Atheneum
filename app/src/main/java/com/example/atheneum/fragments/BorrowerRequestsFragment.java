@@ -73,10 +73,25 @@ public class BorrowerRequestsFragment extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        Log.d(TAG, "Current visibility is onStart");
+        this.view.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d(TAG, "Current visibility is onResume");
+        this.view.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_borrower_requests, container, false);
+
 
         this.context = getContext();
         requestView = (ListView) this.view.findViewById(R.id.requestView);
@@ -98,6 +113,8 @@ public class BorrowerRequestsFragment extends Fragment {
 //            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
 
+
+        retriveRequest();
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
         //https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -149,6 +166,8 @@ public class BorrowerRequestsFragment extends Fragment {
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                view.setVisibility(View.GONE);
+
                 Intent new_request_intent = new Intent(getActivity(), NewRequestActivity.class);
 //                ref.removeEventListener();
                 startActivity(new_request_intent);
@@ -173,6 +192,8 @@ public class BorrowerRequestsFragment extends Fragment {
          * Get the request list
          */
         if(this.view !=null && this.view.getGlobalVisibleRect(new Rect())) {
+
+            Log.d(TAG, "Current visibility is "+ String.valueOf(this.view.getGlobalVisibleRect(new Rect())));
             ref.addValueEventListener(new ValueEventListener() {
 
                 @Override

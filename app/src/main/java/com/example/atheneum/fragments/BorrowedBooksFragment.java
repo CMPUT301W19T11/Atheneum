@@ -10,6 +10,7 @@
 
 package com.example.atheneum.fragments;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -55,6 +56,7 @@ public class BorrowedBooksFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
+    private FloatingActionButton addBook;
 
     private RecyclerView borrowerBooksRecyclerView;
     private OwnerBooksListAdapter borrowerBooksListAdapter;
@@ -71,6 +73,7 @@ public class BorrowedBooksFragment extends Fragment {
 
 
 
+    @SuppressLint("RestrictedApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -81,6 +84,9 @@ public class BorrowedBooksFragment extends Fragment {
 
         borrowedBookSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
         borrowedBookSpinner.setVisibility(View.GONE);
+
+        addBook = (FloatingActionButton) this.view.findViewById(R.id.add_book);
+        addBook.setVisibility(View.GONE);
 
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
