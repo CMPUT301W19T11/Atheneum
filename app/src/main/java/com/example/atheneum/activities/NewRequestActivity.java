@@ -1,10 +1,12 @@
 package com.example.atheneum.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +42,9 @@ import java.util.Arrays;
  * Activity to handle new requests made by borrower of owner books
  */
 public class NewRequestActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+    public static final String BOOK_REQUESTED = "book_requested";
+    public static final int CREATE_NEW_REQUEST = 11;
+
     Intent intentNewRequest;
     Intent intentRequestList;
 
@@ -64,6 +69,15 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
     private static ArrayList<Book> defaultAvailableBook = new ArrayList<Book>();
     private static ArrayList<Book> searchAvailableBook = new ArrayList<Book>();
     private AvailableBookAdapter availableAdapter;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CREATE_NEW_REQUEST && resultCode == Activity.RESULT_OK) {
+            // this means that the result button was pressed in the book info page
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +105,9 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                 Log.i(TAG, "Opening request book info for id=" + book.getBookID());
                 intentRequestList.putExtra(BookInfoActivity.BOOK_ID, book.getBookID());
                 intentRequestList.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.BORROWER_VIEW);
-                startActivity(intentRequestList);
+
+                startActivityForResult(intentRequestList, CREATE_NEW_REQUEST);
+//                startActivity(intentRequestList);
                 //finish();
             }
         });

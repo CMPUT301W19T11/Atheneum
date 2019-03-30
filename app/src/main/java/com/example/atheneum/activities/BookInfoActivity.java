@@ -10,6 +10,7 @@
 
 package com.example.atheneum.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -809,6 +810,10 @@ public class BookInfoActivity extends AppCompatActivity {
                             notification.constructMessage(requester.getUserName(), book_to_request.getTitle());
                             DatabaseWriteHelper.makeRequest(newRequest, notification);
 
+                            // TODO finish with result to kill previous activity as well
+                            Intent onFinishData = new Intent();
+                            onFinishData.putExtra(NewRequestActivity.BOOK_REQUESTED, true);
+                            setResult(Activity.RESULT_OK, onFinishData);
                             finish();
                         }
                     }
@@ -1076,6 +1081,13 @@ public class BookInfoActivity extends AppCompatActivity {
 
     public void showScanButtonArea(final Book book) {
         LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+
+        // finish quick if not in a state to have this button
+        final TextView requestStatusTextView = (TextView) findViewById(R.id.requestStatus);
+        if (requestStatusTextView.getText().toString().equals("PENDING") || requestStatusTextView.getText().toString().equals("DECLINED")){
+            hideScanButton();
+            return; 
+        }
 
         if (view_type.equals(OWNER_VIEW)) {
             if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {

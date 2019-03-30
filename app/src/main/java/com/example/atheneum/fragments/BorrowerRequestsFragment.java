@@ -170,7 +170,6 @@ public class BorrowerRequestsFragment extends Fragment {
 
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
 
-
                         String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
                         final String Status = item.child(getString(R.string.db_book_request_status)).getValue(String.class);
 
@@ -192,7 +191,7 @@ public class BorrowerRequestsFragment extends Fragment {
                                             requestList.add(new Pair(book, Status));
                                         }
                                     }
-                                    RequestAdapter.notifyDataSetChanged();
+//                                    RequestAdapter.notifyDataSetChanged();
 //                                requestList.clear();
 
                                 }
@@ -205,6 +204,8 @@ public class BorrowerRequestsFragment extends Fragment {
                         });
 
                     }
+
+                    RequestAdapter.notifyDataSetChanged();
                 }
 
                 @Override
