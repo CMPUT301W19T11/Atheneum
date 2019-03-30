@@ -93,18 +93,46 @@
                 android:paddingBottom="15dp"
                 android:text="BOOK STATUS GOES HERE" />
 
-            <Button
-                android:id="@+id/scanISBN"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="SCAN" />
+            <LinearLayout
+                android:id="@+id/scan_button_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/scanBtnPrompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scan ISBN:"
+                    android:textColor="@color/design_default_color_primary_dark" />
+
+                <TextView
+                    android:id="@+id/scanInfoMsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingBottom="15dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/scanISBN"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="SCAN" />
+
+
+
+            </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/request_status_area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/requestStatusText"

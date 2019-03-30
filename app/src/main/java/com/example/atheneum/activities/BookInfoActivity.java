@@ -161,7 +161,7 @@ public class BookInfoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         Log.i(TAG, "Return from scan ISBN");
-        if (requestCode == 0) {
+        if (view_type.equals(OWNER_VIEW) && requestCode == 0) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null && book != null) {
                     Barcode barcode = data.getParcelableExtra("Barcode");
@@ -231,7 +231,80 @@ public class BookInfoActivity extends AppCompatActivity {
                 }
             }
 
-        } else {
+        }
+        else if (view_type.equals(REQUSET_VIEW) && requestCode == 0) {
+            if(resultCode == CommonStatusCodes.SUCCESS){
+                if(data != null){
+                    Barcode barcode = data.getParcelableExtra("Barcode");
+                    String barcodeISBN = String.valueOf(barcode.displayValue);
+                    if(!barcodeISBN.equals(Long.toString(book.getIsbn()))){
+                        Toast.makeText(this, "Error: The ISBN does not match that of the requested book",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Log.i(TAG, "Updating transaction bScan");
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                        Log.i(TAG, "bOok  bookID is " + book.getBookID());
+                        final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
+                        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+
+                        if (!transactionLiveData.hasObservers()) {
+                            transactionLiveData.observe(this,  new Observer<Transaction>() {
+                                @Override
+                                public void onChanged(@Nullable Transaction transaction) {
+                                    if (transaction != null){
+
+                                        transaction.setOwnerID(ownerID);
+                                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                        Log.i(TAG, "UserID is: " + currentUser.getUid());
+
+                                        if ((transaction.getOScan() && transaction.getType().equals(Transaction.CHECKOUT)) ||
+                                                (!transaction.getOScan() && transaction.getType().equals(Transaction.RETURN))) {
+                                            transaction.setBorrowerID(currentUser.getUid());
+                                            transaction.setBScan(true);
+                                            transactionViewModel.updateTransaction(transaction);
+                                            Log.i(TAG, "*******borrower's scan completed");
+                                            Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
+                                            Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
+                                            Log.i(TAG, "transaction type: " + String.valueOf(transaction.getType()));
+                                        }
+
+                                        if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Log.i(TAG, "***borrowing scan completed");
+                                            transaction.setBorrowerID(currentUser.getUid());
+                                            transactionViewModel.updateTransactionBorrowed(book, transaction);
+                                            transactionLiveData.removeObserver(this);
+                                        }
+                                        if(transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Book borrowed.",
+                                                    Toast.LENGTH_SHORT).show();
+//                                            scanBook.setVisibility(View.GONE);
+                                            hideScanButton();
+                                        }
+
+                                        else{
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Waiting for owner to scan.",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    else{
+                                        Log.d(TAG, "Error transaction is null");
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+
+                }
+                else{
+                    Toast.makeText(this, "Error: Barcode not found",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+        else {
             Log.i(TAG, "in else");
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -321,46 +394,46 @@ public class BookInfoActivity extends AppCompatActivity {
                     textStatus.setText(String.valueOf(book.getStatus()));
 //                    status = String.valueOf(book.getStatus());
 
-                    if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
-                        Log.i(TAG, "***//scan button visible");
-                        scanBtn.setVisibility(View.VISIBLE);
-                        scanBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-                                transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
-                                final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
-
-                                transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
-                                    @Override
-                                    public void onChanged(@Nullable Transaction transaction) {
-                                        if(transaction != null) {
-
-                                            Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
-                                            Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
-
-                                            if (transaction.getType().equals(Transaction.RETURN) && !transaction.getBScan()) {
-                                                Toast.makeText(BookInfoActivity.this, "To return a book, borrower must scan first!",
-                                                        Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Log.i(TAG, "***//ISBN scan requested");
-                                                Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
-                                                startActivityForResult(intent, 0);
-                                            }
-                                        }
-                                        else{
-                                            Log.d(TAG, "Error transaction is null");
-                                        }
-                                        transactionLiveData1.removeObserver(this);
-                                    }
-                                });
-
-                            }
-                        });
-                    } else {
-                        Log.i(TAG, "scan button not visible");
-                        scanBtn.setVisibility(View.GONE);
-                    }
+//                    if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
+//                        Log.i(TAG, "***//scan button visible");
+//                        scanBtn.setVisibility(View.VISIBLE);
+//                        scanBtn.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+//                                transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+//                                final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
+//
+//                                transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
+//                                    @Override
+//                                    public void onChanged(@Nullable Transaction transaction) {
+//                                        if(transaction != null) {
+//
+//                                            Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+//                                            Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+//
+//                                            if (transaction.getType().equals(Transaction.RETURN) && !transaction.getBScan()) {
+//                                                Toast.makeText(BookInfoActivity.this, "To return a book, borrower must scan first!",
+//                                                        Toast.LENGTH_SHORT).show();
+//                                            } else {
+//                                                Log.i(TAG, "***//ISBN scan requested");
+//                                                Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+//                                                startActivityForResult(intent, 0);
+//                                            }
+//                                        }
+//                                        else{
+//                                            Log.d(TAG, "Error transaction is null");
+//                                        }
+//                                        transactionLiveData1.removeObserver(this);
+//                                    }
+//                                });
+//
+//                            }
+//                        });
+//                    } else {
+//                        Log.i(TAG, "scan button not visible");
+//                        scanBtn.setVisibility(View.GONE);
+//                    }
                     setStatusTextColor(book);
 
                     setupViewComponents(book);
@@ -415,10 +488,10 @@ public class BookInfoActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_book_info, menu);
         }
         else if(getIntent().getStringExtra(VIEW_TYPE).equals(BORROWER_VIEW)) {
-            // TODO
+            // Unused
         }
         else if (getIntent().getStringExtra(VIEW_TYPE).equals(REQUSET_VIEW)) {
-
+            // Unused
         }
         else {
             Log.e(TAG, "ERROR in view type onCreateOptionsMenu");
@@ -748,11 +821,13 @@ public class BookInfoActivity extends AppCompatActivity {
 
     private void showRequestBtn(final Book book_to_request) {
         LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
-        Button requestBookBtn = (Button) findViewById(R.id.requestBookBtn);
+        final Button requestBookBtn = (Button) findViewById(R.id.requestBookBtn);
 
         requestBookBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                requestBookBtn.setClickable(false); // prevent repeat presses
+
                 // taken from the old AvailableBookInfoActivity
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -962,6 +1037,9 @@ public class BookInfoActivity extends AppCompatActivity {
                                 public void onClick(View view) {
                                     Log.i(TAG, "accept request button pressed");
                                     acceptRequest(requester);
+
+                                    // TODO show scan button
+//                                    showScanButtonArea();
                                 }
                             });
                         }
@@ -1023,12 +1101,73 @@ public class BookInfoActivity extends AppCompatActivity {
         requesterListArea.setVisibility(View.VISIBLE);
     }
 
+    public void hideScanButton() {
+        LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+
+        scanBtnArea.setVisibility(View.GONE);
+    }
+
+    public void showScanButtonMessage(String msg) {
+        LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+        TextView scanMessageTextView = (TextView) findViewById(R.id.scanInfoMsg);
+        scanMessageTextView.setText(msg);
+        scanMessageTextView.setVisibility(View.VISIBLE);
+
+        scanBtnArea.setVisibility(View.VISIBLE);
+    }
+
+    public void showScanButtonArea(final Book book) {
+        if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
+            Log.i(TAG, "***//scan button visible");
+            scanBtn.setVisibility(View.VISIBLE);
+            scanBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                    transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+                    final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
+
+                    transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
+                        @Override
+                        public void onChanged(@Nullable Transaction transaction) {
+                            if(transaction != null) {
+
+                                Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+                                Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+
+                                if (transaction.getType().equals(Transaction.RETURN) && !transaction.getBScan()) {
+                                    Toast.makeText(BookInfoActivity.this, "To return a book, borrower must scan first!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.i(TAG, "***//ISBN scan requested");
+                                    Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+                                    startActivityForResult(intent, 0);
+                                }
+                            }
+                            else{
+                                Log.d(TAG, "Error transaction is null");
+                            }
+                            transactionLiveData1.removeObserver(this);
+                        }
+                    });
+
+                }
+            });
+        } else {
+            Log.i(TAG, "scan button not visible");
+//            scanBtn.setVisibility(View.GONE);
+            hideScanButton();
+        }
+
+    }
+
     private void setupViewComponents(final Book book) {
         if (this.view_type == null || this.view_type.equals("")){
             Log.e(TAG, "No view type, shouldn't be happening");
             return;
         }
 
+        Log.i(TAG, "VIEW_TYPE: "+ this.view_type);
         if (view_type.equals(OWNER_VIEW)) {
             // owner view shouldn't show owner or request button
             hideRequestStatus();
@@ -1036,6 +1175,7 @@ public class BookInfoActivity extends AppCompatActivity {
             hideOwnerProfArea();
             showBorrowerProfArea(book);
             showRequesterList();
+            showScanButtonArea(book);
         }
         else if (view_type.equals(BORROWER_VIEW)) {
             hideRequestStatus();
@@ -1043,6 +1183,7 @@ public class BookInfoActivity extends AppCompatActivity {
             showOwnerProfArea(book);
             hideBorrowerProfArea();
             hideRequesterList();
+            hideScanButton();
         }
         else if (view_type.equals(REQUSET_VIEW)) {
             showRequestStatus(book);
@@ -1050,6 +1191,7 @@ public class BookInfoActivity extends AppCompatActivity {
             showOwnerProfArea(book);
             showBorrowerProfArea(book);
             hideRequesterList();
+            showScanButtonArea(book);
         }
         else {
             Log.e(TAG, "invalid view type, shouldn't be happening");
