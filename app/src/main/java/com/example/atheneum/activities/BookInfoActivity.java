@@ -215,6 +215,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                         else if (transaction.getType().equals(Transaction.RETURN)) {
                                             Toast.makeText(BookInfoActivity.this, "Scan successful! Book returned.",
                                                     Toast.LENGTH_SHORT).show();
+                                            hideScanButtonArea();
 
                                         }
                                     }
@@ -280,7 +281,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                             Toast.makeText(BookInfoActivity.this, "Scan successful! Book borrowed.",
                                                     Toast.LENGTH_SHORT).show();
 //                                            scanBook.setVisibility(View.GONE);
-                                            hideScanButton();
+                                            hideScanButtonArea();
                                         }
 
                                         else{
@@ -1064,12 +1065,16 @@ public class BookInfoActivity extends AppCompatActivity {
         requesterListArea.setVisibility(View.VISIBLE);
     }
 
-    public void hideScanButton() {
+    public void hideScanButtonArea() {
         LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
 
         scanBtnArea.setVisibility(View.GONE);
     }
 
+    /**
+     * Hides the scan button and shows a message
+     * @param msg the message to show
+     */
     public void showScanButtonMessage(String msg) {
         LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
         TextView scanMessageTextView = (TextView) findViewById(R.id.scanInfoMsg);
@@ -1085,8 +1090,8 @@ public class BookInfoActivity extends AppCompatActivity {
         // finish quick if not in a state to have this button
         final TextView requestStatusTextView = (TextView) findViewById(R.id.requestStatus);
         if (requestStatusTextView.getText().toString().equals("PENDING") || requestStatusTextView.getText().toString().equals("DECLINED")){
-            hideScanButton();
-            return; 
+            hideScanButtonArea();
+            return;
         }
 
         if (view_type.equals(OWNER_VIEW)) {
@@ -1172,9 +1177,9 @@ public class BookInfoActivity extends AppCompatActivity {
 
         }
         else {
-            Log.i(TAG, "scan button not visible");
+            Log.i(TAG, "scan button area not visible");
 //            scanBtn.setVisibility(View.GONE);
-            hideScanButton();
+            hideScanButtonArea();
         }
 
     }
@@ -1201,7 +1206,7 @@ public class BookInfoActivity extends AppCompatActivity {
             showOwnerProfArea(book);
             hideBorrowerProfArea();
             hideRequesterList();
-            hideScanButton();
+            hideScanButtonArea();
         }
         else if (view_type.equals(REQUSET_VIEW)) {
             showRequestStatus(book);
