@@ -9,6 +9,7 @@ import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.Request;
+import com.example.atheneum.models.Transaction;
 import com.example.atheneum.models.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -43,7 +44,7 @@ public class DatabaseWriteHelper {
         final String bookRef = String.format("books/%s", newBook.getBookID());
         final String ownerBookRef = String.format("ownerCollection/%s/%s", owner.getUserID(), newBook.getBookID());
         updates.put(bookRef, newBook);
-        // Even though we are just interested in the bookID, we have store a value for the bookID
+        // Even though we are just interested in the bookID, we have to store a value for the bookID
         // for Firebase. So we just use true.
         updates.put(ownerBookRef, true);
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
@@ -210,6 +211,7 @@ public class DatabaseWriteHelper {
             }
         });
     }
+
 
     /**
      * Triggers when a request is accepted
@@ -396,6 +398,88 @@ public class DatabaseWriteHelper {
         });
     }
 
+
+    public static void addNewTransaction(Transaction transaction){
+        TransactionRefUtils.TRANSACTION_REF.child(transaction.getBookID()).setValue(transaction);
+
+    }
+
+    public static void updateTransaction(Transaction transaction){
+        TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(transaction);
+    }
+
+    public static void updateTransactionBookBorrow(Book book, Transaction transaction){
+        HashMap<String, Object> updates = new HashMap<>();
+
+        final String transactionTypeRef = String.format("transactions/%s/type",
+                book.getBookID());
+
+        final String transactionOScanRef = String.format("transactions/%s/oScan",
+                book.getBookID());
+
+        final String transactionBScanRef = String.format("transactions/%s/bScan",
+                book.getBookID());
+
+        final String bookStatusRef = String.format("books/%s/status",
+                book.getBookID());
+
+        final String requestRef = String.format("requestCollection/%s/%s",
+                transaction.getBorrowerID(), transaction.getBookID());
+
+        updates.put(transactionTypeRef, Transaction.RETURN);
+        updates.put(transactionOScanRef, false);
+        updates.put(transactionBScanRef, false);
+        updates.put(bookStatusRef, Book.Status.BORROWED);
+//        updates.put(requestRef, null);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null){
+                    Log.w(TAG, "Error updating data at" + databaseReference.toString());
+                }
+                else{
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                    Log.i(TAG, "transaction type: " + transactionTypeRef);
+                    Log.i(TAG, "oscan type: "  + transactionOScanRef);
+                    Log.i(TAG, "bscantype: " + transactionBScanRef);
+                    Log.i(TAG, "book Status: " + bookStatusRef);
+                    Log.i(TAG, "request:" + requestRef);
+                }
+            }
+        });
+    }
+
+    public static void updateTransactionBookReturn(Book book){
+        HashMap<String, Object> updates = new HashMap<>();
+
+        final String transactionTypeRef = String.format("transactions/%s",
+                book.getBookID());
+
+        final String bookStatusRef = String.format("books/%s/status",
+                book.getBookID());
+
+        final String bookBorrowerIDRef = String.format("books/%s/borrowerID",
+                book.getBookID());
+
+
+        updates.put(transactionTypeRef, null);
+        updates.put(bookStatusRef, Book.Status.AVAILABLE);
+        updates.put(bookBorrowerIDRef, "");
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null){
+                    Log.w(TAG, "Error updating data at" + databaseReference.toString());
+                }
+                else{
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
+
     /**
      * Add a photo for a particular book to the Database.
      *
@@ -427,5 +511,6 @@ public class DatabaseWriteHelper {
      */
     public static void deleteBookPhoto(String bookID, Photo photo) {
         BookPhotosRefUtils.getBookPhotoRef(bookID, photo.getPhotoID()).removeValue();
+
     }
 }

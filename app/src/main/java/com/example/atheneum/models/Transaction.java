@@ -1,7 +1,9 @@
 package com.example.atheneum.models;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.StringDef;
 
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.PropertyName;
 
 import java.lang.annotation.Retention;
@@ -13,14 +15,14 @@ import java.util.UUID;
  * at a specified location.
  */
 public class Transaction {
-    public static final int CHECKOUT = 0;
-    public static final int RETURN = 1;
+    public static final String CHECKOUT = "CHECKOUT";
+    public static final String RETURN = "RETURN";
 
-    private int type;
+    private String type;
     private Location location;
-    private User borrower;
-    private User owner;
-    private UUID bookID;
+    private String borrowerID;
+    private String ownerID;
+    private String bookID;
     private boolean bScan;
     private boolean oScan;
 
@@ -44,7 +46,7 @@ public class Transaction {
      * See: https://android.jlelse.eu/android-performance-avoid-using-enum-on-android-326be0794dc3
      * https://stackoverflow.com/a/21874183/11039833
      */
-    @IntDef({CHECKOUT, RETURN})
+    @StringDef({CHECKOUT, RETURN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
     }
@@ -54,31 +56,36 @@ public class Transaction {
      *
      * @param type     Determines type of transaction (ie. checkout or return)
      * @param location Location where transaction will occur
-     * @param borrower User who is borrowing book
-     * @param owner    User who owns the book
+     * @param borrowerID String ID of user who is borrowing book
+     * @param ownerID    String ID of user who owns the book
      * @param bookID   Identifier of book
      * @param bScan    Represents if the borrower has scanned the book
      * @param oScan    Represents if the owner has scanned the book
      */
-    public Transaction(@Type int type, Location location, User borrower, User owner, UUID bookID, boolean bScan, boolean oScan) {
+    public Transaction(@Type String type, Location location, String borrowerID, String ownerID, String bookID, boolean bScan, boolean oScan) {
         this.type = type;
         this.location = location;
-        this.borrower = borrower;
-        this.owner = owner;
+        this.borrowerID = borrowerID;
+        this.ownerID = ownerID;
         this.bookID = bookID;
         this.bScan = bScan;
         this.oScan = oScan;
     }
 
     /**
-     * Note: No setter provided since type can't change
      *
      * @return Type of transaction (ie. checkout or return)
      */
     @PropertyName("type")
-    public int getType() {
+    public String getType() {
         return type;
     }
+
+    /**
+     *
+     * @param type New type of transaction
+     */
+    public void setType(@Type String type){this.type = type;}
 
     /**
      * @return Location of the transaction
@@ -102,8 +109,12 @@ public class Transaction {
      * @return Borrower of the book associated with the transaction
      */
     @PropertyName("borrower")
-    public User getBorrower() {
-        return borrower;
+    public String getBorrowerID() {
+        return borrowerID;
+    }
+
+    public void setBorrowerID(String borrowerID){
+        this.borrowerID = borrowerID;
     }
 
     /**
@@ -112,8 +123,12 @@ public class Transaction {
      * @return Owner of the book associated with the transaction
      */
     @PropertyName("owner")
-    public User getOwner() {
-        return owner;
+    public String getOwnerID() {
+        return ownerID;
+    }
+
+    public void setOwnerID(String ownerID){
+        this.ownerID = ownerID;
     }
 
     /**
@@ -122,13 +137,14 @@ public class Transaction {
      * @return ID of book involved in transaction
      */
     @PropertyName("bookID")
-    public UUID getBookID() {
+    public String getBookID() {
         return bookID;
     }
 
     /**
      * @return True if borrower has scanned the book, false otherwise
      */
+
     @PropertyName("bScan")
     public boolean getBScan() {
         return bScan;
@@ -137,6 +153,7 @@ public class Transaction {
     /**
      * @param bScan New value of bScan
      */
+    @Exclude
     @PropertyName("bScan")
     public void setBScan(boolean bScan) {
         this.bScan = bScan;
@@ -145,6 +162,7 @@ public class Transaction {
     /**
      * @return True if owner has scanned the book, false otherwise
      */
+
     @PropertyName("oScan")
     public boolean getOScan() {
         return oScan;
@@ -153,16 +171,10 @@ public class Transaction {
     /**
      * @param oScan New value of oScan
      */
-    @PropertyName("bScan")
+    @PropertyName("oScan")
     public void setOScan(boolean oScan) {
         this.oScan = oScan;
     }
 
-    /**
-     * @return True if the transaction is complete (both owner and borrower have scanned the book,
-     * false otherwise
-     */
-    public boolean isComplete() {
-        return oScan && bScan;
-    }
+
 }
