@@ -220,6 +220,7 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
         availableBook = new ArrayList<Book>();
 
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
