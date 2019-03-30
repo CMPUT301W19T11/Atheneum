@@ -167,12 +167,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public static void moveCamera(LatLng latLng, float zoom) {
         if (googleMap != null) {
+            Log.d(TAG, "move to " + latLng.toString());
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         }
     }
 
-    public static void addMarker(LatLng latLng, float zoom, String title) {
-        if (!title.equals("My Location") && googleMap != null) {
+    public static void addMarker(LatLng latLng, String title) {
+        if (googleMap != null) {
+            Log.d(TAG, "addMarker " + latLng.toString());
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
             googleMap.addMarker(markerOptions);
         }
@@ -229,7 +231,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void setUpMapView() {
         moveCamera(goToLocation, DEFAULT_ZOOM);
         if (showMarker) {
-            addMarker(goToLocation, DEFAULT_ZOOM, "Meeting Location");
+            addMarker(goToLocation, "Meeting Location");
         }
     }
 

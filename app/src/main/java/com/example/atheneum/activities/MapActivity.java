@@ -75,9 +75,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
      */
     public static final String TAG = "Map Activity";
 
-    private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
-            new LatLng(-40, -168), new LatLng(71, 136));
-
     private static boolean locationPermissionGiven = false;
 
     private String bookID;
@@ -96,9 +93,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_map);
-
-//        searchText = (AutoCompleteTextView) findViewById(R.id.search_text);
-//        searchText.setMaxLines(1);
 
         Intent mapIntent = getIntent();
 
@@ -157,17 +151,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
             }
         });
 
-//        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if (actionId == EditorInfo.IME_ACTION_GO) {
-//                    Log.d(TAG, "call getGeo");
-//                    setNewLocation();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
     }
 
     /**
@@ -219,7 +202,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
             Log.d(TAG, "setNewLocation got " + address.toString());
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
-            addMarker(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, "Meeting Location");
+            addMarker(new LatLng(address.getLatitude(), address.getLongitude()), "Meeting Location");
 
             addLocation(bookID, new LatLng(address.getLatitude(), address.getLongitude()));
         }
