@@ -392,48 +392,6 @@ public class BookInfoActivity extends AppCompatActivity {
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
-//                    status = String.valueOf(book.getStatus());
-
-//                    if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
-//                        Log.i(TAG, "***//scan button visible");
-//                        scanBtn.setVisibility(View.VISIBLE);
-//                        scanBtn.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-//                                transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
-//                                final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
-//
-//                                transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
-//                                    @Override
-//                                    public void onChanged(@Nullable Transaction transaction) {
-//                                        if(transaction != null) {
-//
-//                                            Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
-//                                            Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
-//
-//                                            if (transaction.getType().equals(Transaction.RETURN) && !transaction.getBScan()) {
-//                                                Toast.makeText(BookInfoActivity.this, "To return a book, borrower must scan first!",
-//                                                        Toast.LENGTH_SHORT).show();
-//                                            } else {
-//                                                Log.i(TAG, "***//ISBN scan requested");
-//                                                Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
-//                                                startActivityForResult(intent, 0);
-//                                            }
-//                                        }
-//                                        else{
-//                                            Log.d(TAG, "Error transaction is null");
-//                                        }
-//                                        transactionLiveData1.removeObserver(this);
-//                                    }
-//                                });
-//
-//                            }
-//                        });
-//                    } else {
-//                        Log.i(TAG, "scan button not visible");
-//                        scanBtn.setVisibility(View.GONE);
-//                    }
                     setStatusTextColor(book);
 
                     setupViewComponents(book);
