@@ -316,7 +316,9 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        firebaseRecyclerAdapter.startListening();
+        if (firebaseRecyclerAdapter != null) {
+            firebaseRecyclerAdapter.startListening();
+        }
         loggedInUserRef.addListenerForSingleValueEvent(loggedInUserFirebaseListener);
     }
 
