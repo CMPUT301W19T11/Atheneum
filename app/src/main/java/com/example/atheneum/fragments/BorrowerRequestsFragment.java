@@ -114,7 +114,7 @@ public class BorrowerRequestsFragment extends Fragment {
         }
 
 
-        retriveRequest();
+
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
         //https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -215,13 +215,14 @@ public class BorrowerRequestsFragment extends Fragment {
                                     book = dataSnapshot.getValue(Book.class);
                                     Log.d(TAG, "find book " + book.getTitle());
                                     Log.d(TAG, "find book with rStatus " + rStatus);
-                                    if (!requestList.contains(new Pair(book, Status))) {
+                                    Pair newPair = (new Pair(book, Status));
+                                    if (!requestList.contains(newPair)) {
                                         if (rStatus.equals("ALL")) {
-                                            requestList.add(new Pair(book, Status));
+                                            requestList.add(newPair);
 
 
                                         } else if (rStatus.equals(Status)) {
-                                            requestList.add(new Pair(book, Status));
+                                            requestList.add(newPair);
                                         }
                                     }
                                     RequestAdapter.notifyDataSetChanged();
