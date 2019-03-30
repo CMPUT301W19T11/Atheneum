@@ -41,7 +41,7 @@ import java.util.ArrayList;
 /**
  * The Borrower page fragment to list borrower's requested books.
  */
-public class BorrowerPageFragment extends Fragment {
+public class BorrowerRequestsFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
@@ -64,7 +64,7 @@ public class BorrowerPageFragment extends Fragment {
     /**
      * Instantiates a new Borrower page fragment.
      */
-    public BorrowerPageFragment() {
+    public BorrowerRequestsFragment() {
         // required empty constructor
     }
 
@@ -72,7 +72,7 @@ public class BorrowerPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        this.view = inflater.inflate(R.layout.fragment_borrower_page, container, false);
+        this.view = inflater.inflate(R.layout.fragment_borrower_requests, container, false);
 
         this.context = getContext();
         requestView = (ListView) this.view.findViewById(R.id.requestView);
@@ -110,8 +110,10 @@ public class BorrowerPageFragment extends Fragment {
             }
         });
 
-        RequestAdapter = new RequestAdapter(BorrowerPageFragment.this.context, R.layout.request_list_item, requestList);
+
+        RequestAdapter = new RequestAdapter(BorrowerRequestsFragment.this.context, R.layout.request_list_item, requestList);
         requestView.setAdapter(RequestAdapter);
+
         requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -19,7 +19,6 @@ public class Book {
     private String borrowerID = "";
 
     private Status status = Status.AVAILABLE;
-    private ArrayList<Request> requests = new ArrayList<Request>();
     private String bookID;
 
     @Override
@@ -220,49 +219,6 @@ public class Book {
      */
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    /**
-     * Gets requests made for the book
-     *
-     * @return the requests
-     */
-    public ArrayList<Request> getRequests() {
-        return requests;
-    }
-
-    /**
-     * Sets requests made for the book
-     *
-     * @param requests the requests
-     */
-    public void setRequests(ArrayList<Request> requests) {
-        this.requests = requests;
-    }
-
-    /**
-     * Add a request to the list of requests for the book
-     *
-     * @param request the request
-     */
-    public void addRequest(Request request) {
-        this.requests.add(request);
-    }
-
-    /**
-     * Delete a request from the list of requests for the book
-     *
-     * @param request the request
-     */
-    public void deleteRequest(Request request) {
-        this.requests.remove(request);
-    }
-
-    /**
-     * Delete all requests from the list of requests for the book
-     */
-    public void deleteRequests() {
-        this.requests.clear();
     }
 
     /**

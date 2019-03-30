@@ -180,6 +180,7 @@ public class OwnerPageFragment extends Fragment {
             @Override
             public void onChanged(@Nullable ArrayList<Book> ownerBooks) {
                 ArrayList<Book> testBook = new ArrayList<Book>();
+                if(ownerBooks!= null && ownerBooks.size()>0){
                 for(int i=0; i<ownerBooks.size(); i++){
                     if(status.equals("ALL")){
                         testBook.add(ownerBooks.get(i));
@@ -190,6 +191,7 @@ public class OwnerPageFragment extends Fragment {
 
                 }
                 ownerBooksListAdapter.submitList(testBook);
+                }
             }
         });
         ownerBooksRecyclerView.setAdapter(ownerBooksListAdapter);

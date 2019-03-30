@@ -93,6 +93,12 @@
                 android:paddingBottom="15dp"
                 android:text="BOOK STATUS GOES HERE" />
 
+            <Button
+                android:id="@+id/scanISBN"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="SCAN" />
+
             <LinearLayout
                 android:id="@+id/request_status_area"
                 android:layout_width="match_parent"
