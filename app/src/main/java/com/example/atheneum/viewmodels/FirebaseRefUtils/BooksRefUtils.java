@@ -35,4 +35,9 @@ public class BooksRefUtils extends RootRefUtils {
     public static Query getOwnerBooksRef(String ownerID) {
         return BOOKS_REF.orderByChild("ownerID").equalTo(ownerID);
     }
+
+    public static Query getBorrowerBookRef(String borrowerID){
+        return BOOKS_REF.orderByChild("borrowerID").equalTo(borrowerID);
+    }
+
 }
