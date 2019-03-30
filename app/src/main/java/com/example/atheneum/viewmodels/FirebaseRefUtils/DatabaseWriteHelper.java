@@ -450,7 +450,7 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void updateTransactionBookReturn(Book book){
+    public static void updateTransactionBookReturn(Book book, String borrowerID){
         HashMap<String, Object> updates = new HashMap<>();
 
         final String transactionTypeRef = String.format("transactions/%s",
@@ -462,10 +462,13 @@ public class DatabaseWriteHelper {
         final String bookBorrowerIDRef = String.format("books/%s/borrowerID",
                 book.getBookID());
 
+        final String borrowedBooksHistoryIsbnRef = String.format("borrowedBooksHistory/%s/%s",
+                borrowerID, book.getIsbn());
 
         updates.put(transactionTypeRef, null);
         updates.put(bookStatusRef, Book.Status.AVAILABLE);
         updates.put(bookBorrowerIDRef, "");
+        updates.put(borrowedBooksHistoryIsbnRef, true);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override

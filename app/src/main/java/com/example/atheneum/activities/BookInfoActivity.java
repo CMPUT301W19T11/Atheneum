@@ -192,8 +192,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                         if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
                                             transactionLiveData.removeObserver(this);
-                                            transactionViewModel.updateTransactionReturned(book);
-
+                                            transactionViewModel.updateTransactionReturned(book, borrowerID);
                                             scanBtn.setClickable(true);
                                         }
 
