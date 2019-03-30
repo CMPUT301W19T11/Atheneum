@@ -54,8 +54,8 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         final TextView username = findViewById(R.id.username);
         final TextView phone = findViewById(R.id.phone);
-        final TextView borrower_rating = findViewById(R.id.rStatus);
-        final TextView owner_rating = findViewById(R.id.owner);
+//        final TextView borrower_rating = findViewById(R.id.rStatus);
+//        final TextView owner_rating = findViewById(R.id.owner);
 
         UserViewModelFactory factory = new UserViewModelFactory(userID);
         UserViewModel userViewModel = ViewModelProviders.of(this, factory).get(UserViewModel.class);
@@ -66,8 +66,8 @@ public class ViewProfileActivity extends AppCompatActivity {
                 if (user != null) {
                     username.setText(user.getUserName());
                     phone.setText(user.getPhoneNumber());
-                    borrower_rating.setText(Double.toString(user.getBorrowerRate()));
-                    owner_rating.setText(Double.toString(user.getOwnerRate()));
+//                    borrower_rating.setText(Double.toString(user.getBorrowerRate()));
+//                    owner_rating.setText(Double.toString(user.getOwnerRate()));
                     ArrayList<String> photos = user.getPhotos();
                     if (!photos.isEmpty()) {
                         try {
