@@ -5,20 +5,20 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
 /**
- * Factory that instantiates a OwnerBooksViewModel with a particular userID.
- * Read the StackOverflow post linked here to understand we can't instantiate OwnerBooksViewModel directly.
+ * Factory that instantiates a BorrowerBooksViewModel with a particular userID.
+ * Read the StackOverflow post linked here to understand we can't instantiate BorrowerBooksViewModel directly.
  *
  * See: https://stackoverflow.com/a/46704702/11039833
  */
-public class BorrowerBookViewModelFactory implements ViewModelProvider.Factory {
+public class BorrowerBooksViewModelFactory implements ViewModelProvider.Factory {
     private final String borrowerID;
 
     /**
-     * Create a new instance of OwnerBooksViewModelFactory
+     * Create a new instance of BorrowerBooksViewModelFactory
      *
      * @param borrowerID User ID of the borrower.
      */
-    public BorrowerBookViewModelFactory(String borrowerID) {
+    public BorrowerBooksViewModelFactory(String borrowerID) {
         this.borrowerID = borrowerID;
     }
 
@@ -32,6 +32,6 @@ public class BorrowerBookViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new OwnerBooksViewModel(borrowerID);
+        return (T) new BorrowerBooksViewModel(borrowerID);
     }
 }

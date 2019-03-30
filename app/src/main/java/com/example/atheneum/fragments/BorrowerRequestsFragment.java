@@ -55,7 +55,7 @@ public class BorrowerRequestsFragment extends Fragment {
     private ArrayAdapter<String> requestSpinnerAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
-    private String rStatus;
+    private static String rStatus = "ALL";
     FirebaseUser currentUser;
     /**
      * The Book object borrowed.
@@ -95,7 +95,7 @@ public class BorrowerRequestsFragment extends Fragment {
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
-            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
+//            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
 
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
@@ -133,30 +133,6 @@ public class BorrowerRequestsFragment extends Fragment {
                 startActivity(requestInfoIndent);
 
 
-//                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
-//                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
-//                        .child(currentUser.getUid()).child(listItem.getBookID());
-//                ref_request.addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if (dataSnapshot.exists()) {
-//
-//                            String request1 = dataSnapshot.child("bookID").getValue(String.class);
-//                            Request.Status status = dataSnapshot.child("rStatus").getValue(Request.Status.class);
-////                            String request1 = dataSnapshot.getValue(String.class).toString();
-//                            Log.d(TAG, "find requested book2 " + request1);
-//
-//
-//                            requestInfoIndent.putExtra("rStatus", status.toString());
-//                            startActivity(requestInfoIndent);
-//                        }
-//
-//                    }
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
             }
         });
 //        requestList.clear();
