@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,7 +32,15 @@ import com.example.atheneum.viewmodels.LocationViewModel;
 import com.example.atheneum.viewmodels.LocationViewModelFactory;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,6 +49,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.example.atheneum.fragments.MapFragment.addMarker;
@@ -51,21 +61,24 @@ import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_
 import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_ENABLE_GPS;
 import static com.example.atheneum.viewmodels.LocationViewModel.addLocation;
 
+
+
 /**
  * An activity that displays a Google map with a marker (pin) to indicate a particular location.
  *
  * See: https://gist.github.com/mitchtabian/2b9a3dffbfdc565b81f8d26b25d059bf
  */
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * The constant TAG.
      */
     public static final String TAG = "Map Activity";
 
-    private static boolean locationPermissionGiven = false;
+    private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
+            new LatLng(-40, -168), new LatLng(71, 136));
 
-    private EditText searchText;
+    private static boolean locationPermissionGiven = false;
 
     private String bookID;
 
@@ -74,14 +87,18 @@ public class MapActivity extends AppCompatActivity {
     LatLng locationToView;
 
     @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "creating Map Activity");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_map);
 
-        searchText = (EditText) findViewById(R.id.search_text);
-        searchText.setMaxLines(1);
+//        searchText = (AutoCompleteTextView) findViewById(R.id.search_text);
+//        searchText.setMaxLines(1);
 
         Intent mapIntent = getIntent();
 
@@ -110,17 +127,47 @@ public class MapActivity extends AppCompatActivity {
      */
     private void initSearchListener() {
         Log.d(TAG, "initializing search listener");
-        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), getString(R.string.google_maps_api_key));
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.google_maps_api_key));
+        }
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-                    Log.d(TAG, "call getGeo");
-                    setNewLocation();
-                    return true;
-                }
-                return false;
+            public void onPlaceSelected(Place place) {
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                setNewLocation(place.getName());
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.i(TAG, "An error occurred: " + status);
             }
         });
+
+//        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_GO) {
+//                    Log.d(TAG, "call getGeo");
+//                    setNewLocation();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
     }
 
     /**
@@ -154,10 +201,10 @@ public class MapActivity extends AppCompatActivity {
      * add a marker
      * add it to firebase
      */
-    private void setNewLocation() {
+    private void setNewLocation(String locationName) {
         Log.d(TAG, "Setting location in MapActivity");
 
-        String searchLocation = searchText.getText().toString();
+        String searchLocation = locationName;
 
         Geocoder geocoder = new Geocoder(MapActivity.this);
         List<Address> addressList = new ArrayList<>();
