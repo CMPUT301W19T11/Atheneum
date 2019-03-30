@@ -1,7 +1,6 @@
 package com.example.atheneum.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 
 
 import com.example.atheneum.R;
-import com.example.atheneum.activities.MapActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -168,8 +166,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public static void moveCamera(LatLng latLng, float zoom) {
-//        if (googleMap != null) {
-        if (true) {
+        if (googleMap != null) {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         }
     }
@@ -200,7 +197,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
 
-//                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                             goToLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
                         }else{
@@ -222,8 +218,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public static void goToViewLocation(LatLng locationToView) {
         Log.d(TAG, "in gotoviewlocation locationtoview is " + locationToView.toString());
-//        moveCamera(locationToView, DEFAULT_ZOOM);
-//        addMarker(locationToView, DEFAULT_ZOOM, "Meeting Location");
         goToLocation = locationToView;
         showMarker = true;
     }

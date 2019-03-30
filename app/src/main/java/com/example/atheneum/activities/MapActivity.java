@@ -148,17 +148,6 @@ public class MapActivity extends AppCompatActivity {
         });
     }
 
-//    /**
-//     * View a meeting location based on lat/lon from firebase
-//     * go to the place
-//     * add a marker
-//     */
-//    private void goToViewLocation(LatLng locationToView) {
-//        Log.d(TAG, "in gotoviewlocation locationtoview is " + locationToView.toString());
-//        moveCamera(locationToView, DEFAULT_ZOOM);
-//        addMarker(locationToView, DEFAULT_ZOOM, "Meeting Location");
-//    }
-
     /**
      * Sets a new geo location for the meeting
      * go to the place
