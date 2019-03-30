@@ -1,7 +1,7 @@
 package com.example.atheneum.fragments;
 
 import android.Manifest;
-import android.content.Intent;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,28 +9,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 
 import com.example.atheneum.R;
-import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.MapActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -53,8 +46,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static GoogleMap googleMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
-//    private boolean viewOnly;
-//    private LatLng latLng;
+    private static LatLng goToLocation;
+    private static boolean showMarker = false;
+
 
     /**
      * Create a new instance of the map fragment.
@@ -79,23 +73,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         Log.d(TAG, "initializing Google Map");
 
-//        viewOnly = getArguments().getBoolean("viewonly");
-//
-//        if (viewOnly) {
-//            double lat = getArguments().getDouble("lat");
-//            double lon = getArguments().getDouble("lon");
-//            latLng = new LatLng(lat, lon);
-//        }
+        MapsInitializer.initialize(getActivity());
 
         initGoogleMap(savedInstanceState);
 
         return view;
     }
 
+    /**
+     *  *** IMPORTANT ***
+     * MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
+     * objects or sub-Bundles.
+     * @param savedInstanceState
+     */
     private void initGoogleMap(Bundle savedInstanceState){
-        // *** IMPORTANT ***
-        // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
-        // objects or sub-Bundles.
+
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
@@ -147,14 +139,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
         map.setMyLocationEnabled(true);
 
-//        if (viewOnly) {
-//            moveCamera(latLng, DEFAULT_ZOOM);
-//        } else {
-//            getDeviceLocation();
-//        }
+        if (!showMarker) {
+            getDeviceLocation();
+        }
 
         googleMap = map;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        setUpMapView();
     }
 
     @Override
@@ -176,16 +168,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public static void moveCamera(LatLng latLng, float zoom) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+//        if (googleMap != null) {
+        if (true) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        }
     }
 
     public static void addMarker(LatLng latLng, float zoom, String title) {
-        if (!title.equals("My Location")) {
+        if (!title.equals("My Location") && googleMap != null) {
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
             googleMap.addMarker(markerOptions);
         }
     }
 
+    /**
+     * Get device current location
+     */
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
@@ -202,7 +200,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
 
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+//                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                            goToLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
@@ -216,5 +215,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Set the meeting location to display based on lat/lon from firebase
+     * go to the place
+     * add a marker
+     */
+    public static void goToViewLocation(LatLng locationToView) {
+        Log.d(TAG, "in gotoviewlocation locationtoview is " + locationToView.toString());
+//        moveCamera(locationToView, DEFAULT_ZOOM);
+//        addMarker(locationToView, DEFAULT_ZOOM, "Meeting Location");
+        goToLocation = locationToView;
+        showMarker = true;
+    }
+
+    /**
+     * Display the meeting location
+     * or go to current location
+     */
+    private void setUpMapView() {
+        moveCamera(goToLocation, DEFAULT_ZOOM);
+        if (showMarker) {
+            addMarker(goToLocation, DEFAULT_ZOOM, "Meeting Location");
+        }
+    }
 
 }

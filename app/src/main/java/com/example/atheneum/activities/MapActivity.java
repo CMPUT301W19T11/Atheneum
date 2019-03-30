@@ -1,8 +1,6 @@
 package com.example.atheneum.activities;
 
 import android.app.Dialog;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,7 +11,6 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -30,18 +27,23 @@ import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.MapFragment;
-import com.example.atheneum.models.Location;
 import com.example.atheneum.viewmodels.LocationViewModel;
 import com.example.atheneum.viewmodels.LocationViewModelFactory;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.atheneum.fragments.MapFragment.addMarker;
+import static com.example.atheneum.fragments.MapFragment.goToViewLocation;
 import static com.example.atheneum.fragments.MapFragment.moveCamera;
 import static com.example.atheneum.utils.GoogleMapConstants.DEFAULT_ZOOM;
 import static com.example.atheneum.utils.GoogleMapConstants.ERROR_DIALOG_REQUEST;
@@ -71,13 +73,11 @@ public class MapActivity extends AppCompatActivity {
 
     LatLng locationToView;
 
-//    Bundle mapBundle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "creating Map Activity");
         super.onCreate(savedInstanceState);
-        // Retrieve the content view that renders the map.
+
         setContentView(R.layout.activity_map);
 
         searchText = (EditText) findViewById(R.id.search_text);
@@ -95,6 +95,8 @@ public class MapActivity extends AppCompatActivity {
         if (viewOnly == true) {
             RelativeLayout searchBar = (RelativeLayout) findViewById(R.id.search_bar);
             searchBar.setVisibility(View.INVISIBLE);
+            inflateMapFragment();
+            Log.d(TAG,"inflate this goto ");
             viewLocation();
         } else {
             initSearchListener();
@@ -126,42 +128,36 @@ public class MapActivity extends AppCompatActivity {
      * from Firebase
      */
     private void viewLocation() {
-
         Log.d(TAG, "Getting location in MapActivity");
 
-        final LiveData<Location> locationLiveData = locationViewModel.getLocationLiveData();
-        if (!locationLiveData.hasObservers()) {
-            locationLiveData.observe(this, new Observer<Location>() {
-                @Override
-                public void onChanged(@Nullable Location loc) {
-                    if (loc != null) {
-                        Log.i(TAG, "location is not null loc != null!");
-                        Log.i(TAG, "printing location in MA loc: " + loc.toString());
-                        locationToView = new LatLng(loc.getLat(), loc.getLon());
-                    }
-                    locationLiveData.removeObserver(this);
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = db.getReference("transactions").child(bookID).child("location");
 
-                    Log.d(TAG, "inflate Map locationtoview is " + locationToView.toString());
-
-//                    mapBundle.putDouble("lat", locationToView.latitude);
-//                    mapBundle.putDouble("lon", locationToView.longitude);
-//                    mapBundle.putBoolean("viewonly", true);
-                }
-            });
-        }
-        goToViewLocation();
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                double lat = dataSnapshot.child("lat").getValue(double.class);
+                double lon = dataSnapshot.child("lon").getValue(double.class);
+                locationToView = new LatLng(lat, lon);
+                Log.d(TAG, "after onDataChange locationtoview is " + locationToView.toString());
+                goToViewLocation(locationToView);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 
-    /**
-     * View a meeting location based on lat/lon from firebase
-     * go to the place
-     * add a marker
-     */
-    private void goToViewLocation() {
-        Log.d(TAG, "goto viewlocation");
-        moveCamera(locationToView, DEFAULT_ZOOM);
-        addMarker(locationToView, DEFAULT_ZOOM, "Meeting Location");
-    }
+//    /**
+//     * View a meeting location based on lat/lon from firebase
+//     * go to the place
+//     * add a marker
+//     */
+//    private void goToViewLocation(LatLng locationToView) {
+//        Log.d(TAG, "in gotoviewlocation locationtoview is " + locationToView.toString());
+//        moveCamera(locationToView, DEFAULT_ZOOM);
+//        addMarker(locationToView, DEFAULT_ZOOM, "Meeting Location");
+//    }
 
     /**
      * Sets a new geo location for the meeting
@@ -171,8 +167,6 @@ public class MapActivity extends AppCompatActivity {
      */
     private void setNewLocation() {
         Log.d(TAG, "Setting location in MapActivity");
-
-//        mapBundle.putBoolean("viewonly", false);
 
         String searchLocation = searchText.getText().toString();
 
@@ -293,12 +287,10 @@ public class MapActivity extends AppCompatActivity {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapActivity.this);
 
         if(available == ConnectionResult.SUCCESS){
-            //everything is fine and the user can make map requests
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
         }
         else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occurred but we can resolve it
             Log.d(TAG, "isServicesOK: an error occurred but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
@@ -315,7 +307,6 @@ public class MapActivity extends AppCompatActivity {
         locationPermissionGiven = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationPermissionGiven = true;
@@ -345,14 +336,9 @@ public class MapActivity extends AppCompatActivity {
     /**
      * create map fragment
      */
-    private void inflateMapFragment() {
-        MapFragment mapFragment = MapFragment.newInstance();
-
-//        mapFragment.setArguments(mapBundle);
-
+    public void inflateMapFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.content_frame, new MapFragment()).commit();
-        transaction.replace(R.id.content_frame, mapFragment).commit();
+        transaction.replace(R.id.content_frame, new MapFragment()).commit();
     }
 
     public static boolean isLocationPermissionGiven(){

@@ -47,24 +47,8 @@ public class LocationViewModel extends ViewModel {
 
     public static void addLocation(String BookID, LatLng latLng) {
         Log.d(TAG, "adding new location");
-//        final String locationRef = String.format("locations/%s", latLng.toString());
 
-        Location newLocation = new Location(latLng.toString(), latLng.latitude, latLng.longitude);
-
-//        HashMap<String, Object> updates = new HashMap<String, Object>();
-//        updates.put(locationRef, newLocation);
-//
-//        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-//                if (databaseError != null) {
-//                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
-//                    Log.i(TAG, "locationRef: " + locationRef.toString());
-//                } else {
-//                    Log.i(TAG, "Successful update at " + databaseReference.toString());
-//                }
-//            }
-//        });
+        Location newLocation = new Location(latLng.latitude, latLng.longitude);
 
         writeLocation(BookID, newLocation);
     }

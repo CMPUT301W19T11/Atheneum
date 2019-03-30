@@ -5,7 +5,6 @@ package com.example.atheneum.models;
  */
 public class Location {
 
-    private String latLng;
     private double lat;
     private double lon;
 
@@ -25,27 +24,9 @@ public class Location {
      * @param lat Latitude of location
      * @param lon Longitude of location
      */
-    public Location(String latLng, double lat, double lon) {
-        this.latLng = latLng;
+    public Location(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
-    }
-
-    /**
-     *
-     * @return Latitude/Longitude of location
-     */
-    public String getLatLng() {
-        return latLng;
-    }
-
-    /**
-     * Updates the lat/lon of the location
-     *
-     * @param latLng New latitude/longitude
-     */
-    public void setLatLng(String latLng) {
-        this.latLng = latLng;
     }
 
     /**
