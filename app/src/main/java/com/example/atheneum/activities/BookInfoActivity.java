@@ -1117,6 +1117,8 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     public void showScanButtonArea(final Book book) {
+        LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+
         if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
             Log.i(TAG, "***//scan button visible");
             scanBtn.setVisibility(View.VISIBLE);
@@ -1153,7 +1155,11 @@ public class BookInfoActivity extends AppCompatActivity {
 
                 }
             });
-        } else {
+
+            scanBtnArea.setVisibility(View.VISIBLE);
+
+        }
+        else {
             Log.i(TAG, "scan button not visible");
 //            scanBtn.setVisibility(View.GONE);
             hideScanButton();
