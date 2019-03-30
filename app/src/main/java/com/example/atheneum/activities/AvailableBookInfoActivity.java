@@ -173,8 +173,8 @@ public class AvailableBookInfoActivity extends AppCompatActivity {
                                     "");
                             notification.constructMessage(requester.getUserName(), shownBook.getTitle());
                             DatabaseWriteHelper.makeRequest(newRequest, notification);
-                            startActivity(new_request_intent);
-//                            finish();
+//                            startActivity(new_request_intent);
+                            finish();
                         }
                     }
 

@@ -2,6 +2,7 @@ package com.example.atheneum.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -129,7 +130,6 @@ public class BorrowerRequestsFragment extends Fragment {
 
                 Log.d(TAG, "find requested book1 " + listItem.getBookID());
                 requestInfoIndent.putExtra("rStatus", (String) listItemPair.second);
-//                ref.removeEventListener();
                 startActivity(requestInfoIndent);
 
 
@@ -174,6 +174,7 @@ public class BorrowerRequestsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent new_request_intent = new Intent(getActivity(), NewRequestActivity.class);
+//                ref.removeEventListener();
                 startActivity(new_request_intent);
             }
         });
@@ -195,55 +196,57 @@ public class BorrowerRequestsFragment extends Fragment {
         /**
          * Get the request list
          */
-        ref.addValueEventListener(new ValueEventListener() {
+        if(this.view !=null && this.view.getGlobalVisibleRect(new Rect())) {
+            ref.addValueEventListener(new ValueEventListener() {
 
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                requestList.clear();
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    requestList.clear();
 
-                for (DataSnapshot item: dataSnapshot.getChildren()) {
-
-
-                    String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
-                    final String Status = item.child(getString(R.string.db_book_request_status)).getValue(String.class);
-
-                    DatabaseReference ref_book = db.getReference().child("books").child(bookID);
-                    ref_book.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-
-                                book = dataSnapshot.getValue(Book.class);
-                                Log.d(TAG, "find book " + book.getTitle());
-                                Log.d(TAG, "find book with rStatus " + rStatus);
-                                if(!requestList.contains(new Pair(book, Status))){
-                                    if(rStatus.equals("ALL")){
-                                        requestList.add(new Pair(book, Status));
+                    for (DataSnapshot item : dataSnapshot.getChildren()) {
 
 
+                        String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
+                        final String Status = item.child(getString(R.string.db_book_request_status)).getValue(String.class);
+
+                        DatabaseReference ref_book = db.getReference().child("books").child(bookID);
+                        ref_book.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+
+                                    book = dataSnapshot.getValue(Book.class);
+                                    Log.d(TAG, "find book " + book.getTitle());
+                                    Log.d(TAG, "find book with rStatus " + rStatus);
+                                    if (!requestList.contains(new Pair(book, Status))) {
+                                        if (rStatus.equals("ALL")) {
+                                            requestList.add(new Pair(book, Status));
+
+
+                                        } else if (rStatus.equals(Status)) {
+                                            requestList.add(new Pair(book, Status));
+                                        }
                                     }
-                                    else if(rStatus.equals(Status)){
-                                        requestList.add(new Pair(book, Status));
-                                    }
-                                }
-                                RequestAdapter.notifyDataSetChanged();
+                                    RequestAdapter.notifyDataSetChanged();
 //                                requestList.clear();
 
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
+                            }
+                        });
 
+                    }
                 }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
 
 
         Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
