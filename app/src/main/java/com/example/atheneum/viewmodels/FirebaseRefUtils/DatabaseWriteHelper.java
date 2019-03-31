@@ -436,6 +436,7 @@ public class DatabaseWriteHelper {
         updates.put(borrowedBooksHistoryIsbnRef, true);
         updates.put(requestRef, null);
 
+
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {

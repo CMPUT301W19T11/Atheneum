@@ -245,6 +245,7 @@ public class BookInfoActivity extends AppCompatActivity {
                     else{
                         Log.i(TAG, "Updating transaction bScan");
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+
                         Log.i(TAG, "book  bookID is " + book.getBookID());
                         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
@@ -754,6 +755,7 @@ public class BookInfoActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     String requestStatus = dataSnapshot.getValue(String.class);
                     Log.i(TAG, "Request status: " + requestStatus);
+
                     if (requestStatus != null) {
                         // update the request status text
                         requestStatusTextView.setText((String) requestStatus);
