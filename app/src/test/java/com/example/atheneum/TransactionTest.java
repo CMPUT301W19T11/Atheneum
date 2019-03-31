@@ -19,22 +19,21 @@ public class TransactionTest {
     private static final double CALGARY_LAT = 51.0486;
     private static final double CALGARY_LON = 114.0708;
 
-    private int initalType;
+    private String initialType;
     private Location initialLocation;
-    private User borrower;
-    private User owner;
-    UUID bookID;
+    private String borrower;
+    private String owner;
+    String bookID;
     private Transaction transaction;
 
     @Before
     public void setUp() throws Exception {
-        initalType = Transaction.RETURN;
+        initialType = Transaction.RETURN;
         initialLocation = new Location(EDMONTON_LAT, EDMONTON_LON);
-        String userID = UUID.randomUUID().toString();
-        borrower = new User(userID, "borrows@borrow.com", "0123456789", 0.0, 0.0);
-        owner = new User(userID, "owner@owner.com", "9876543210", 5.0, 5.0);
-        bookID = UUID.randomUUID();
-        transaction = new Transaction(initalType, initialLocation, borrower, owner, bookID, false,
+        borrower = UUID.randomUUID().toString();
+        owner = UUID.randomUUID().toString();
+        bookID = UUID.randomUUID().toString();
+        transaction = new Transaction(initialType, initialLocation, borrower, owner, bookID, false,
                 false);
     }
 
@@ -43,12 +42,11 @@ public class TransactionTest {
     }
 
     @Test
-    public void getType() {
-        assertEquals(transaction.getType(), initalType);
-        // Since the transaction's type doesn't have a setter, we create a new transaction in order
-        // to check Transaction.getType() when we create a transaction with type Transaction.RETURN
-        transaction = new Transaction(Transaction.RETURN, initialLocation, borrower, owner, bookID, false,
-                false);
+    public void getType() { assertEquals(transaction.getType(), initialType); }
+
+    @Test
+    public void setType(){
+        transaction.setType(Transaction.RETURN);
         assertEquals(transaction.getType(), Transaction.RETURN);
     }
 
@@ -68,12 +66,26 @@ public class TransactionTest {
 
     @Test
     public void getBorrower() {
-        assertThat(transaction.getBorrower(), is(borrower));
+        assertThat(transaction.getBorrowerID(), is(borrower));
+    }
+
+    @Test
+    public void setBorrower() {
+        String newBorrower = UUID.randomUUID().toString();
+        transaction.setBorrowerID(newBorrower);
+        assertThat(transaction.getBorrowerID(), is(newBorrower));
     }
 
     @Test
     public void getOwner() {
-        assertThat(transaction.getOwner(), is(owner));
+        assertThat(transaction.getOwnerID(), is(owner));
+    }
+
+    @Test
+    public void setOwner() {
+        String newOwner = UUID.randomUUID().toString();
+        transaction.setOwnerID(newOwner);
+        assertThat(transaction.getOwnerID(), is(newOwner));
     }
 
     @Test
@@ -107,16 +119,4 @@ public class TransactionTest {
         assertEquals(transaction.getOScan(), false);
     }
 
-    @Test
-    public void isComplete() {
-        boolean[] oScanValues = new boolean[]{false, true};
-        boolean[] bScanValues = new boolean[]{false, true};
-        for (boolean oScanVal : oScanValues) {
-            for (boolean bScanVal : bScanValues) {
-                transaction.setOScan(oScanVal);
-                transaction.setBScan(bScanVal);
-                assertEquals(transaction.getComplete(), oScanVal && bScanVal);
-            }
-        }
-    }
 }

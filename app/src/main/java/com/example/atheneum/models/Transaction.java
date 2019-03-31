@@ -104,7 +104,6 @@ public class Transaction {
     }
 
     /**
-     * Note: No setter provided since borrower can't change
      *
      * @return Borrower of the book associated with the transaction
      */
@@ -113,6 +112,11 @@ public class Transaction {
         return borrowerID;
     }
 
+    /**
+     *
+     * @param borrowerID
+     */
+    @PropertyName("borrower")
     public void setBorrowerID(String borrowerID){
         this.borrowerID = borrowerID;
     }
@@ -127,6 +131,11 @@ public class Transaction {
         return ownerID;
     }
 
+    /**
+     *
+     * @param ownerID
+     */
+    @PropertyName("owner")
     public void setOwnerID(String ownerID){
         this.ownerID = ownerID;
     }
@@ -175,6 +184,5 @@ public class Transaction {
     public void setOScan(boolean oScan) {
         this.oScan = oScan;
     }
-
 
 }
