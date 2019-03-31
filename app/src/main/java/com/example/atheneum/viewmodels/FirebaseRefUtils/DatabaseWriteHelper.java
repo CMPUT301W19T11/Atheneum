@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Utility class to abstract writes to the database. Abstracting writes to the database in a central
@@ -221,43 +222,65 @@ public class DatabaseWriteHelper {
      * @param notification
      */
     public static void declineAllRequests(final String bookID, final Notification notification) {
+        Log.i(TAG, "declineAllRequests!");
         DatabaseReference bookRequestRef = RequestCollectionRefUtils
                 .getBookRequestCollectionRef(bookID);
-        bookRequestRef.addChildEventListener(new ChildEventListener() {
+        bookRequestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                final String requesterID = dataSnapshot.getKey();
-                Log.i(TAG, "requester being declined from book acceptance: " + requesterID);
-                notification.setNotificationReceiverID(requesterID);
-                notification.setRequesterID(requesterID);
-                Log.i(TAG, "notification requester ID: " + notification.getRequesterID());
-                declineRequest(requesterID, bookID, notification, false);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    HashMap<String, Object> updates = new HashMap<>();
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        String requesterID = data.getKey();
+                        Log.i(TAG, "requester being declined from book acceptance: " + requesterID);
+                        notification.setNotificationReceiverID(requesterID);
+                        notification.setRequesterID(requesterID);
+                        Log.i(TAG, "notification requester ID: " + notification.getRequesterID());
+                        addDeclinedRequestToMultiPathUpdate(requesterID, bookID, notification, updates);
+                    }
+                    // After adding all the declined requests, send the updates
+                    RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                            if (databaseError != null) {
+                                Log.e(TAG, "Failed to declineAllRequests!: " + databaseError.toString());
+                            } else {
+                                Log.i(TAG, "Successfully declined all requests!");
+                            }
+                        }
+                    });
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, databaseError.toString());
             }
         });
     }
 
+    private static void addDeclinedRequestToMultiPathUpdate(String requesterID, String bookID,
+            Notification notification, HashMap<String, Object> updates) {
+        final String requesterRef = String.format("requestCollection/%s/%s/rStatus",
+                requesterID, bookID);
+        final String bookRequestRef = String.format("bookRequests/%s/%s",
+                bookID, requesterID);
+        final String notificationsRef = String.format("notifications/%s/%s",
+                notification.getNotificationReceiverID(),
+                notification.getNotificationID());
+        final String pushNotificationsRef = String.format("pushNotifications/%s/%s",
+                notification.getNotificationReceiverID(),
+                notification.getNotificationID());
+
+        updates.put(requesterRef, Request.Status.DECLINED);
+        updates.put(bookRequestRef, null);
+        updates.put(notificationsRef, notification);
+        updates.put(pushNotificationsRef, notification);
+    }
+
     public static void declineRequest(String requesterID, final String bookID,
                                       Notification notification, final boolean shouldUpdateStatus) {
+        Log.i(TAG, "declining the request!");
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
         final String requesterRef = String.format("requestCollection/%s/%s/rStatus",
