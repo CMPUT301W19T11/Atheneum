@@ -4,51 +4,34 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.atheneum.R;
 import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
-
 import com.example.atheneum.models.Book;
 import com.example.atheneum.models.Request;
-import com.example.atheneum.models.User;
-import com.example.atheneum.utils.RequestAdapter;
-import com.example.atheneum.viewmodels.BorrowerBooksViewModelFactory;
 import com.example.atheneum.viewmodels.BorrowerRequestsViewModel;
 import com.example.atheneum.viewmodels.BorrowerRequestsViewModelFactory;
 import com.example.atheneum.views.adapters.BorrowerRequestListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,14 +64,14 @@ public class BorrowerRequestsFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         Log.d(TAG, "Current visibility is onStart");
         this.view.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Log.d(TAG, "Current visibility is onResume");
 
@@ -143,12 +126,11 @@ public class BorrowerRequestsFragment extends Fragment {
             }
         });
 
-        if (getActivity() instanceof  MainActivity) {
+        if (getActivity() instanceof MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
 //            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
-
 
 
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
@@ -157,8 +139,8 @@ public class BorrowerRequestsFragment extends Fragment {
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
-                 String rStatus = (String) arg0.getSelectedItem().toString();
-                Log.i(TAG, "use Spinner "+rStatus);
+                String rStatus = (String) arg0.getSelectedItem().toString();
+                Log.i(TAG, "use Spinner " + rStatus);
                 if (rStatus.equals("ALL")) {
                     requestStatus = null;
                 } else {
@@ -168,13 +150,12 @@ public class BorrowerRequestsFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> arg1)
-            {
-                Log.d(TAG,"Nothing Selected");
+            public void onNothingSelected(AdapterView<?> arg1) {
+                Log.d(TAG, "Nothing Selected");
 
             }
         });
-        
+
         /**
          * go to request generation activity
          */

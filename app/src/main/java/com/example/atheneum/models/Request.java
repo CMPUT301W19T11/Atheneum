@@ -141,7 +141,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getRequesterID());
+        return Objects.hash(getRequesterID(), getBookID());
     }
 
 }
