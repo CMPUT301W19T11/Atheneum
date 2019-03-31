@@ -142,6 +142,7 @@ public class GoodreadsReviewAdapter {
      */
     private GoodreadsReviewInfo readBookEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
         long isbn = Book.INVALILD_ISBN;
+        long isbn10 = Book.INVALILD_ISBN;
         float avg_rating = GoodreadsReviewInfo.INVALID_RATING;
         String reviews_widget_url = null;
 
@@ -153,6 +154,9 @@ public class GoodreadsReviewAdapter {
             String name = parser.getName();
             if (name.equals("isbn13")) {
                 isbn = readIsbn13(parser);
+            }
+            else if (name.equals("isbn")) {
+                isbn10 = readIsbn10(parser);
             } else if (name.equals("average_rating")) {
                 avg_rating = readAvgRatng(parser);
             } else if (name.equals("reviews_widget")) {
@@ -165,7 +169,7 @@ public class GoodreadsReviewAdapter {
         }
 
 
-        return new GoodreadsReviewInfo(isbn, avg_rating, reviews_widget_url);
+        return new GoodreadsReviewInfo(isbn, isbn10, avg_rating, reviews_widget_url);
     }
 
     /**
@@ -180,6 +184,27 @@ public class GoodreadsReviewAdapter {
         parser.require(XmlPullParser.START_TAG, null, "isbn13");
         String isbn_str = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "isbn13");
+
+        try{
+            return Long.parseLong(isbn_str);
+        }catch (Exception e) {
+
+            return Book.INVALILD_ISBN;
+        }
+    }
+
+    /**
+     * Takes the found isbn tag and returns the ISBN (10)
+     *
+     * @param parser the XmlPullParser being used
+     * @return the ISBN
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
+    private long readIsbn10(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, null, "isbn");
+        String isbn_str = readText(parser);
+        parser.require(XmlPullParser.END_TAG, null, "isbn");
 
         try{
             return Long.parseLong(isbn_str);

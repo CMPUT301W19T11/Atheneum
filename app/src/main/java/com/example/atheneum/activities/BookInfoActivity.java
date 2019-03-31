@@ -141,7 +141,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     // temporary initialization
     private GoodreadsReviewInfo goodreadsReviewInfo =
-            new GoodreadsReviewInfo(Book.INVALILD_ISBN, GoodreadsReviewInfo.INVALID_RATING, null);
+            new GoodreadsReviewInfo(Book.INVALILD_ISBN, Book.INVALILD_ISBN, GoodreadsReviewInfo.INVALID_RATING, null);
     private RatingBar goodreadsAvgRatingbar;
     private Button getReviewsBtn;
 
@@ -561,7 +561,7 @@ public class BookInfoActivity extends AppCompatActivity {
     /**
      * Attempt to get information from goodreads
      */
-    public void getGoodreadsReviewInfo(long isbn) {
+    public void getGoodreadsReviewInfo(final long isbn) {
         // show error instead if there is no internet connection
         ConnectionChecker connectionChecker = new ConnectionChecker(this);
         if (!connectionChecker.isNetworkConnected()) {
@@ -573,7 +573,6 @@ public class BookInfoActivity extends AppCompatActivity {
         goodreadsAvgRatingbar = findViewById(R.id.goodreadsAvgRatingBar);
         getReviewsBtn = findViewById(R.id.gotoReviewsBtn);
         String apiRequestURL = null;
-
 
         // null check for ISBN
         if (textIsbn.getText() != null && !textIsbn.getText().toString().equals("")) {
@@ -591,8 +590,15 @@ public class BookInfoActivity extends AppCompatActivity {
                                 GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
                                 goodreadsReviewInfo = reviewAdapter.getReviewInfo();
 
-                                hideGoodreadsReviewError();
-                                showGoodreadsReview();
+                                // check isbn match
+                                if (isbn != goodreadsReviewInfo.getIsbn() && isbn != goodreadsReviewInfo.getIsbn10()) {
+                                    hideGoodreadsReview();
+                                    showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                                }
+                                else {
+                                    hideGoodreadsReviewError();
+                                    showGoodreadsReview();
+                                }
                             }
                         }
                     },
