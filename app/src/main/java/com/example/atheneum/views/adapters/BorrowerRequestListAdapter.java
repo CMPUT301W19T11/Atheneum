@@ -2,6 +2,7 @@ package com.example.atheneum.views.adapters;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -51,7 +52,7 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView bookTitle;
-        private TextView bookOwner;b
+        private TextView bookOwner;
         private TextView requestStatus;
 
         /**
@@ -101,6 +102,14 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         Request request = getItem(position);
         viewHolder.requestStatus.setText(request.getrStatus().toString());
         final String bookID = request.getBookID();
+
+        if (request.getrStatus().equals(Request.Status.PENDING)) {
+            viewHolder.requestStatus.setTextColor(Color.MAGENTA);
+        } else if (request.getrStatus().equals(Request.Status.DECLINED)) {
+            viewHolder.requestStatus.setTextColor(Color.RED);
+        } else if (request.getrStatus().equals(Request.Status.ACCEPTED)) {
+            viewHolder.requestStatus.setTextColor(Color.BLUE);
+        }
 
         if (viewHolder.itemView.getContext() instanceof FragmentActivity) {
             if (bookID != null && !bookID.equals("")) {
