@@ -41,6 +41,10 @@ public class LocationViewModel extends ViewModel {
     private class Deserializer implements Function<DataSnapshot, Location> {
         @Override
         public Location apply(DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists() == false) {
+                Log.d(TAG, "Deserializer apply(): location does not exist");
+                return null;
+            }
             return dataSnapshot.getValue(Location.class);
         }
     }

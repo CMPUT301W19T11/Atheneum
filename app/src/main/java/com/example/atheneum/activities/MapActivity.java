@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.fragments.MapFragment;
+import com.example.atheneum.models.Location;
 import com.example.atheneum.viewmodels.LocationViewModel;
 import com.example.atheneum.viewmodels.LocationViewModelFactory;
 import com.google.android.gms.common.ConnectionResult;
@@ -83,8 +84,11 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
 
     LatLng locationToView;
 
+    boolean viewOnly = false;
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "google map connection failed");
     }
 
     @Override
@@ -102,17 +106,29 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
         locationViewModel = ViewModelProviders
                 .of(this, new LocationViewModelFactory(bookID))
                 .get(LocationViewModel.class);
-        boolean viewOnly = mapIntent.getExtras().getBoolean("ViewOnly");
+        viewOnly = mapIntent.getExtras().getBoolean("ViewOnly");
+        Log.d(TAG, "viewonly is: " + String.valueOf(viewOnly));
         if (viewOnly == true) {
             RelativeLayout searchBar = (RelativeLayout) findViewById(R.id.search_bar);
             searchBar.setVisibility(View.INVISIBLE);
             inflateMapFragment();
-            Log.d(TAG,"inflate this goto ");
             viewLocation();
         } else {
             initSearchListener();
         }
 
+    }
+
+    /**
+     * //prevent going back until location set
+     */
+    @Override
+    public void onBackPressed() {
+        if (viewOnly == true) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Must set a location", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -166,9 +182,13 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                double lat = dataSnapshot.child("lat").getValue(double.class);
-                double lon = dataSnapshot.child("lon").getValue(double.class);
-                locationToView = new LatLng(lat, lon);
+                if (dataSnapshot.exists() == false) {
+                    Log.e(TAG, "viewLocation failed datasnapshot location does not exist");
+                }
+//                double lat = dataSnapshot.child("lat").getValue(double.class);
+//                double lon = dataSnapshot.child("lon").getValue(double.class);
+                Location location = dataSnapshot.getValue(Location.class);
+                locationToView = new LatLng(location.getLat(), location.getLon());
                 Log.d(TAG, "after onDataChange locationtoview is " + locationToView.toString());
                 goToViewLocation(locationToView);
             }
@@ -206,6 +226,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
 
             addLocation(bookID, new LatLng(address.getLatitude(), address.getLongitude()));
 
+            viewOnly = true;
             onBackPressed();
         }
     }

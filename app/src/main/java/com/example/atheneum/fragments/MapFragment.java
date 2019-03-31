@@ -45,7 +45,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private static LatLng goToLocation;
-    private static boolean showMarker = false;
+    private static boolean showMarker;
 
 
     /**
@@ -59,6 +59,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        showMarker = false;
 
         Log.d(TAG, "on Create called");
     }
