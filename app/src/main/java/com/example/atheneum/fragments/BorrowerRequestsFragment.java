@@ -35,7 +35,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 
 /**
- * The Borrower page fragment to list borrower's requested books.
+ * The Borrower page fragment to list borrower's requested books.b
  */
 public class BorrowerRequestsFragment extends Fragment {
     private View view;

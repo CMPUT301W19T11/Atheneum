@@ -780,7 +780,7 @@ public class BookInfoActivity extends AppCompatActivity {
         LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
         requestBtnArea.setVisibility(View.GONE);
     }
-re
+
     private void showRequestBtn(final Book book_to_request) {
         LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
         final Button requestBookBtn = (Button) findViewById(R.id.requestBookBtn);
