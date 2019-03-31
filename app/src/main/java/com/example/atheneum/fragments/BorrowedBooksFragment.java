@@ -126,10 +126,12 @@ public class BorrowedBooksFragment extends Fragment {
                 @Override
                 public void onChanged(@Nullable ArrayList<Book> borrowedBooks) {
                     ArrayList<Book> submittedBorrowedBook = new ArrayList<Book>();
-                    for(int i=0; i<borrowedBooks.size(); i++){
-                        Book book = borrowedBooks.get(i);
-                        if(book.getStatus().toString().equals("BORROWED")){
-                            submittedBorrowedBook.add(book);
+                    if(borrowedBooks != null){
+                        for(int i=0; i<borrowedBooks.size(); i++){
+                            Book book = borrowedBooks.get(i);
+                            if(book.getStatus().toString().equals("BORROWED")){
+                                submittedBorrowedBook.add(book);
+                            }
                         }
                     }
                     borrowerBooksListAdapter.submitList(submittedBorrowedBook);
