@@ -109,11 +109,12 @@ public class BorrowedBooksFragment extends Fragment {
                 @Override
                 public void onClick(View v, Book book) {
                     Log.i("Borrowed Book", "clicked on a book");
-//                    Intent intent = new Intent(context, BookInfoActivity.class);
-//                    intent.putExtra("bookID", book.getBookID());
-//                    if (mainActivity != null) {
-//                        mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
-//                    }
+                    Intent intent = new Intent(context, BookInfoActivity.class);
+                    intent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.REQUSET_VIEW);
+                    intent.putExtra(BookInfoActivity.BOOK_ID, book.getBookID());
+                    if (mainActivity != null) {
+                        mainActivity.startActivityForResult(intent, REQUEST_DELETE_ENTRY);
+                    }
                 }
             });
             borrowerBooksRecyclerView.setAdapter(borrowerBooksListAdapter);
