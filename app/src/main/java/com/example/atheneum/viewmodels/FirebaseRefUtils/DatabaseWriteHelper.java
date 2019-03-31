@@ -214,10 +214,6 @@ public class DatabaseWriteHelper {
     }
 
 
-    public static void deleteRequest(Transaction transaction){
-        RequestCollectionRefUtils.getSpecifiedOwnerRequest(transaction.getBorrowerID(), transaction.getBookID()).removeValue();
-    }
-
     /**
      * Triggers when a request is accepted
      * Used only by other DatabaseWriteHelper methods
@@ -435,11 +431,15 @@ public class DatabaseWriteHelper {
         final String requestRef = String.format("requestCollection/%s/%s",
                 transaction.getBorrowerID(), transaction.getBookID());
 
+        final String borrowedBooksHistoryIsbnRef = String.format("borrowedBooksHistory/%s/%s",
+                transaction.getBorrowerID(), book.getIsbn());
+
         updates.put(transactionTypeRef, Transaction.RETURN);
         updates.put(transactionOScanRef, false);
         updates.put(transactionBScanRef, false);
         updates.put(bookStatusRef, Book.Status.BORROWED);
-        updates.put(requestRef, null);
+        updates.put(borrowedBooksHistoryIsbnRef, true);
+//        updates.put(requestRef, null);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
@@ -470,7 +470,6 @@ public class DatabaseWriteHelper {
 
         final String bookBorrowerIDRef = String.format("books/%s/borrowerID",
                 book.getBookID());
-
 
         updates.put(transactionTypeRef, null);
         updates.put(bookStatusRef, Book.Status.AVAILABLE);

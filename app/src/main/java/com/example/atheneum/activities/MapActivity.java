@@ -158,7 +158,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
      * from Firebase
      */
     private void viewLocation() {
-        Log.d(TAG, "Getting location in MapActivity");
+        Log.d(TAG, "Getting location in MapActivity with view location");
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = db.getReference("transactions").child(bookID).child("location");
@@ -185,7 +185,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
      * add it to firebase
      */
     private void setNewLocation(String locationName) {
-        Log.d(TAG, "Setting location in MapActivity");
+        Log.d(TAG, "Setting location in MapActivity with set new location");
 
         String searchLocation = locationName;
 
@@ -201,10 +201,12 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
             Address address = addressList.get(0);
             Log.d(TAG, "setNewLocation got " + address.toString());
 
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
             addMarker(new LatLng(address.getLatitude(), address.getLongitude()), "Meeting Location");
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
 
             addLocation(bookID, new LatLng(address.getLatitude(), address.getLongitude()));
+
+            onBackPressed();
         }
     }
 

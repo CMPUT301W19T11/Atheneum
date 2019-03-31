@@ -10,6 +10,7 @@
 
 package com.example.atheneum.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -21,6 +22,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -103,6 +105,13 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class BookInfoActivity extends AppCompatActivity {
     private Context ctx;
+    public static final String VIEW_TYPE = "view_type";
+    public static final String OWNER_VIEW = "owner_view_book_info";
+    public static final String BORROWER_VIEW = "borrower_view_book_info";
+    public static final String REQUSET_VIEW = "request_view_book_info";
+    private String view_type;
+
+    public static final String BOOK_ID = "bookID";
 
     String title;
     String author;
@@ -110,7 +119,8 @@ public class BookInfoActivity extends AppCompatActivity {
     String desc;
     private String bookID;
     private String borrowerID;
-    private String status;
+    private String ownerID;
+//    private String status;
     private BookInfoViewModel bookInfoViewModel;
     private TransactionViewModel transactionViewModel;
 
@@ -143,6 +153,7 @@ public class BookInfoActivity extends AppCompatActivity {
     private Book book;
 
     private LinearLayout borrowerProfileArea;
+    private LinearLayout ownerProfileArea;
 
     private static final String TAG = BookInfoActivity.class.getSimpleName();
 
@@ -151,7 +162,7 @@ public class BookInfoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         Log.i(TAG, "Return from scan ISBN");
-        if (requestCode == 0) {
+        if (view_type.equals(OWNER_VIEW) && requestCode == 0) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null && book != null) {
                     Barcode barcode = data.getParcelableExtra("Barcode");
@@ -159,7 +170,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
                     if (barcodeISBN.equals(Long.toString(book.getIsbn()))) {
                         Log.i(TAG, "They do equal");
-
 
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
                         transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
@@ -169,52 +179,152 @@ public class BookInfoActivity extends AppCompatActivity {
                             transactionLiveData.observe(this, new Observer<Transaction>() {
                                 @Override
                                 public void onChanged(@Nullable Transaction transaction) {
-                                    if (transaction != null && transaction.getBScan() && !transaction.getOScan()) {
+                                    if (transaction != null){
                                         Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
                                         Log.i(TAG, "bookID:  " + String.valueOf(transaction.getBookID()));
                                         Log.i(TAG, "BScan value:" + String.valueOf(transaction.getBScan()));
                                         Log.i(TAG, "OScan value:" + String.valueOf(transaction.getOScan()));
                                         Log.i(TAG, "Owner value:" + transaction.getOwnerID());
                                         Log.i(TAG, "Borrower value:" + transaction.getBorrowerID());
-                                        transaction.setOScan(true);
 
-                                        scanBtn.setClickable(false);
-                                        transaction.setBorrowerID(borrowerID);
-                                        transaction.setOwnerID(loggedInUser.getUserID());
-                                        transactionViewModel.updateTransaction(transaction);
+                                        if ((!transaction.getOScan() && !transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)) ||
+                                                (transaction.getBScan() && transaction.getType().equals(Transaction.RETURN))) {
 
                                     }
-                                    else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
+                                    else if(transaction != null && transaction.getOScan() == false && transaction.getBScan() == false && transaction.getType().equals(Transaction.CHECKOUT)){
                                         transaction.setBorrowerID(borrowerID);
                                         transactionViewModel.updateTransactionBorrowed(book, transaction);
 //                                        transactionViewModel.deleteRequest(transaction);
                                         transactionLiveData.removeObserver(this);
                                         scanBtn.setClickable(true);
 
-                                    }
-                                    else if(transaction != null && transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
-                                        transactionViewModel.updateTransactionReturned(book);
-                                        transactionLiveData.removeObserver(this);
-                                        scanBtn.setClickable(true);
+                                            transaction.setOScan(true);
 
+                                            scanBtn.setClickable(false);
+                                            transaction.setBorrowerID(borrowerID);
+                                            transaction.setOwnerID(loggedInUser.getUserID());
+
+                                            transactionLiveData.removeObserver(this);
+                                            transactionViewModel.updateTransaction(transaction);
+                                        }
+
+
+                                        if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
+                                            transactionLiveData.removeObserver(this);
+                                            transactionViewModel.updateTransactionReturned(book);
+                                            scanBtn.setClickable(true);
+                                        }
+
+                                        if(transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Waiting for borrower to scan.",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if (transaction.getType().equals(Transaction.RETURN)) {
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Book returned.",
+                                                    Toast.LENGTH_SHORT).show();
+                                            hideScanButtonArea();
+
+                                        }
                                     }
                                 }
-
                             });
                         }
-                    } else {
+                    }
+                    else {
                         Toast.makeText(this, "Error: The ISBN does not match that of the requested book",
                                 Toast.LENGTH_SHORT).show();
                     }
+                }
+                else {
+                    Toast.makeText(this, "Error: Barcode not found", Toast.LENGTH_SHORT).show();
+                }
+            }
 
+        }
+        else if (view_type.equals(REQUSET_VIEW) && requestCode == 0) {
+            if(resultCode == CommonStatusCodes.SUCCESS){
+                if(data != null){
+                    Barcode barcode = data.getParcelableExtra("Barcode");
+                    String barcodeISBN = String.valueOf(barcode.displayValue);
+                    if(!barcodeISBN.equals(Long.toString(book.getIsbn()))){
+                        Toast.makeText(this, "Error: The ISBN does not match that of the requested book",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Log.i(TAG, "Updating transaction bScan");
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                        Log.i(TAG, "bOok  bookID is " + book.getBookID());
+                        final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
+                        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
-                } else {
+                        if (!transactionLiveData.hasObservers()) {
+                            transactionLiveData.observe(this,  new Observer<Transaction>() {
+                                @Override
+                                public void onChanged(@Nullable Transaction transaction) {
+                                    if (transaction != null){
+
+                                        transaction.setOwnerID(ownerID);
+                                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                        Log.i(TAG, "UserID is: " + currentUser.getUid());
+
+                                        if ((transaction.getOScan() && transaction.getType().equals(Transaction.CHECKOUT)) ||
+                                                (!transaction.getOScan() && transaction.getType().equals(Transaction.RETURN))) {
+                                            transaction.setBorrowerID(currentUser.getUid());
+                                            transaction.setBScan(true);
+                                            transactionViewModel.updateTransaction(transaction);
+                                            Log.i(TAG, "*******borrower's scan completed");
+                                            Log.i(TAG, "value of BScan is" + String.valueOf(transaction.getBScan()));
+                                            Log.i(TAG, "value of OScan is" + String.valueOf(transaction.getOScan()));
+                                            Log.i(TAG, "transaction type: " + String.valueOf(transaction.getType()));
+                                        }
+
+                                        if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Log.i(TAG, "***borrowing scan completed");
+                                            transaction.setBorrowerID(currentUser.getUid());
+                                            transactionViewModel.updateTransactionBorrowed(book, transaction);
+                                            transactionLiveData.removeObserver(this);
+                                        }
+                                        if(transaction.getType().equals(Transaction.CHECKOUT)){
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Book borrowed.",
+                                                    Toast.LENGTH_SHORT).show();
+//                                            scanBook.setVisibility(View.GONE);
+                                            hideScanButtonArea();
+                                        }
+
+                                        else{
+                                            Toast.makeText(BookInfoActivity.this, "Scan successful! Waiting for owner to scan.",
+                                                    Toast.LENGTH_SHORT).show();
+                                            // Remove observer to prevent spawning multiple recommendation activities
+                                            transactionLiveData.removeObserver(this);
+                                            // Once we've returned the book, get the recommendations for the
+                                            // book
+                                            Intent intent = new Intent(getApplicationContext(), RecommendedBooksActivity.class);
+                                            intent.putExtra(RecommendedBooksActivity.INTENT_KEY_BORROWER_ID, currentUser.getUid());
+                                            intent.putExtra(RecommendedBooksActivity.INTENT_KEY_ISBN, book.getIsbn());
+                                            startActivity(intent);
+                                            // Finish here since we don't need to come back here to this activity after we've returned
+                                            // the book
+                                            finish();
+                                        }
+                                    }
+                                    else{
+                                        Log.d(TAG, "Error transaction is null");
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+
+                }
+                else{
                     Toast.makeText(this, "Error: Barcode not found",
                             Toast.LENGTH_SHORT).show();
                 }
             }
 
-        } else {
+        }
+        else {
             Log.i(TAG, "in else");
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -224,14 +334,20 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseRecyclerAdapter.startListening();
+        if (firebaseRecyclerAdapter != null) {
+            firebaseRecyclerAdapter.startListening();
+        }
         loggedInUserRef.addListenerForSingleValueEvent(loggedInUserFirebaseListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        firebaseRecyclerAdapter.stopListening();
+        if (firebaseRecyclerAdapter != null) {
+            // null check because this isn't always initialized
+            firebaseRecyclerAdapter.stopListening();
+        }
+
         loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
@@ -259,8 +375,12 @@ public class BookInfoActivity extends AppCompatActivity {
         setTitle(R.string.activity_book_info);
         ctx = this;
 
-        bookID = getIntent().getStringExtra("bookID");
-        Log.i("bookid value: ", bookID);
+        Intent intent = getIntent();
+        view_type = intent.getStringExtra(VIEW_TYPE);
+        Log.i(TAG, "view type : " + view_type);
+        bookID = intent.getStringExtra("bookID");
+        Log.i(TAG, "bookid value: " + bookID);
+
         textTitle = (TextView) findViewById(R.id.bookTitle);
         textAuthor = (TextView) findViewById(R.id.bookAuthor);
         textIsbn = (TextView) findViewById(R.id.bookISBN);
@@ -278,6 +398,7 @@ public class BookInfoActivity extends AppCompatActivity {
                 setLocation();
             }
         });
+        setLoc.setVisibility(View.GONE);
 
         getLoc = findViewById(R.id.get_location);
         getLoc.setOnClickListener(new View.OnClickListener() {
@@ -286,7 +407,10 @@ public class BookInfoActivity extends AppCompatActivity {
                 getLocation();
             }
         });
+        getLoc.setVisibility(View.GONE);
+        findViewById(R.id.location_prompt).setVisibility(View.GONE);
 
+        ownerProfileArea = (LinearLayout) findViewById(R.id.owner_prof_area);
 
         FirstBookPhotoViewModelFactory bookPhotoViewModelFactory = new FirstBookPhotoViewModelFactory(bookID);
         FirstBookPhotoViewModel bookPhotoViewModel = ViewModelProviders
@@ -324,95 +448,9 @@ public class BookInfoActivity extends AppCompatActivity {
                     textIsbn.setText(String.valueOf(book.getIsbn()));
                     textDesc.setText(book.getDescription());
                     textStatus.setText(String.valueOf(book.getStatus()));
-//                    status = String.valueOf(book.getStatus());
-
-                    if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
-                        Log.i(TAG, "***//scan button visible");
-                        scanBtn.setVisibility(View.VISIBLE);
-                        scanBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-                                TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
-                                final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
-
-                                transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
-                                    @Override
-                                    public void onChanged(@Nullable Transaction transaction) {
-                                        Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
-                                        Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
-                                        if (!transaction.getBScan()){
-                                            Toast.makeText(BookInfoActivity.this, "Borrower must scan first!",
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                        else{
-                                            Log.i(TAG, "***//ISBN scan requested");
-                                            Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
-                                            startActivityForResult(intent, 0);
-                                        }
-                                        transactionLiveData.removeObserver(this);
-                                    }
-                                });
-
-                            }
-                        });
-                    } else {
-                        Log.i(TAG, "scan button not visible");
-                        scanBtn.setVisibility(View.INVISIBLE);
-                    }
                     setStatusTextColor(book);
-                    borrowerID = book.getBorrowerID();
 
-                    // using borrowerID, show borrower email and profile image, or "None"
-                    final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
-                    final ImageView borrowerPicture = (ImageView) findViewById(R.id.borrower_profile_pic);
-                    // retrieve the User's email
-                    if (!(borrowerID == null || borrowerID.equals(""))) {
-                        Log.i(TAG, "Valid borrowerID");
-
-                        // retrieve email
-                        UserViewModelFactory userViewModelFactory = new UserViewModelFactory(borrowerID);
-                        UserViewModel userViewModel = ViewModelProviders.of(BookInfoActivity.this, userViewModelFactory).get(UserViewModel.class);
-                        final LiveData<User> userLiveData = userViewModel.getUserLiveData();
-
-                        userLiveData.observe(BookInfoActivity.this, new Observer<User>() {
-                            @Override
-                            public void onChanged(@Nullable User user) {
-                                Log.i(TAG, "in Observer!");
-                                // update borrower email
-                                borrowerEmailTextView.setText(user.getUserName());
-                                Log.i(TAG, "User email*** " + user.getUserName());
-                                if (user.getPhotos().size() > 0) {
-                                    String userPic = user.getPhotos().get(0);
-                                    Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
-                                    borrowerPicture.setImageBitmap(bitmapPhoto);
-                                } else {
-                                    borrowerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
-                                }
-                                borrowerPicture.setVisibility(View.VISIBLE);
-                                // show image
-                                // Remove the observer after update
-                                userLiveData.removeObserver(this);
-                            }
-                        });
-
-                        // set clickable profile area
-                        borrowerProfileArea.setClickable(true);
-                        borrowerProfileArea.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i(TAG, "Borrower Profile clicked");
-                                viewUserProfile(borrowerID);
-                            }
-                        });
-
-                    } else { // no borrower;
-                        Log.i(TAG, "No borrower");
-                        borrowerEmailTextView.setText("None");
-                        borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
-                        borrowerProfileArea.setClickable(false);
-                    }
-
+                    setupViewComponents(book);
                 }
             }
         });
@@ -433,104 +471,8 @@ public class BookInfoActivity extends AppCompatActivity {
 
         Log.v(TAG, bookID);
 
-        // get list of requesters
-        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
-            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
-
-            FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
-                    .setQuery(query, new SnapshotParser<String>() {
-                        //@Nonnull is removed, it doesn't work when introduced for some reason
-                        @Override
-                        public String parseSnapshot(DataSnapshot snapshot) {
-                            return snapshot.getKey();
-                        }
-                    }).build();
-
-            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
-                @Override
-                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder,
-                                                int position, @NonNull final String requesterID) {
-                    //Bind Book object to BookViewHolder
-                    Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
-
-                    //get user object from requesterID
-                    DatabaseReference requesterRef = UsersRefUtils.getUsersRef(requesterID);
-                    requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            final User requester = dataSnapshot.getValue(User.class);
-                            holder.requesterNameTextView.setText(requester.getUserName());
-                            holder.declineRequestImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Log.i(TAG, "decline request button pressed");
-                                    declineRequest(requester);
-                                }
-                            });
-                            holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Log.i(TAG, "accept request button pressed");
-                                    acceptRequest(requester);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.e(TAG, databaseError.getMessage());
-                        }
-                    });
-
-                    // set on click to take you to the user's profile page
-                    holder.requestItem.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            viewUserProfile(requesterID);
-                        }
-                    });
-                }
-
-                @Override
-                public BookRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                    // Create a new instance of the ViewHolder, in this case we are using a custom
-                    // layout called R.layout.message for each item
-                    // create a new view
-                    LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.request_on_book_card, parent, false);
-                    final BookRequestViewHolder vh = new BookRequestViewHolder(v);
-
-                    return vh;
-                }
-
-                @Override
-                public void onDataChanged() {
-                    // Called each time there is a new data snapshot. You may want to use this method
-                    // to hide a loading spinner or check for the "no documents" state and update your UI.
-                    // ...
-                }
-
-                @Override
-                public void onError(DatabaseError e) {
-                    // Called when there is an error getting data. You may want to update
-                    // your UI to display an error message to the user.
-                    // ...
-                    Log.i(TAG, e.getMessage());
-                }
-            };
-
-            requestsRecyclerView = (RecyclerView) findViewById(R.id.book_requests_recycler_view);
-            requestsLayoutManager = new LinearLayoutManager(this);
-            requestsRecyclerView.setLayoutManager(requestsLayoutManager);
-            requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
-            requestsRecyclerView.setNestedScrollingEnabled(false);
-            requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
-                    DividerItemDecoration.VERTICAL));
-        }
-
         hideGoodreadsReview();
         showGoodreadsReviewError("Loading...\n");
-        // TODO deal with goodreads reviews
         bookLiveData.observe(this, new Observer<Book>() {
             @Override
             public void onChanged(@Nullable Book book) {
@@ -556,7 +498,19 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_book_info, menu);
+        if (getIntent().getStringExtra(VIEW_TYPE).equals(OWNER_VIEW)){
+            getMenuInflater().inflate(R.menu.menu_book_info, menu);
+        }
+        else if(getIntent().getStringExtra(VIEW_TYPE).equals(BORROWER_VIEW)) {
+            // Unused
+        }
+        else if (getIntent().getStringExtra(VIEW_TYPE).equals(REQUSET_VIEW)) {
+            // Unused
+        }
+        else {
+            Log.e(TAG, "ERROR in view type onCreateOptionsMenu");
+            return false;
+        }
         return true;
     }
 
@@ -674,19 +628,28 @@ public class BookInfoActivity extends AppCompatActivity {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
-                            goodreadsReviewInfo = reviewAdapter.getReviewInfo();
+                            // null check in case of exiting activity
+                            if (BookInfoActivity.this != null) {
+                                GoodreadsReviewAdapter reviewAdapter = new GoodreadsReviewAdapter(response);
+                                goodreadsReviewInfo = reviewAdapter.getReviewInfo();
 
-                            hideGoodreadsReviewError();
-                            showGoodreadsReview();
+                                hideGoodreadsReviewError();
+                                showGoodreadsReview();
+                            }
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e(TAG, "API Response error");
-                            hideGoodreadsReview();
-                            showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                            if (error != null && error.getMessage() != null && !error.getMessage().equals("")) {
+                                Log.e(TAG, error.getMessage());
+                                Log.e(TAG, error.toString());
+                            }
+                            if (BookInfoActivity.this != null) {
+                                hideGoodreadsReview();
+                                showGoodreadsReviewError("Couldn't retrieve ratings and reviews from Goodreads for the given ISBN.\n");
+                            }
                         }
                     });
 
@@ -805,5 +768,524 @@ public class BookInfoActivity extends AppCompatActivity {
 
         Transaction transaction = new Transaction(Transaction.CHECKOUT, null, requester.getUserID(), loggedInUser.getUserID(), bookID, false, false);
         DatabaseWriteHelper.addNewTransaction(transaction);
+
+        //US 09.01.01
+        //As an owner
+        //specify a geo location on a map of where to receive a book when I accept a request on the book
+        setLocation();
+    }
+
+    private void hideRequestStatus() {
+        LinearLayout requestStatusArea = (LinearLayout) findViewById(R.id.request_status_area);
+        requestStatusArea.setVisibility(View.GONE);
+    }
+
+    private void showRequestStatus(final Book book) {
+        LinearLayout requestStatusArea = (LinearLayout) findViewById(R.id.request_status_area);
+        // set the request status text
+        final TextView requestStatusTextView = (TextView) findViewById(R.id.requestStatus);
+
+        final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        if (userID != null && !userID.equals("")) {
+            // get the request on this book
+            final FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference ref = db.getReference()
+                    .child(getString(R.string.db_requestCollection))
+                    .child(userID)
+                    .child(book.getBookID())
+                    .child("rStatus");
+
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String requestStatus = dataSnapshot.getValue(String.class);
+                    Log.i(TAG, "Request status: " + requestStatus);
+                    // update the request status text
+                    requestStatusTextView.setText((String) requestStatus);
+                    // set color
+                    if(requestStatus.equals("PENDING")){
+                        requestStatusTextView.setTextColor(Color.BLUE);
+                    }
+                    else if(requestStatus.equals("ACCEPTED")){
+                        requestStatusTextView.setTextColor(Color.GREEN);
+                        getLoc.setVisibility(View.VISIBLE);
+                        findViewById(R.id.requester).setVisibility(View.GONE);
+                        findViewById(R.id.location_prompt).setVisibility(View.VISIBLE);
+                    }
+                    else if(requestStatus.equals("DECLINED")){
+                        requestStatusTextView.setTextColor(Color.RED);
+                    }
+                    else {
+                        Log.e(TAG, "Bad request status, shouldn't be here");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.i(TAG, "cancelled reading for requests.");
+                }
+            });
+
+            requestStatusArea.setVisibility(View.VISIBLE);
+        }
+        else {
+            Log.e(TAG, "No logged in user, shouldn't be here");
+        }
+
+
+    }
+
+    private void hideRequestBtn() {
+        LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
+        requestBtnArea.setVisibility(View.GONE);
+    }
+
+    private void showRequestBtn(final Book book_to_request) {
+        LinearLayout requestBtnArea = (LinearLayout) findViewById(R.id.requestBookBtnArea);
+        final Button requestBookBtn = (Button) findViewById(R.id.requestBookBtn);
+
+        requestBookBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestBookBtn.setClickable(false); // prevent repeat presses
+
+                // taken from the old AvailableBookInfoActivity
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                DatabaseReference ref = db.getReference()
+                        .child(getString(R.string.db_users)).child(currentUser.getUid());
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            User requester = dataSnapshot.getValue(User.class);
+
+                            com.example.atheneum.models.Request newRequest = new com.example.atheneum.models.Request(requester.getUserID(), book_to_request.getBookID());
+
+                            Notification notification = new Notification(
+                                    requester.getUserID(),
+                                    book_to_request.getOwnerID(),
+                                    book_to_request.getOwnerID(),
+                                    book_to_request.getBookID(),
+                                    Notification.NotificationType.REQUEST,
+                                    "");
+                            notification.constructMessage(requester.getUserName(), book_to_request.getTitle());
+                            DatabaseWriteHelper.makeRequest(newRequest, notification);
+
+                            // TODO finish with result to kill previous activity as well
+                            Intent onFinishData = new Intent();
+                            onFinishData.putExtra(NewRequestActivity.BOOK_REQUESTED, true);
+                            setResult(Activity.RESULT_OK, onFinishData);
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        requestBookBtn.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOwnerProfArea() {
+        ownerProfileArea = (LinearLayout) findViewById(R.id.owner_prof_area);
+        ownerProfileArea.setVisibility(View.GONE);
+    }
+
+    private void showOwnerProfArea(final Book book) {
+        ownerID = book.getOwnerID();
+
+        // setup and show owner username and picture
+        final TextView ownererEmailTextView = (TextView) findViewById(R.id.book_owner_email);
+        final ImageView ownerPicture = (ImageView) findViewById(R.id.owner_profile_pic);
+        // retrieve the User's email
+        if (!(ownerID == null || ownerID.equals(""))) {
+            Log.i(TAG, "Valid ownerID, this is expected");
+
+            // retrieve email
+            String ownerProviderKey = UserViewModel.generateViewModelProviderKey(ownerID);
+            UserViewModel ownerViewModel = ViewModelProviders
+                    .of(BookInfoActivity.this, new UserViewModelFactory(ownerID))
+                    .get(ownerProviderKey, UserViewModel.class);
+            final LiveData<User> ownerLiveData = ownerViewModel.getUserLiveData();
+
+            ownerLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    // update borrower email
+                    ownererEmailTextView.setText(user.getUserName());
+                    Log.i(TAG, "User email*** " + user.getUserName());
+                    if (user.getPhotos().size() > 0) {
+                        String userPic = user.getPhotos().get(0);
+                        Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                        ownerPicture.setImageBitmap(bitmapPhoto);
+                    } else {
+                        ownerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
+                    }
+                    ownerPicture.setVisibility(View.VISIBLE);
+                    // show image
+                    // Remove the observer after update
+                    ownerLiveData.removeObserver(this);
+                }
+            });
+
+            // set clickable profile area
+            ownerProfileArea.setClickable(true);
+            ownerProfileArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "Owner Profile clicked");
+                    viewUserProfile(ownerID);
+                }
+            });
+
+            ownerProfileArea.setVisibility(View.VISIBLE);
+        }
+        else { // shouldn't be here
+            Log.e(TAG, "Error, no ownerID found");
+            ownerProfileArea.setVisibility(View.GONE);
+        }
+    }
+
+    private void hideBorrowerProfArea() {
+        borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
+        borrowerProfileArea.setVisibility(View.GONE);
+    }
+
+    private void showBorrowerProfArea(final Book book) {
+        borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
+        borrowerID = book.getBorrowerID();
+
+        // using borrowerID, show borrower email and profile image, or "None"
+        final TextView borrowerEmailTextView = (TextView) findViewById(R.id.book_borrower_email);
+        final ImageView borrowerPicture = (ImageView) findViewById(R.id.borrower_profile_pic);
+        // retrieve the User's email
+        if (!(borrowerID == null || borrowerID.equals(""))) {
+            Log.i(TAG, "Valid borrowerID");
+
+            // retrieve email
+            String borrowerProviderKey = UserViewModel.generateViewModelProviderKey(borrowerID);
+            UserViewModel borrowerViewModel = ViewModelProviders
+                    .of(BookInfoActivity.this, new UserViewModelFactory(borrowerID))
+                    .get(borrowerProviderKey, UserViewModel.class);
+            final LiveData<User> borrowerLiveData = borrowerViewModel.getUserLiveData();
+
+            borrowerLiveData.observe(BookInfoActivity.this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    Log.i(TAG, "in Observer!");
+                    // update borrower email
+                    borrowerEmailTextView.setText(user.getUserName());
+                    Log.i(TAG, "User email*** " + user.getUserName());
+                    if (user.getPhotos().size() > 0) {
+                        String userPic = user.getPhotos().get(0);
+                        Bitmap bitmapPhoto = PhotoUtils.DecodeBase64BitmapPhoto(userPic);
+                        borrowerPicture.setImageBitmap(bitmapPhoto);
+                    }
+                    else {
+                        borrowerPicture.setImageDrawable(getDrawable(R.drawable.ic_account_circle_black_24dp));
+                    }
+                    borrowerPicture.setVisibility(View.VISIBLE);
+                    // show image
+                    // Remove the observer after update
+                    borrowerLiveData.removeObserver(this);
+                }
+            });
+
+            // set clickable profile area
+            borrowerProfileArea.setClickable(true);
+            borrowerProfileArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "Borrower Profile clicked");
+                    viewUserProfile(borrowerID);
+                }
+            });
+            borrowerProfileArea.setVisibility(View.VISIBLE);
+        }
+        else { // no borrower;
+            Log.i(TAG, "No borrower");
+            borrowerEmailTextView.setText("None");
+            borrowerPicture.setVisibility(View.INVISIBLE);  // hide profile picture placeholder when no borrower
+            borrowerProfileArea.setClickable(false);
+        }
+    }
+
+    private void hideRequesterList(){
+        LinearLayout requesterListArea = (LinearLayout) findViewById(R.id.requesterListArea);
+        requesterListArea.setVisibility(View.GONE);
+    }
+
+    private void showRequesterList() {
+        LinearLayout requesterListArea = (LinearLayout) findViewById(R.id.requesterListArea);
+
+        if (FirebaseAuthUtils.isCurrentUserAuthenticated()) {
+            Query query = RequestCollectionRefUtils.getBookRequestCollectionRef(bookID);
+
+            FirebaseRecyclerOptions<String> options = new FirebaseRecyclerOptions.Builder<String>()
+                    .setQuery(query, new SnapshotParser<String>() {
+                        //@Nonnull is removed, it doesn't work when introduced for some reason
+                        @Override
+                        public String parseSnapshot(DataSnapshot snapshot) {
+                            return snapshot.getKey();
+                        }
+                    }).build();
+
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<String, BookRequestViewHolder>(options) {
+                @Override
+                protected void onBindViewHolder(@NonNull final BookRequestViewHolder holder,
+                                                int position, @NonNull final String requesterID) {
+                    //Bind Book object to BookViewHolder
+                    Log.v(TAG, "BIND VIEW HOLDER " + requesterID);
+
+                    //get user object from requesterID
+                    DatabaseReference requesterRef = UsersRefUtils.getUsersRef(requesterID);
+                    requesterRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final User requester = dataSnapshot.getValue(User.class);
+                            holder.requesterNameTextView.setText(requester.getUserName());
+                            holder.declineRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "decline request button pressed");
+                                    declineRequest(requester);
+                                }
+                            });
+                            holder.acceptRequestImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i(TAG, "accept request button pressed");
+                                    acceptRequest(requester);
+
+                                    // TODO show scan button
+//                                    showScanButtonArea();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, databaseError.getMessage());
+                        }
+                    });
+
+                    // set on click to take you to the user's profile page
+                    holder.requestItem.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            viewUserProfile(requesterID);
+                        }
+                    });
+                }
+
+                @Override
+                public BookRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    // Create a new instance of the ViewHolder, in this case we are using a custom
+                    // layout called R.layout.message for each item
+                    // create a new view
+                    LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.request_on_book_card, parent, false);
+                    final BookRequestViewHolder vh = new BookRequestViewHolder(v);
+
+                    return vh;
+                }
+
+                @Override
+                public void onDataChanged() {
+                    // Called each time there is a new data snapshot. You may want to use this method
+                    // to hide a loading spinner or check for the "no documents" state and update your UI.
+                    // ...
+                }
+
+                @Override
+                public void onError(DatabaseError e) {
+                    // Called when there is an error getting data. You may want to update
+                    // your UI to display an error message to the user.
+                    // ...
+                    Log.i(TAG, e.getMessage());
+                }
+            };
+
+            firebaseRecyclerAdapter.startListening();
+
+            requestsRecyclerView = (RecyclerView) findViewById(R.id.book_requests_recycler_view);
+            requestsLayoutManager = new LinearLayoutManager(this);
+            requestsRecyclerView.setLayoutManager(requestsLayoutManager);
+            requestsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+            requestsRecyclerView.setNestedScrollingEnabled(false);
+            requestsRecyclerView.addItemDecoration(new DividerItemDecoration(requestsRecyclerView.getContext(),
+                    DividerItemDecoration.VERTICAL));
+        }
+
+        requesterListArea.setVisibility(View.VISIBLE);
+    }
+
+    public void hideScanButtonArea() {
+        LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+
+        scanBtnArea.setVisibility(View.GONE);
+    }
+
+    /**
+     * Hides the scan button and shows a message
+     * @param msg the message to show
+     */
+    public void showScanButtonMessage(String msg) {
+        LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+        TextView scanMessageTextView = (TextView) findViewById(R.id.scanInfoMsg);
+        scanMessageTextView.setText(msg);
+        scanMessageTextView.setVisibility(View.VISIBLE);
+
+        scanBtnArea.setVisibility(View.VISIBLE);
+    }
+
+    public void showScanButtonArea(final Book book) {
+        LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+
+        // finish quick if not in a state to have this button
+        final TextView requestStatusTextView = (TextView) findViewById(R.id.requestStatus);
+        if (requestStatusTextView.getText().toString().equals("PENDING") || requestStatusTextView.getText().toString().equals("DECLINED")){
+            hideScanButtonArea();
+            return;
+        }
+
+        if (view_type.equals(OWNER_VIEW)) {
+            if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
+                getLoc.setVisibility(View.VISIBLE);
+                findViewById(R.id.requester).setVisibility(View.GONE);
+                findViewById(R.id.location_prompt).setVisibility(View.VISIBLE);
+
+                Log.i(TAG, "***//scan button visible");
+                scanBtn.setVisibility(View.VISIBLE);
+                scanBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                        transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+                        final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
+
+                        transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
+                            @Override
+                            public void onChanged(@Nullable Transaction transaction) {
+                                if(transaction != null) {
+
+                                    Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+                                    Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+
+                                    if (transaction.getType().equals(Transaction.RETURN) && !transaction.getBScan()) {
+                                        Toast.makeText(BookInfoActivity.this, "To return a book, borrower must scan first!",
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.i(TAG, "***//ISBN scan requested");
+                                        Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+                                        startActivityForResult(intent, 0);
+                                    }
+                                }
+                                else{
+                                    Log.d(TAG, "Error transaction is null");
+                                }
+                                transactionLiveData1.removeObserver(this);
+                            }
+                        });
+
+                    }
+                });
+
+                scanBtnArea.setVisibility(View.VISIBLE);
+
+            }
+        }
+        else if (view_type.equals(REQUSET_VIEW)) {
+            scanBtn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+
+                    TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+                    TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+                    final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
+
+                    transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
+                        @Override
+                        public void onChanged(@Nullable Transaction transaction) {
+                            if(transaction != null){
+
+                                Log.i(TAG, "***// transaction getBScan: " + transaction.getBScan());
+                                Log.i(TAG, "***// transaction getOScan: " + transaction.getOScan());
+
+                                if(transaction.getType().equals(Transaction.CHECKOUT) && !transaction.getOScan()){
+                                    Toast.makeText(BookInfoActivity.this, "To borrow, owner must scan first!",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    Log.i(TAG, "ISBN scan requested");
+                                    Intent intent = new Intent(BookInfoActivity.this, ScanBarcodeActivity.class);
+
+                                    startActivityForResult(intent, 0);
+                                }
+                            }
+                            else{
+                                Log.d(TAG, "Error transaction is null");
+                            }
+                            transactionLiveData.removeObserver(this);
+                        }
+                    });
+                }
+            });
+
+            scanBtnArea.setVisibility(View.VISIBLE);
+
+        }
+        else {
+            Log.i(TAG, "scan button area not visible");
+//            scanBtn.setVisibility(View.GONE);
+            hideScanButtonArea();
+        }
+
+    }
+
+    private void setupViewComponents(final Book book) {
+        if (this.view_type == null || this.view_type.equals("")){
+            Log.e(TAG, "No view type, shouldn't be happening");
+            return;
+        }
+
+        Log.i(TAG, "VIEW_TYPE: "+ this.view_type);
+        if (view_type.equals(OWNER_VIEW)) {
+            // owner view shouldn't show owner or request button
+            hideRequestStatus();
+            hideRequestBtn();
+            hideOwnerProfArea();
+            showBorrowerProfArea(book);
+            showRequesterList();
+            showScanButtonArea(book);
+        }
+        else if (view_type.equals(BORROWER_VIEW)) {
+            hideRequestStatus();
+            showRequestBtn(book);
+            showOwnerProfArea(book);
+            hideBorrowerProfArea();
+            hideRequesterList();
+            hideScanButtonArea();
+        }
+        else if (view_type.equals(REQUSET_VIEW)) {
+            showRequestStatus(book);
+            hideRequestBtn();
+            showOwnerProfArea(book);
+            showBorrowerProfArea(book);
+            hideRequesterList();
+            showScanButtonArea(book);
+        }
+        else {
+            Log.e(TAG, "invalid view type, shouldn't be happening");
+        }
+
     }
 }
+

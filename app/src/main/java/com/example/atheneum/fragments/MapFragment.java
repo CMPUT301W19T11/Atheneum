@@ -42,7 +42,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
     private static GoogleMap googleMap;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private static LatLng goToLocation;
     private static boolean showMarker = false;
@@ -137,7 +137,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
         map.setMyLocationEnabled(true);
 
-        if (!showMarker) {
+        if (showMarker == false) {
             getDeviceLocation();
         }
 
@@ -186,27 +186,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         try {
             if(isLocationPermissionGiven()){
 
-                final Task location = mFusedLocationProviderClient.getLastLocation();
+                final Task location = fusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
-                            Log.d(TAG, "onComplete: found location!");
+                            Log.d(TAG, "getDeviceLocation onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
 
                             goToLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
                         }else{
-                            Log.d(TAG, "onComplete: current location is null");
+                            Log.d(TAG, "getDeviceLocation onComplete: current location is null");
                             Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+            } else {
+                Log.d(TAG, "location perm not given for getdevicelocation");
             }
         } catch (SecurityException e){
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
@@ -229,9 +231,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * or go to current location
      */
     private void setUpMapView() {
-        moveCamera(goToLocation, DEFAULT_ZOOM);
-        if (showMarker) {
+        Log.d(TAG, "setupmapview called");
+        if (showMarker == true) {
             addMarker(goToLocation, "Meeting Location");
+        }
+        if (goToLocation != null) {
+            moveCamera(goToLocation, DEFAULT_ZOOM);
         }
     }
 

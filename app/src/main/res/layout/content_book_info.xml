@@ -10,7 +10,9 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,64 +91,150 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
                 android:paddingBottom="15dp"
-                android:text="BOOK STATUS GOES HERE"/>
+                android:text="BOOK STATUS GOES HERE" />
 
-            <Button
-                android:id="@+id/scanISBN"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="SCAN" />
-
-            <Button
-                android:id="@+id/set_location"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="Set Location" />
-
-            <Button
-                android:id="@+id/get_location"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="Get Location" />
-
-            <TextView
-                android:id="@+id/borrower_prompt"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/scan_button_area"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Borrower:"
-                android:textColor="@color/design_default_color_primary_dark" />
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/scanBtnPrompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scan ISBN:"
+                    android:textColor="@color/design_default_color_primary_dark" />
+
+                <TextView
+                    android:id="@+id/scanInfoMsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingBottom="15dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/scanISBN"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="SCAN" />
+
+
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/request_status_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/requestStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Request Status:"
+                    android:textColor="@color/design_default_color_primary_dark" />
+
+                <TextView
+                    android:id="@+id/requestStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="REQUEST STATUS GOES HERE" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/owner_prof_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/ownerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Owner:"
+                    android:textColor="@color/design_default_color_primary_dark" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/owner_profile_pic"
+                        android:layout_width="@dimen/bookinfo_borrower_profile_image_size"
+                        android:layout_height="@dimen/bookinfo_borrower_profile_image_size"
+                        android:src="@drawable/ic_account_circle_black_24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/book_owner_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="OWNEREMAIL"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/borrower_prof_area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/borrower_profile_pic"
-                    android:layout_width="@dimen/bookinfo_borrower_profile_image_size"
-                    android:layout_height="@dimen/bookinfo_borrower_profile_image_size"
-                    android:src="@drawable/ic_account_circle_black_24dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/book_borrower_email"
+                    android:id="@+id/borrowerPrompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="BORROWEREMAIL"
-                    android:textSize="16sp" />
+                    android:text="Borrower:"
+                    android:textColor="@color/design_default_color_primary_dark" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/borrower_profile_pic"
+                        android:layout_width="@dimen/bookinfo_borrower_profile_image_size"
+                        android:layout_height="@dimen/bookinfo_borrower_profile_image_size"
+                        android:src="@drawable/ic_account_circle_black_24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/book_borrower_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="BORROWEREMAIL"
+                        android:textSize="16sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
             <TextView
-            android:id="@+id/avg_goodreads_rating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Average Goodreads Rating:"
-            android:textColor="@color/design_default_color_primary_dark" />
+                android:id="@+id/avg_goodreads_rating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Average Goodreads Rating:"
+                android:textColor="@color/design_default_color_primary_dark" />
 
 
             <LinearLayout
@@ -171,8 +259,8 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="3.2"
-                    android:stepSize="0.1"
                     android:secondaryProgressTint="#00000000"
+                    android:stepSize="0.1"
                     android:visibility="visible" />
 
                 <Button
@@ -182,7 +270,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="0.5"
                     android:text="See Goodreads Reviews"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
             </LinearLayout>
 
@@ -201,30 +289,84 @@
                 android:paddingBottom="15dp"
                 android:text="BOOK DESCRIPTION GOES HERE" />
 
-            <TextView
-                android:id="@+id/requester"
+            <LinearLayout
+                android:id="@+id/requesterListArea"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/requester"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Requesters:"
+                    android:textColor="@color/design_default_color_primary_dark" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/book_requests_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    tools:context=".activities.BookInfoActivity">
+
+                </android.support.v7.widget.RecyclerView>
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_weight="0.5"
+                    android:background="#111111" />
+
+            </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/requestBookBtnArea"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="25dp">
+            <Button
+                android:id="@+id/requestBookBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Requesters:"
-                android:textColor="@color/design_default_color_primary_dark" />
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="Request" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/book_requests_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="vertical"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:context=".activities.BookInfoActivity">
-
-            </android.support.v7.widget.RecyclerView>
-
-            <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_weight="0.5"
-            android:background="#111111"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/location_area"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="25dp">
+            <TextView
+                android:id="@+id/location_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meeting Location:"
+                android:textColor="@color/design_default_color_primary_dark" />
+            <Button
+                android:id="@+id/set_location"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Set Location"
+                android:gravity="center"/>
+
+            <Button
+                android:id="@+id/get_location"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Get Location"
+                android:gravity="center"/>
+        </LinearLayout>
+
+
+        </LinearLayout>
+
     </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

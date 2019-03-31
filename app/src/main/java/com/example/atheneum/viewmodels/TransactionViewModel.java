@@ -63,7 +63,7 @@ public class TransactionViewModel extends ViewModel {
     public void updateTransactionBorrowed(Book book, Transaction transaction){
         DatabaseWriteHelper.updateTransactionBookBorrow(book, transaction);
     }
-    public void updateTransactionReturned( Book book){
+    public void updateTransactionReturned(Book book){
         DatabaseWriteHelper.updateTransactionBookReturn(book);
     }
 

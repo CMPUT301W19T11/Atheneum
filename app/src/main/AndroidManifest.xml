@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.atheneum">
-
     <!-- See: https://stackoverflow.com/a/35973323/11039833 -->
     <uses-feature
         android:name="android.hardware.camera.any"
@@ -38,9 +37,12 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
+            android:name=".activities.RecommendedBooksActivity"
+            android:label="@string/title_activity_recommended_books"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".activities.ViewEditBookPhotosActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.NotificationsActivity"
             android:label="@string/title_activity_notifications"
@@ -105,19 +107,7 @@
         <activity
             android:name=".activities.GoodreadsReviewsActivity"
             android:label="Goodreads Reviews"
-
             android:theme="@style/AppTheme"></activity>
-
-        <activity
-            android:name=".activities.ShowRequestInfoActivity"
-            android:label="@string/RequestInfo"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".activities.MainActivity" />
-
-        <activity
-            android:name=".activities.AvailableBookInfoActivity"
-            android:label="@string/AvailableBookInfo"
-            android:theme="@style/AppTheme" />
 
         <!--
         Set custom default icon. This is used when no icon is set for incoming notification messages.
