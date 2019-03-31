@@ -286,6 +286,9 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
         ArrayList<String> descriptionList = new ArrayList<String>(Arrays.asList(book.getDescription().toLowerCase().split(" ")));
 
+        if(book.getStatus().toString().equals("ACCEPTED") || book.getStatus().toString().equals("BORROWED")){
+            return false;
+        }
 
         for (int i = 0; i<queryList.size(); i++){
             Log.d(TAG, "QUERY LIST IS "+ queryList);
@@ -297,7 +300,6 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
                     return true;
                 }
             }
-
         }
 
         return false;
