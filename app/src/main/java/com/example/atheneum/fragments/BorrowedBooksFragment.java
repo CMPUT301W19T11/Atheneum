@@ -124,7 +124,14 @@ public class BorrowedBooksFragment extends Fragment {
             borrowerBooksViewModel.borrowerBooksLiveData().observe(getActivity(), new Observer<ArrayList<Book>>() {
                 @Override
                 public void onChanged(@Nullable ArrayList<Book> borrowedBooks) {
-                    borrowerBooksListAdapter.submitList(borrowedBooks);
+                    ArrayList<Book> submittedBorrowedBook = new ArrayList<Book>();
+                    for(int i=0; i<borrowedBooks.size(); i++){
+                        Book book = borrowedBooks.get(i);
+                        if(book.getStatus().toString().equals("BORROWED")){
+                            submittedBorrowedBook.add(book);
+                        }
+                    }
+                    borrowerBooksListAdapter.submitList(submittedBorrowedBook);
                 }
             });
 
