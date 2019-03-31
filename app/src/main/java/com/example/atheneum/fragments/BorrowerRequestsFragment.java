@@ -232,6 +232,8 @@ public class BorrowerRequestsFragment extends Fragment {
                                         }
                                     }
                                     RequestAdapter.notifyDataSetChanged();
+                                    requestView.setAdapter(RequestAdapter);
+                                    ref.removeEventListener(this);
 
 //                                requestList.clear();
 
@@ -251,6 +253,7 @@ public class BorrowerRequestsFragment extends Fragment {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
+
         }
 
 
