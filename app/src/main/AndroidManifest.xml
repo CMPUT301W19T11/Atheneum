@@ -85,7 +85,7 @@
         <activity
             android:name=".activities.NewRequestActivity"
             android:label="@string/NewRequestActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" ></activity>
         <activity
             android:name=".activities.GoodreadsReviewsActivity"
             android:label="Goodreads Reviews"

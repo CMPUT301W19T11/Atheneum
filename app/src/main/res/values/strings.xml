@@ -82,6 +82,13 @@
 
     <!--Strings for owner page-->
     <string name="owner_page_title">Owner Page</string>
+    <string-array name="ownBookSpinnerArray">
+        <item>ALL</item>
+        <item>AVAILABLE</item>
+        <item>REQUESTED</item>
+        <item>ACCEPTED</item>
+        <item>BORROWED</item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -105,13 +112,7 @@
         <item>DECLINED</item>
     </string-array>
     <!--End of Strings for borrower page-->
-    <string-array name="ownBookSpinnerArray">
-        <item>ALL</item>
-        <item>AVAILABLE</item>
-        <item>REQUESTED</item>
-        <item>ACCEPTED</item>
-        <item>BORROWED</item>
-    </string-array>
+
 
     <!--Strings for search page-->
     <string name="search_page_title">Search</string>
