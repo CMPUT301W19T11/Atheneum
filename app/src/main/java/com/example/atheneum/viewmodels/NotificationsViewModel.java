@@ -57,6 +57,13 @@ public class NotificationsViewModel extends ViewModel {
     }
 
     /**
+     * Make all notifications seen in Firebase
+     */
+    public void makeAllNotificationsSeen(String userID) {
+        DatabaseWriteHelper.makeAllNotificationsSeen(userID);
+    }
+
+    /**
      * Delete notification from Firebase
      *
      * @param deletedNotification
@@ -64,6 +71,15 @@ public class NotificationsViewModel extends ViewModel {
     public void deleteNotification(Notification deletedNotification) {
         Log.i(TAG, "delete notification from LiveData: " + deletedNotification.getMessage());
         DatabaseWriteHelper.deleteNotification(deletedNotification);
+    }
+
+    /**
+     * Delete all notifications from Firebase
+     *
+     * @param userID
+     */
+    public void deleteAllNotifications(String userID) {
+        DatabaseWriteHelper.deleteAllNotifications(userID);
     }
 
     /**

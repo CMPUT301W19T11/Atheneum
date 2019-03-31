@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.atheneum.R;
 import com.example.atheneum.models.Notification;
@@ -29,6 +31,8 @@ import java.util.List;
 public class NotificationsActivity extends AppCompatActivity {
     private static final String TAG = NotificationsActivity.class.getSimpleName();
 
+    private String userID;
+
     private NotificationsViewModel notificationsViewModel;
 
     private RecyclerView notificationsRecyclerView;
@@ -42,6 +46,7 @@ public class NotificationsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        userID = FirebaseAuthUtils.getCurrentUser().getUid();
         setUpRecyclerView();
         subscribeToModel();
     }
@@ -67,7 +72,6 @@ public class NotificationsActivity extends AppCompatActivity {
                 Log.i(TAG, "NOTIFICATION CLICKED: " + notification.getMessage());
                 makeNotificationSeen(notification);
                 showBookInfo(notification);
-
             }
         });
 
@@ -78,15 +82,37 @@ public class NotificationsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_notifications, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.seen_notifications:
+                Log.i(TAG, "make all notifications seen");
+                makeAllNotificationsSeen();
+                showToast("All notifications marked as seen");
+                return true;
+            case R.id.delete_notifications:
+                Log.i(TAG, "delete all notifications");
+                deleteAllNotifications();
+                showToast("All notifications deleted");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void showToast(CharSequence message) {
+        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /**
      * Sets up NotificationsViewModel and observe the LiveData
      */
     private void subscribeToModel() {
-        String userID = FirebaseAuthUtils.getCurrentUser().getUid();
-
         notificationsViewModel = ViewModelProviders
                 .of(this, new NotificationsViewModelFactory(userID))
                 .get(NotificationsViewModel.class);
@@ -117,5 +143,19 @@ public class NotificationsActivity extends AppCompatActivity {
      */
     private void makeNotificationSeen(Notification notification) {
         notificationsViewModel.makeNotificationSeen(notification);
+    }
+
+    /**
+     * Make all notifications seen, used when user taps on menu item
+     */
+    private void makeAllNotificationsSeen() {
+        notificationsViewModel.makeAllNotificationsSeen(userID);
+    }
+
+    /**
+     * Delete all notifications, used when user taps on menu item
+     */
+    private void deleteAllNotifications() {
+        notificationsViewModel.deleteAllNotifications(userID);
     }
 }

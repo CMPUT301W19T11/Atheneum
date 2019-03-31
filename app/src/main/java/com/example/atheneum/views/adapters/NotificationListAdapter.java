@@ -149,7 +149,16 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
      */
     public void deleteItem(int position) {
         Notification deletedNotification = getItem(position);
-        Log.i(TAG, "SWIPED, DELETE ITEM: " + position);
+        Log.i(TAG, "SWIPED RIGHT, DELETE ITEM: " + position);
         mNotificationsViewModel.deleteNotification(deletedNotification);
+    }
+
+    /**
+     * Make notification in list seen
+     */
+    public void makeItemSeen(int position) {
+        Notification seenNotification = getItem(position);
+        Log.i(TAG, "SWIPED LEFT, SEEN ITEM: " + position);
+        mNotificationsViewModel.makeNotificationSeen(seenNotification);
     }
 }

@@ -23,14 +23,17 @@ import com.example.atheneum.views.adapters.NotificationListAdapter;
  */
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private NotificationListAdapter mAdapter;
-    private Drawable icon;
+    private Drawable deleteIcon;
+    private Drawable seenIcon;
     private final ColorDrawable background;
 
     public SwipeToDeleteCallback(NotificationListAdapter adapter) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
-        icon = ContextCompat.getDrawable(mAdapter.getContext(),
+        deleteIcon = ContextCompat.getDrawable(mAdapter.getContext(),
                 R.drawable.close);
+        seenIcon = ContextCompat.getDrawable(mAdapter.getContext(),
+                R.drawable.check);
         background = new ColorDrawable(Color.RED);
     }
 
@@ -44,7 +47,12 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
-        mAdapter.deleteItem(position);
+        if (direction == ItemTouchHelper.LEFT) {
+            mAdapter.makeItemSeen(position);
+        }
+        else if (direction == ItemTouchHelper.RIGHT) {
+            mAdapter.deleteItem(position);
+        }
     }
 
     @Override
@@ -55,30 +63,35 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         View itemView = viewHolder.itemView;
         int backgroundCornerOffset = 20;
 
-        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-        int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-        int iconBottom = iconTop + icon.getIntrinsicHeight();
+        int iconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+        int iconTop = itemView.getTop() + (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+        int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
 
         if (dX > 0) { // Swiping to the right
-            int iconLeft = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+            int iconLeft = itemView.getLeft() + iconMargin + deleteIcon.getIntrinsicWidth();
             int iconRight = itemView.getLeft() + iconMargin;
-            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+            deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
 
+            background.setColor(Color.RED);
             background.setBounds(itemView.getLeft(), itemView.getTop(),
                     itemView.getLeft() + ((int) dX) + backgroundCornerOffset,
                     itemView.getBottom());
-        } else if (dX < 0) { // Swiping to the left
-            int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
-            int iconRight = itemView.getRight() - iconMargin;
-            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+            background.draw(c);
+            deleteIcon.draw(c);
 
+        } else if (dX < 0) { // Swiping to the left
+            int iconLeft = itemView.getRight() - iconMargin - seenIcon.getIntrinsicWidth();
+            int iconRight = itemView.getRight() - iconMargin;
+            seenIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+            background.setColor(Color.GREEN);
             background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
                     itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            background.draw(c);
+            seenIcon.draw(c);
         } else { // view is unSwiped
             background.setBounds(0, 0, 0, 0);
+            background.draw(c);
         }
-
-        background.draw(c);
-        icon.draw(c);
     }
 }
