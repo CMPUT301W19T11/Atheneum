@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class BorrowerFragment extends Fragment {
     private View view;
     private Context context;
     private ViewPager mPager;
+    private MainActivity mainActivity = null;
 
 
 
@@ -48,6 +50,12 @@ public class BorrowerFragment extends Fragment {
 
         this.context = getContext();
 
+        if (getActivity() instanceof MainActivity) {
+            mainActivity = (MainActivity) getActivity();
+            // set action bar title
+            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
+        }
+
         mPager = (ViewPager) this.view.findViewById(R.id.borrowerViewPager);
         setUpViewPager(mPager);
 
@@ -59,8 +67,8 @@ public class BorrowerFragment extends Fragment {
 
     private void setUpViewPager(ViewPager viewPager){
         TabsAdapter adapter = new TabsAdapter(getChildFragmentManager());
-        adapter.addFragment(new BorrowedBooksFragment(), "Borrowed Books");
         adapter.addFragment(new BorrowerRequestsFragment(), "Borrower Requests");
+        adapter.addFragment(new BorrowedBooksFragment(), "Borrowed Books");
         mPager.setAdapter(adapter);
 
     }

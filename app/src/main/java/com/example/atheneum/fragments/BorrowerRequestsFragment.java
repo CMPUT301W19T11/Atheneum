@@ -55,14 +55,14 @@ public class BorrowerRequestsFragment extends Fragment {
     private ArrayAdapter<String> requestSpinnerAdapter;
     private User borrower;
     private static final String TAG = "ShowRequest";
-    private String rStatus;
+    private static String rStatus = "ALL";
     FirebaseUser currentUser;
     /**
      * The Book object borrowed.
      */
     Book book;
     private Intent requestInfoIndent;
-    DatabaseReference ref;
+
 
 
     /**
@@ -73,10 +73,27 @@ public class BorrowerRequestsFragment extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        Log.d(TAG, "Current visibility is onStart");
+        this.view.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d(TAG, "Current visibility is onResume");
+
+        this.view.setVisibility(View.VISIBLE);
+        retriveRequest();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_borrower_requests, container, false);
+
 
         this.context = getContext();
         requestView = (ListView) this.view.findViewById(R.id.requestView);
@@ -95,11 +112,14 @@ public class BorrowerRequestsFragment extends Fragment {
         if (getActivity() instanceof  MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
-            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
+//            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
+
+
 
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
         //https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
+        this.view.setVisibility(View.GONE);
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
@@ -133,30 +153,6 @@ public class BorrowerRequestsFragment extends Fragment {
                 startActivity(requestInfoIndent);
 
 
-//                final FirebaseDatabase db_request = FirebaseDatabase.getInstance();
-//                DatabaseReference ref_request = db_request.getReference().child("requestCollection")
-//                        .child(currentUser.getUid()).child(listItem.getBookID());
-//                ref_request.addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if (dataSnapshot.exists()) {
-//
-//                            String request1 = dataSnapshot.child("bookID").getValue(String.class);
-//                            Request.Status status = dataSnapshot.child("rStatus").getValue(Request.Status.class);
-////                            String request1 = dataSnapshot.getValue(String.class).toString();
-//                            Log.d(TAG, "find requested book2 " + request1);
-//
-//
-//                            requestInfoIndent.putExtra("rStatus", status.toString());
-//                            startActivity(requestInfoIndent);
-//                        }
-//
-//                    }
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
             }
         });
 //        requestList.clear();
@@ -173,6 +169,8 @@ public class BorrowerRequestsFragment extends Fragment {
         addRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                view.setVisibility(View.GONE);
+
                 Intent new_request_intent = new Intent(getActivity(), NewRequestActivity.class);
 //                ref.removeEventListener();
                 startActivity(new_request_intent);
@@ -189,18 +187,23 @@ public class BorrowerRequestsFragment extends Fragment {
          * Retrieve request list
          */
 
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
-                .child(currentUser.getUid());
 
         /**
          * Get the request list
          */
         if(this.view !=null && this.view.getGlobalVisibleRect(new Rect())) {
-            ref.addValueEventListener(new ValueEventListener() {
+
+            final FirebaseDatabase db = FirebaseDatabase.getInstance();
+            final DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
+                    .child(currentUser.getUid());
+
+
+            Log.d(TAG, "Current visibility is "+ String.valueOf(this.view.getGlobalVisibleRect(new Rect())));
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "Current visibility 1 is "+ String.valueOf(view.getGlobalVisibleRect(new Rect())));
                     requestList.clear();
 
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
@@ -218,16 +221,20 @@ public class BorrowerRequestsFragment extends Fragment {
                                     book = dataSnapshot.getValue(Book.class);
                                     Log.d(TAG, "find book " + book.getTitle());
                                     Log.d(TAG, "find book with rStatus " + rStatus);
-                                    if (!requestList.contains(new Pair(book, Status))) {
+                                    Pair newPair = (new Pair(book, Status));
+                                    if (!requestList.contains(newPair)) {
                                         if (rStatus.equals("ALL")) {
-                                            requestList.add(new Pair(book, Status));
+                                            requestList.add(newPair);
 
 
                                         } else if (rStatus.equals(Status)) {
-                                            requestList.add(new Pair(book, Status));
+                                            requestList.add(newPair);
                                         }
                                     }
                                     RequestAdapter.notifyDataSetChanged();
+                                    requestView.setAdapter(RequestAdapter);
+                                    ref.removeEventListener(this);
+
 //                                requestList.clear();
 
                                 }
@@ -246,6 +253,7 @@ public class BorrowerRequestsFragment extends Fragment {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
+
         }
 
 

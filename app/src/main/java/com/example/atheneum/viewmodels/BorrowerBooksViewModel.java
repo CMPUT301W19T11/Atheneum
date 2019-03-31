@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * adding a listener and then updating the view based on the changes to the data. The list of books
  * queried by Firebase is found by books matching the owner's user id.
  */
-public class BorrowerBookViewModel extends ViewModel {
+public class BorrowerBooksViewModel extends ViewModel {
     private static final String TAG = OwnerBooksViewModel.class.getSimpleName();
 
     private final String borrowerID;
@@ -26,13 +26,13 @@ public class BorrowerBookViewModel extends ViewModel {
     private final LiveData<ArrayList<Book>> borrowerBooksLiveData;
 
     /**
-     * Create a new instance of BorrowerBookViewModel.
+     * Create a new instance of BorrowerBooksViewModel.
      *
      * @param borrowerID User ID of the owner.
      */
-    public BorrowerBookViewModel(String borrowerID) {
+    public BorrowerBooksViewModel(String borrowerID) {
         this.borrowerID = borrowerID;
-        firebaseQueryLiveData = new FirebaseQueryLiveData(BooksRefUtils.getOwnerBooksRef(borrowerID));
+        firebaseQueryLiveData = new FirebaseQueryLiveData(BooksRefUtils.getBorrowerBookRef(borrowerID));
         borrowerBooksLiveData = Transformations.map(firebaseQueryLiveData, new Function<DataSnapshot, ArrayList<Book>>() {
             @Override
             public ArrayList<Book> apply(DataSnapshot dataSnapshot) {
@@ -52,7 +52,7 @@ public class BorrowerBookViewModel extends ViewModel {
      * @return Lifecycle-aware observable stream of {@code ArrayList<Book>} that the view can observe
      *         for changes. The books in this list are owned by the owner.
      */
-    public LiveData<ArrayList<Book>> borrowerBookLiveData() {
+    public LiveData<ArrayList<Book>> borrowerBooksLiveData() {
         return borrowerBooksLiveData;
     }
 }
