@@ -158,4 +158,8 @@
     <string name="title_activity_recommended_books">Recommended Books</string>
     <!--End of Strings for RecommendedBooksActivity-->
 
+    <!--Strings for HomePageFragment-->
+    <string name="popular_books_recommendations_prompt">Popular with Other Users: </string>
+    <!--End of Strings for HomePageFragment-->
+
 </resources>

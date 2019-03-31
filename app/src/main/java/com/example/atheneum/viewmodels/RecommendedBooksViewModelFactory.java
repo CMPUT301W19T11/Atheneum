@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+import com.example.atheneum.models.Book;
+
 /**
  * Factory that instantiates a RecommendedBooksViewModelFactory with a particular borrowerID and isbn.
  * Read the StackOverflow post linked here to understand we can't instantiate RecommendedBooksViewModel directly.
@@ -23,6 +25,16 @@ public class RecommendedBooksViewModelFactory implements ViewModelProvider.Facto
     public RecommendedBooksViewModelFactory(String borrowerID, Long isbn) {
         this.borrowerID = borrowerID;
         this.isbn = isbn;
+    }
+
+    /**
+     * Create a new instance of RecommendedBooksViewModelFactory
+     *
+     * @param borrowerID User ID of the borrower who just returned a book.
+     */
+    public RecommendedBooksViewModelFactory(String borrowerID) {
+        this.borrowerID = borrowerID;
+        this.isbn = Book.INVALILD_ISBN;
     }
 
     /**

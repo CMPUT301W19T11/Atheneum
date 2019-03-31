@@ -63,6 +63,8 @@ public class RecommendedBooksActivity extends AppCompatActivity {
                 Log.i(TAG, "clicked on a book");
                 Intent intent = new Intent(getApplicationContext(), BookInfoActivity.class);
                 intent.putExtra("bookID", book.getBookID());
+                intent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.BORROWER_VIEW);
+                startActivity(intent);
             }
         });
         recommendedBooksRecyclerView.setAdapter(recommendedBooksListAdapter);

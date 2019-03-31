@@ -79,7 +79,13 @@ public class RecommendedBooksViewModel extends ViewModel {
      * @param isbn       ISBN of the book that the user just returned.
      */
     public RecommendedBooksViewModel(final String borrowerID, final Long isbn) {
-        recommendedIsbnsQueryLiveData = new FirebaseQueryLiveData(BorrowedBooksHistoryRefUtils.getUserHistoriesContainingIsbn(isbn));
+        if (isbn != Book.INVALILD_ISBN) {
+            // If the isbn passed in is valid, only search the history of users who borrowed that isbn
+            recommendedIsbnsQueryLiveData = new FirebaseQueryLiveData(BorrowedBooksHistoryRefUtils.getUserHistoriesContainingIsbn(isbn));
+        } else {
+            // Otherwise, search the history of all users
+            recommendedIsbnsQueryLiveData = new FirebaseQueryLiveData(BorrowedBooksHistoryRefUtils.BORROWED_BOOKS_HISTORY_REF);
+        }
         recommendedIsbnsLiveData = Transformations.map(recommendedIsbnsQueryLiveData, new android.arch.core.util.Function<DataSnapshot, List<Long>>() {
             /**
              * Whenever new isbn's are added to user histories which contain the isbn of the book
