@@ -53,22 +53,4 @@ public class LocationViewModel extends ViewModel {
         writeLocation(BookID, newLocation);
     }
 
-    public static void deleteLocation(LatLng latLng) {
-        final String locationRef = String.format("locations/%s", latLng.toString());
-
-        HashMap<String, Object> updates = new HashMap<String, Object>();
-        updates.put(locationRef, null);
-
-        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
-                    Log.i(TAG, "locationRef: " + locationRef.toString());
-                } else {
-                    Log.i(TAG, "Successful update at " + databaseReference.toString());
-                }
-            }
-        });
-    }
 }
