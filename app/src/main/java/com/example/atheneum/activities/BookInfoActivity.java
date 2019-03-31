@@ -752,22 +752,27 @@ public class BookInfoActivity extends AppCompatActivity {
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String requestStatus = dataSnapshot.getValue(String.class);
-                    Log.i(TAG, "Request status: " + requestStatus);
-                    // update the request status text
-                    requestStatusTextView.setText((String) requestStatus);
-                    // set color
-                    if(requestStatus.equals("PENDING")){
-                        requestStatusTextView.setTextColor(Color.BLUE);
-                    }
-                    else if(requestStatus.equals("ACCEPTED")){
-                        requestStatusTextView.setTextColor(Color.GREEN);
-                    }
-                    else if(requestStatus.equals("DECLINED")){
-                        requestStatusTextView.setTextColor(Color.RED);
-                    }
-                    else {
-                        Log.e(TAG, "Bad request status, shouldn't be here");
+                    if (dataSnapshot.exists()) {
+                        String requestStatus = dataSnapshot.getValue(String.class);
+                        Log.i(TAG, "Request status: " + requestStatus);
+                        // update the request status text
+                        requestStatusTextView.setText((String) requestStatus);
+                        // set color
+                        if(requestStatus.equals("PENDING")){
+                            requestStatusTextView.setTextColor(Color.BLUE);
+                        }
+                        else if(requestStatus.equals("ACCEPTED")){
+                            requestStatusTextView.setTextColor(Color.GREEN);
+                        }
+                        else if(requestStatus.equals("DECLINED")){
+                            requestStatusTextView.setTextColor(Color.RED);
+                        }
+                        else {
+                            Log.e(TAG, "Bad request status, shouldn't be here");
+                        }
+                    } else {
+                        Log.i(TAG, "no request!");
+                        requestStatusTextView.setText("");
                     }
                 }
 
