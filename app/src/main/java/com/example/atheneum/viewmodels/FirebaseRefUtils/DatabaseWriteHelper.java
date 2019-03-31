@@ -426,10 +426,14 @@ public class DatabaseWriteHelper {
         final String requestRef = String.format("requestCollection/%s/%s",
                 transaction.getBorrowerID(), transaction.getBookID());
 
+        final String borrowedBooksHistoryIsbnRef = String.format("borrowedBooksHistory/%s/%s",
+                transaction.getBorrowerID(), book.getIsbn());
+
         updates.put(transactionTypeRef, Transaction.RETURN);
         updates.put(transactionOScanRef, false);
         updates.put(transactionBScanRef, false);
         updates.put(bookStatusRef, Book.Status.BORROWED);
+        updates.put(borrowedBooksHistoryIsbnRef, true);
 //        updates.put(requestRef, null);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
@@ -450,7 +454,7 @@ public class DatabaseWriteHelper {
         });
     }
 
-    public static void updateTransactionBookReturn(Book book, String borrowerID){
+    public static void updateTransactionBookReturn(Book book){
         HashMap<String, Object> updates = new HashMap<>();
 
         final String transactionTypeRef = String.format("transactions/%s",
@@ -462,13 +466,9 @@ public class DatabaseWriteHelper {
         final String bookBorrowerIDRef = String.format("books/%s/borrowerID",
                 book.getBookID());
 
-        final String borrowedBooksHistoryIsbnRef = String.format("borrowedBooksHistory/%s/%s",
-                borrowerID, book.getIsbn());
-
         updates.put(transactionTypeRef, null);
         updates.put(bookStatusRef, Book.Status.AVAILABLE);
         updates.put(bookBorrowerIDRef, "");
-        updates.put(borrowedBooksHistoryIsbnRef, true);
 
         RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
