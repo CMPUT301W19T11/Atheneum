@@ -204,7 +204,6 @@ public class BookInfoActivity extends AppCompatActivity {
                                         if(transaction.getOScan() && transaction.getBScan() && transaction.getType().equals(Transaction.RETURN)) {
                                             transactionLiveData.removeObserver(this);
                                             transactionViewModel.updateTransactionReturned(book);
-
                                             scanBtn.setClickable(true);
                                         }
 
@@ -287,6 +286,17 @@ public class BookInfoActivity extends AppCompatActivity {
                                         else{
                                             Toast.makeText(BookInfoActivity.this, "Scan successful! Waiting for owner to scan.",
                                                     Toast.LENGTH_SHORT).show();
+                                            // Remove observer to prevent spawning multiple recommendation activities
+                                            transactionLiveData.removeObserver(this);
+                                            // Once we've returned the book, get the recommendations for the
+                                            // book
+                                            Intent intent = new Intent(getApplicationContext(), RecommendedBooksActivity.class);
+                                            intent.putExtra(RecommendedBooksActivity.INTENT_KEY_BORROWER_ID, currentUser.getUid());
+                                            intent.putExtra(RecommendedBooksActivity.INTENT_KEY_ISBN, book.getIsbn());
+                                            startActivity(intent);
+                                            // Finish here since we don't need to come back here to this activity after we've returned
+                                            // the book
+                                            finish();
                                         }
                                     }
                                     else{
