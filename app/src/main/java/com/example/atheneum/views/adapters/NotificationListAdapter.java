@@ -160,5 +160,8 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
         Notification seenNotification = getItem(position);
         Log.i(TAG, "SWIPED LEFT, SEEN ITEM: " + position);
         mNotificationsViewModel.makeNotificationSeen(seenNotification);
+        if (seenNotification.getIsSeen()) {
+            notifyDataSetChanged();
+        }
     }
 }
