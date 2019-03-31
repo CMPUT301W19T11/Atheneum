@@ -245,7 +245,7 @@ public class BookInfoActivity extends AppCompatActivity {
                     else{
                         Log.i(TAG, "Updating transaction bScan");
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-                        Log.i(TAG, "bOok  bookID is " + book.getBookID());
+                        Log.i(TAG, "book  bookID is " + book.getBookID());
                         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
@@ -769,7 +769,10 @@ public class BookInfoActivity extends AppCompatActivity {
                         }
                     }
                     else{
-                        Log.d(TAG, "request is null");
+                        requestStatusTextView.setVisibility(View.GONE);
+                        TextView requestStatusText =  findViewById(R.id.requestStatusText);
+                        requestStatusText.setVisibility(View.GONE);
+                        Log.i(TAG, "request is null");
                     }
                 }
 
