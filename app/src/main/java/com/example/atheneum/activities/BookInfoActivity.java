@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +42,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -409,6 +411,16 @@ public class BookInfoActivity extends AppCompatActivity {
                     setStatusTextColor(book);
 
                     setupViewComponents(book);
+                }
+                else {
+                    Log.i(TAG, "Book is null(probably deleted");
+                    ScrollView bookinfoContentSV = findViewById(R.id.book_info_content_scrollview);
+                    bookinfoContentSV.setVisibility(View.GONE);
+
+                    TextView bookErrorMessage = findViewById(R.id.book_info_error_message);
+                    bookErrorMessage.setText("Could not retrieve information for the selected book.\nIt has likely been deleted by the owner.");
+                    ConstraintLayout errorMessageCL = findViewById(R.id.book_info_error_view);
+                    errorMessageCL.setVisibility(View.VISIBLE);
                 }
             }
         });
