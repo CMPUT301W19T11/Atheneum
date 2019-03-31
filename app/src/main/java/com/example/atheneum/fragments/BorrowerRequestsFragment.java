@@ -62,7 +62,7 @@ public class BorrowerRequestsFragment extends Fragment {
      */
     Book book;
     private Intent requestInfoIndent;
-    DatabaseReference ref;
+
 
 
     /**
@@ -83,7 +83,9 @@ public class BorrowerRequestsFragment extends Fragment {
     public void onResume(){
         super.onResume();
         Log.d(TAG, "Current visibility is onResume");
+
         this.view.setVisibility(View.VISIBLE);
+        retriveRequest();
     }
 
     @Override
@@ -117,6 +119,7 @@ public class BorrowerRequestsFragment extends Fragment {
 
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
         //https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
+        this.view.setVisibility(View.GONE);
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
@@ -184,20 +187,23 @@ public class BorrowerRequestsFragment extends Fragment {
          * Retrieve request list
          */
 
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
-                .child(currentUser.getUid());
 
         /**
          * Get the request list
          */
         if(this.view !=null && this.view.getGlobalVisibleRect(new Rect())) {
 
+            final FirebaseDatabase db = FirebaseDatabase.getInstance();
+            final DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
+                    .child(currentUser.getUid());
+
+
             Log.d(TAG, "Current visibility is "+ String.valueOf(this.view.getGlobalVisibleRect(new Rect())));
-            ref.addValueEventListener(new ValueEventListener() {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "Current visibility 1 is "+ String.valueOf(view.getGlobalVisibleRect(new Rect())));
                     requestList.clear();
 
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
@@ -226,6 +232,7 @@ public class BorrowerRequestsFragment extends Fragment {
                                         }
                                     }
                                     RequestAdapter.notifyDataSetChanged();
+
 //                                requestList.clear();
 
                                 }
