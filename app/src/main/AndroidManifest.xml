@@ -91,20 +91,6 @@
             android:label="Goodreads Reviews"
 
             android:theme="@style/AppTheme"></activity>
-
-        <activity
-            android:name=".activities.ShowRequestInfoActivity"
-            android:label="@string/RequestInfo"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".activities.MainActivity" ></activity>
-        <activity
-            android:name=".activities.AvailableBookInfoActivity"
-            android:label="@string/AvailableBookInfo"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.ShowRequestInfoActivity" />
-        </activity>
     </application>
 
 </manifest>

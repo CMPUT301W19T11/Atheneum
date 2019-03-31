@@ -25,6 +25,11 @@ public class BookInfoViewModel extends ViewModel {
     private final DatabaseReference bookRef;
     private final String bookID;
 
+    public static String generateViewModelProviderKey(String bookID) {
+        return BookInfoViewModel.class.getCanonicalName() + ":" + bookID;
+    }
+
+
     public BookInfoViewModel(String bookID) {
         this.bookID = bookID;
 

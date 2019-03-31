@@ -1,69 +1,60 @@
 package com.example.atheneum.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.Pair;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.atheneum.R;
+import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.activities.MainActivity;
 import com.example.atheneum.activities.NewRequestActivity;
-
-import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.models.Book;
-import com.example.atheneum.models.User;
-import com.example.atheneum.utils.RequestAdapter;
+import com.example.atheneum.models.Request;
+import com.example.atheneum.viewmodels.BorrowerRequestsViewModel;
+import com.example.atheneum.viewmodels.BorrowerRequestsViewModelFactory;
+import com.example.atheneum.views.adapters.BorrowerRequestListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-
-
-import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The Borrower page fragment to list borrower's requested books.
+ * The Borrower page fragment to list borrower's requested books.b
  */
 public class BorrowerRequestsFragment extends Fragment {
     private View view;
     private MainActivity mainActivity = null;
     private Context context;
     private FloatingActionButton addRequest;
-    private ListView requestView;
+    private RecyclerView requestListRecyclerView;
     private Spinner requestSpinner;
 
-    private static ArrayList<Pair<Book, String>> requestList = new ArrayList<Pair<Book, String>>();
-    private RequestAdapter RequestAdapter;
     private ArrayAdapter<String> requestSpinnerAdapter;
-    private User borrower;
-    private static final String TAG = "ShowRequest";
+    private static final String TAG = BorrowerRequestsFragment.class.getSimpleName();
+    private Request.Status requestStatus;
+
     private static String rStatus = "ALL";
     FirebaseUser currentUser;
     /**
      * The Book object borrowed.
      */
     Book book;
-    private Intent requestInfoIndent;
-
-
 
     /**
      * Instantiates a new Borrower page fragment.
@@ -73,19 +64,19 @@ public class BorrowerRequestsFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         Log.d(TAG, "Current visibility is onStart");
         this.view.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Log.d(TAG, "Current visibility is onResume");
 
         this.view.setVisibility(View.VISIBLE);
-        retriveRequest();
+//        retriveRequest();
     }
 
     @Override
@@ -94,9 +85,7 @@ public class BorrowerRequestsFragment extends Fragment {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_borrower_requests, container, false);
 
-
         this.context = getContext();
-        requestView = (ListView) this.view.findViewById(R.id.requestView);
 
         //https://developer.android.com/guide/topics/ui/controls/spinner
         requestSpinner = (Spinner) this.view.findViewById(R.id.ownBookSpinner);
@@ -105,16 +94,43 @@ public class BorrowerRequestsFragment extends Fragment {
         requestSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         requestSpinner.setAdapter(requestSpinnerAdapter);
 
+        requestListRecyclerView = this.view.findViewById(R.id.request_list_recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+        requestListRecyclerView.setLayoutManager(layoutManager);
+        requestListRecyclerView.addItemDecoration(new DividerItemDecoration(requestListRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL));
+        final BorrowerRequestListAdapter listAdapter = new BorrowerRequestListAdapter();
+        listAdapter.setOnRequestItemClickListener(new BorrowerRequestListAdapter.OnRequestItemClickListener() {
+            @Override
+            public void onClick(View v, Request request) {
+                Intent requestBookInfoIntent = new Intent(getActivity(), BookInfoActivity.class);
+                Log.d(TAG, "find requested book1 " + request.getBookID());
 
-        requestInfoIndent = new Intent(getActivity(), ShowRequestInfoActivity.class);
+                requestBookInfoIntent.putExtra(BookInfoActivity.BOOK_ID, request.getBookID());
+                requestBookInfoIntent.putExtra(BookInfoActivity.VIEW_TYPE, BookInfoActivity.REQUSET_VIEW);
+
+                startActivity(requestBookInfoIntent);
+            }
+        });
+        requestListRecyclerView.setAdapter(listAdapter);
+
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (getActivity() instanceof  MainActivity) {
+        final BorrowerRequestsViewModel borrowerRequestsViewModel = ViewModelProviders
+                .of(this, new BorrowerRequestsViewModelFactory(currentUser.getUid()))
+                .get(BorrowerRequestsViewModel.class);
+        borrowerRequestsViewModel.getBorrowerRequestLiveData().observe(this, new Observer<List<Request>>() {
+            @Override
+            public void onChanged(@Nullable List<Request> requests) {
+                listAdapter.submitList(borrowerRequestsViewModel.filterRequestsByStatus(requestStatus));
+            }
+        });
+
+        if (getActivity() instanceof MainActivity) {
             mainActivity = (MainActivity) getActivity();
             // set action bar title
 //            mainActivity.setActionBarTitle(context.getResources().getString(R.string.borrower_page_title));
         }
-
 
 
         //https://stackoverflow.com/questions/2399086/how-to-use-spinner
@@ -123,43 +139,22 @@ public class BorrowerRequestsFragment extends Fragment {
         requestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view1, int pos, long id) {
-                 rStatus = (String) arg0.getSelectedItem().toString();
-                Log.d(TAG, "use Spinner "+rStatus);
-                retriveRequest();
+                String rStatus = (String) arg0.getSelectedItem().toString();
+                Log.i(TAG, "use Spinner " + rStatus);
+                if (rStatus.equals("ALL")) {
+                    requestStatus = null;
+                } else {
+                    requestStatus = Request.Status.valueOf(rStatus);
+                }
+                listAdapter.submitList(borrowerRequestsViewModel.filterRequestsByStatus(requestStatus));
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> arg1)
-            {
-                Log.d(TAG,"Nothing Selected");
+            public void onNothingSelected(AdapterView<?> arg1) {
+                Log.d(TAG, "Nothing Selected");
 
             }
         });
-
-
-        RequestAdapter = new RequestAdapter(BorrowerRequestsFragment.this.context, R.layout.request_list_item, requestList);
-        requestView.setAdapter(RequestAdapter);
-
-        requestView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Pair listItemPair = (Pair) requestView.getItemAtPosition(position);
-                Book listItem = (Book) listItemPair.first;
-
-                requestInfoIndent.putExtra("bookID", listItem.getBookID());
-
-                Log.d(TAG, "find requested book1 " + listItem.getBookID());
-                requestInfoIndent.putExtra("rStatus", (String) listItemPair.second);
-                startActivity(requestInfoIndent);
-
-
-            }
-        });
-//        requestList.clear();
-//        RequestAdapter.notifyDataSetChanged();
-
-
-
 
         /**
          * go to request generation activity
@@ -177,89 +172,6 @@ public class BorrowerRequestsFragment extends Fragment {
             }
         });
 
-
-
         return this.view;
     }
-
-    public void retriveRequest(){
-        /**
-         * Retrieve request list
-         */
-
-
-        /**
-         * Get the request list
-         */
-        if(this.view !=null && this.view.getGlobalVisibleRect(new Rect())) {
-
-            final FirebaseDatabase db = FirebaseDatabase.getInstance();
-            final DatabaseReference ref = db.getReference().child(getString(R.string.db_requestCollection))
-                    .child(currentUser.getUid());
-
-
-            Log.d(TAG, "Current visibility is "+ String.valueOf(this.view.getGlobalVisibleRect(new Rect())));
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "Current visibility 1 is "+ String.valueOf(view.getGlobalVisibleRect(new Rect())));
-                    requestList.clear();
-
-                    for (DataSnapshot item : dataSnapshot.getChildren()) {
-
-
-                        String bookID = item.child(getString(R.string.db_book_bookID)).getValue(String.class);
-                        final String Status = item.child(getString(R.string.db_book_request_status)).getValue(String.class);
-
-                        DatabaseReference ref_book = db.getReference().child("books").child(bookID);
-                        ref_book.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-
-                                    book = dataSnapshot.getValue(Book.class);
-                                    Log.d(TAG, "find book " + book.getTitle());
-                                    Log.d(TAG, "find book with rStatus " + rStatus);
-                                    Pair newPair = (new Pair(book, Status));
-                                    if (!requestList.contains(newPair)) {
-                                        if (rStatus.equals("ALL")) {
-                                            requestList.add(newPair);
-
-
-                                        } else if (rStatus.equals(Status)) {
-                                            requestList.add(newPair);
-                                        }
-                                    }
-                                    RequestAdapter.notifyDataSetChanged();
-                                    requestView.setAdapter(RequestAdapter);
-                                    ref.removeEventListener(this);
-
-//                                requestList.clear();
-
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-
-        }
-
-
-        Log.d(TAG, "find request size of list "+Integer.toString(requestList.size()));
-
-    }
-
-
 }

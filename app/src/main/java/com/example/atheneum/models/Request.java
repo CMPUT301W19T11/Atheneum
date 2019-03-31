@@ -1,5 +1,10 @@
 package com.example.atheneum.models;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.PropertyName;
+
+import java.util.Objects;
+
 /**
  * The Request class for requests made of owner books by borrowers.
  */
@@ -67,6 +72,7 @@ public class Request {
      *
      * @return the status of the request
      */
+    @PropertyName("rStatus")
     public Status getrStatus() {
         return this.rStatus;
     }
@@ -76,8 +82,18 @@ public class Request {
      *
      * @param requester the requester
      */
+    @Exclude
     public void setRequesterID(User requester) {
         this.requesterID = requester.getUserID();
+    }
+
+    /**
+     * Sets the requester UserID
+     *
+     * @param requesterID UserID of the requester
+     */
+    public void setRequesterID(String requesterID) {
+        this.requesterID = requesterID;
     }
 
     /**
@@ -94,6 +110,7 @@ public class Request {
      *
      * @param status the status of the request
      */
+    @PropertyName("rStatus")
     public void setrStatus(Status status) {
         this.rStatus = status;
     }
@@ -111,4 +128,20 @@ public class Request {
     public void denyRequest() {
         this.rStatus = Status.DECLINED;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Request)) return false;
+        Request request = (Request) o;
+        return Objects.equals(getRequesterID(), request.getRequesterID()) &&
+                Objects.equals(getBookID(), request.getBookID()) &&
+                getrStatus() == request.getrStatus();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRequesterID(), getBookID());
+    }
+
 }
