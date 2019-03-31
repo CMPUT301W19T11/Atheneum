@@ -179,7 +179,7 @@ public class BookInfoActivity extends AppCompatActivity {
                             transactionLiveData.observe(this, new Observer<Transaction>() {
                                 @Override
                                 public void onChanged(@Nullable Transaction transaction) {
-                                    if (transaction != null){
+                                    if (transaction != null) {
                                         Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
                                         Log.i(TAG, "bookID:  " + String.valueOf(transaction.getBookID()));
                                         Log.i(TAG, "BScan value:" + String.valueOf(transaction.getBScan()));
@@ -189,14 +189,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                         if ((!transaction.getOScan() && !transaction.getBScan() && transaction.getType().equals(Transaction.CHECKOUT)) ||
                                                 (transaction.getBScan() && transaction.getType().equals(Transaction.RETURN))) {
-
-                                    }
-                                    else if(transaction != null && transaction.getOScan() == false && transaction.getBScan() == false && transaction.getType().equals(Transaction.CHECKOUT)){
-                                        transaction.setBorrowerID(borrowerID);
-                                        transactionViewModel.updateTransactionBorrowed(book, transaction);
-//                                        transactionViewModel.deleteRequest(transaction);
-                                        transactionLiveData.removeObserver(this);
-                                        scanBtn.setClickable(true);
 
                                             transaction.setOScan(true);
 
