@@ -245,35 +245,43 @@ public class AddEditBookActivity extends AppCompatActivity {
                                 if (response.getInt("totalItems") > 0) {
                                     JSONObject firstBookInfo = response.getJSONArray("items").getJSONObject(0).getJSONObject("volumeInfo");
 
-                                    titleEditText.setText(firstBookInfo.getString("title"));
-                                    JSONArray authorArr = firstBookInfo.getJSONArray("authors");
-                                    String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
+                                    if (ctx != null) {
+                                        titleEditText.setText(firstBookInfo.getString("title"));
+                                        JSONArray authorArr = firstBookInfo.getJSONArray("authors");
+                                        String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
 //
-                                    for (int i = 1; i < authorArr.length(); i++) {
-                                        authorListString += ", " + authorArr.getString(i);
-                                    }
-                                    authorEditText.setText(authorListString);
+                                        for (int i = 1; i < authorArr.length(); i++) {
+                                            authorListString += ", " + authorArr.getString(i);
+                                        }
+                                        authorEditText.setText(authorListString);
 
-                                    descEditText.setText(firstBookInfo.getString("description"));
+                                        descEditText.setText(firstBookInfo.getString("description"));
+                                    }
                                 }
                                 else{
-                                    Toast.makeText(ctx, "No books found for given ISBN", Toast.LENGTH_SHORT).show();
+                                    if (ctx != null) {
+                                        Toast.makeText(ctx, "No books found for given ISBN", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
                             catch(Exception e) {
                                 Log.e(TAG, "AddBook *** JSONObject error");
-                                Toast.makeText(ctx, "Error - Couldn't populate fields", Toast.LENGTH_SHORT).show();
+                                if (ctx != null) {
+                                    Toast.makeText(ctx, "Error - Couldn't populate fields", Toast.LENGTH_SHORT).show();
+                                }
                             }
-
                         }
                     }, new Response.ErrorListener() {
 
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            // TODO: Handle error
                             Log.e(TAG, "AddBook *** VolleyError");
-                            Toast.makeText(ctx, "Error - Volley couldn't access API", Toast.LENGTH_SHORT).show();
-
+                            if (error != null) {
+                                Log.e(TAG, error.toString());
+                            }
+                            if (ctx != null) {
+                                Toast.makeText(ctx, "Google Books couldn't be accessed", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
 

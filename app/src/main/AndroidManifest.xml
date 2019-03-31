@@ -87,20 +87,11 @@
         <activity
             android:name=".activities.NewRequestActivity"
             android:label="@string/NewRequestActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" ></activity>
         <activity
             android:name=".activities.GoodreadsReviewsActivity"
             android:label="Goodreads Reviews"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".activities.ShowRequestInfoActivity"
-            android:label="@string/RequestInfo"
-            android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".activities.AvailableBookInfoActivity"
-            android:label="@string/AvailableBookInfo"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

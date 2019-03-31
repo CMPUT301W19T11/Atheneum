@@ -55,6 +55,12 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         createCameraSource();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        cameraSource.release();
+    }
+
     /**
      * Function to set up the camera on the surfaceview.
      */

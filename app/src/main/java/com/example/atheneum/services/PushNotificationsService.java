@@ -17,8 +17,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.atheneum.R;
-import com.example.atheneum.activities.MainActivity;
-import com.example.atheneum.activities.ShowRequestInfoActivity;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.utils.FirebaseAuthUtils;
 import com.example.atheneum.utils.NotificationIntentProvider;

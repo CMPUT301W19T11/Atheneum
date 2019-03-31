@@ -80,59 +80,59 @@
             app:layout_constraintTop_toBottomOf="@+id/phone_prompt"
             android:importantForAutofill="no" />
 
-        <TextView
-            android:id="@+id/borrower_prompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Borrower Rating"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/phone" />
+        <!--<TextView-->
+            <!--android:id="@+id/borrower_prompt"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="16dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:text="Borrower Rating"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/phone" />-->
 
-        <TextView
-            android:id="@+id/rStatus"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="Borrower Rating"
-            android:textSize="20dp"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/borrower_prompt"
-            android:importantForAutofill="no" />
+        <!--<TextView-->
+            <!--android:id="@+id/rStatus"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="16dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:layout_marginEnd="16dp"-->
+            <!--android:ems="10"-->
+            <!--android:hint="Borrower Rating"-->
+            <!--android:textSize="20dp"-->
+            <!--android:inputType="textPersonName"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.0"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/borrower_prompt"-->
+            <!--android:importantForAutofill="no" />-->
 
-        <TextView
-            android:id="@+id/owner_prompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Owner Rating"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rStatus" />
+        <!--<TextView-->
+            <!--android:id="@+id/owner_prompt"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="16dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:text="Owner Rating"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/rStatus" />-->
 
-        <TextView
-            android:id="@+id/owner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="Owner Rating"
-            android:textSize="20dp"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/owner_prompt"
-            android:importantForAutofill="no" />
+        <!--<TextView-->
+            <!--android:id="@+id/owner"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="16dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:layout_marginEnd="16dp"-->
+            <!--android:ems="10"-->
+            <!--android:hint="Owner Rating"-->
+            <!--android:textSize="20dp"-->
+            <!--android:inputType="textPersonName"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.0"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/owner_prompt"-->
+            <!--android:importantForAutofill="no" />-->
 
 
         <android.support.design.widget.FloatingActionButton

@@ -61,8 +61,8 @@ public class RecommendedBooksActivity extends AppCompatActivity {
             @Override
             public void onClick(View v, Book book) {
                 Log.i(TAG, "clicked on a book");
-//                Intent intent = new Intent(getApplicationContext(), BookInfoActivity.class);
-//                intent.putExtra("bookID", book.getBookID());
+                Intent intent = new Intent(getApplicationContext(), BookInfoActivity.class);
+                intent.putExtra("bookID", book.getBookID());
             }
         });
         recommendedBooksRecyclerView.setAdapter(recommendedBooksListAdapter);

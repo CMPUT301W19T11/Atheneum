@@ -64,8 +64,9 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull Notification notification) {
                 Log.i(TAG, "NOTIFICATION CLICKED: " + notification.getMessage());
-                showBookInfo(notification);
                 makeNotificationSeen(notification);
+                showBookInfo(notification);
+
             }
         });
 
