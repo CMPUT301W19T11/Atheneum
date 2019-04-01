@@ -119,9 +119,9 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
      * @param menu: menu object to inflate
      * @return boolean: true if success, else false
      *
-     * //See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
-     *     //See: https://developer.android.com/reference/android/widget/SearchView
-     *     //See: https://www.youtube.com/watch?v=_7B5iuyhIFk
+     * See: https://stackoverflow.com/questions/34603157/how-to-get-a-text-from-searchview
+     * See: https://developer.android.com/reference/android/widget/SearchView
+     * See: https://www.youtube.com/watch?v=_7B5iuyhIFk
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
