@@ -16,9 +16,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -63,7 +60,6 @@ import com.example.atheneum.models.Transaction;
 
 
 import com.example.atheneum.models.Photo;
-//import com.example.atheneum.models.Request;
 
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
@@ -205,6 +201,9 @@ public class BookInfoActivity extends AppCompatActivity {
                                             transactionLiveData.removeObserver(this);
                                             transactionViewModel.updateTransactionReturned(book);
                                             scanBtn.setClickable(true);
+
+                                            getLoc.setVisibility(View.GONE);
+                                            findViewById(R.id.location_prompt).setVisibility(View.GONE);
                                         }
 
                                         if(transaction.getType().equals(Transaction.CHECKOUT)){
