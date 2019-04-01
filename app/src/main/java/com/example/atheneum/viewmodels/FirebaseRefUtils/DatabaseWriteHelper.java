@@ -12,15 +12,13 @@ import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.Request;
 import com.example.atheneum.models.Transaction;
 import com.example.atheneum.models.User;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Utility class to abstract writes to the database. Abstracting writes to the database in a central
@@ -422,6 +420,48 @@ public class DatabaseWriteHelper {
         });
     }
 
+    public static void makeAllNotificationsSeen(String userID) {
+        final Query notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
+        notificationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                notificationsRef.removeEventListener(this);
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Notification notification = ds.getValue(Notification.class);
+                    if (!notification.getIsSeen()) {
+                        makeNotificationSeen(notification);
+                        Log.i(TAG, notification.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void deleteAllNotifications(String userID) {
+        HashMap<String, Object> updates = new HashMap<String, Object>();
+
+        final String notificationsRef = String.format("notifications/%s",
+                userID);
+
+        updates.put(notificationsRef, null);
+
+        RootRefUtils.ROOT_REF.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.w(TAG, "Error updating data at " + databaseReference.toString());
+                    Log.i(TAG, "notificationsRef: " + notificationsRef);
+                } else {
+                    Log.i(TAG, "Successful update at " + databaseReference.toString());
+                }
+            }
+        });
+    }
 
     public static void addNewTransaction(Transaction transaction){
         TransactionRefUtils.TRANSACTION_REF.child(transaction.getBookID()).setValue(transaction);
