@@ -245,17 +245,44 @@ public class AddEditBookActivity extends AppCompatActivity {
                                 if (response.getInt("totalItems") > 0) {
                                     JSONObject firstBookInfo = response.getJSONArray("items").getJSONObject(0).getJSONObject("volumeInfo");
 
-                                    if (ctx != null) {
-                                        titleEditText.setText(firstBookInfo.getString("title"));
-                                        JSONArray authorArr = firstBookInfo.getJSONArray("authors");
-                                        String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
-//
-                                        for (int i = 1; i < authorArr.length(); i++) {
-                                            authorListString += ", " + authorArr.getString(i);
-                                        }
-                                        authorEditText.setText(authorListString);
+                                    int missingFields = 0;
+                                    String missingFieldsErrorMsg = "No ";
 
-                                        descEditText.setText(firstBookInfo.getString("description"));
+                                    if (ctx != null) {
+                                        if (firstBookInfo.has("title")) {
+                                            titleEditText.setText(firstBookInfo.getString("title"));
+                                        }
+                                        else {
+                                            missingFieldsErrorMsg += (missingFields == 0) ? "title " : ", title ";
+                                            missingFields++;
+                                        }
+
+                                        if (firstBookInfo.has("authors")){
+                                            JSONArray authorArr = firstBookInfo.getJSONArray("authors");
+                                            String authorListString = authorArr.length() > 0 ? authorArr.getString(0) : "";
+                                            for (int i = 1; i < authorArr.length(); i++) {
+                                                authorListString += ", " + authorArr.getString(i);
+                                            }
+                                            authorEditText.setText(authorListString);
+                                        }
+                                        else {
+                                            missingFieldsErrorMsg += (missingFields == 0) ? "authors " : ", authors ";                                            missingFields++;
+                                            missingFields++;
+                                        }
+
+                                        if (firstBookInfo.has("description")){
+                                            descEditText.setText(firstBookInfo.getString("description "));
+                                        }
+                                        else {
+                                            missingFieldsErrorMsg += (missingFields == 0) ? "description " : ", description ";
+                                            missingFields++;
+                                        }
+
+                                        // show error message if there were missing fields
+                                        if (missingFields > 0) {
+                                            missingFieldsErrorMsg += "found for the given ISBN.";
+                                            Toast.makeText(ctx, missingFieldsErrorMsg, Toast.LENGTH_LONG).show();
+                                        }
                                     }
                                 }
                                 else{
