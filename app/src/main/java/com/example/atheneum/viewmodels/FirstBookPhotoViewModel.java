@@ -53,8 +53,9 @@ public class FirstBookPhotoViewModel extends ViewModel {
     }
 
     /**
-     * @return Lifecycle-aware observable stream of the first photo that the view can observe
-     *         for changes.
+     * Gets book photo live data.
+     *
+     * @return Lifecycle -aware observable stream of the first photo that the view can observe         for changes.
      */
     public LiveData<Photo> getBookPhotoLiveData() {
         return bookPhotoLiveData;

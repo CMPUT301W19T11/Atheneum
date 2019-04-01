@@ -4,6 +4,9 @@ package com.example.atheneum.models;
  * Model class for holding the goodreads review info.
  */
 public class GoodreadsReviewInfo {
+    /**
+     * The constant INVALID_RATING.
+     */
     public static final float INVALID_RATING = -1;
 
     private long isbn10;
@@ -24,7 +27,9 @@ public class GoodreadsReviewInfo {
     /**
      * Constructor for a GoodreadsReviewInfo object.
      *
-     * @param avg_rating the book's average rating
+     * @param isbn        the isbn
+     * @param isbn10      the isbn 10
+     * @param avg_rating  the book's average rating
      * @param reviews_url the url of the iframe for goodreads review widget
      */
     public GoodreadsReviewInfo(long isbn, long isbn10, float avg_rating, String reviews_url) {
@@ -36,6 +41,7 @@ public class GoodreadsReviewInfo {
 
     /**
      * Get the average rating for the book
+     *
      * @return the goodreads average rating
      */
     public float getAvg_rating() {
@@ -44,6 +50,7 @@ public class GoodreadsReviewInfo {
 
     /**
      * Sets the average rating of the book
+     *
      * @param avg_rating the value to set the rating to
      */
     public void setAvg_rating(float avg_rating) {
@@ -52,7 +59,8 @@ public class GoodreadsReviewInfo {
 
     /**
      * Get the url string of the reviews widget taken from the goodreads api result
-     * @return
+     *
+     * @return reviews widget url
      */
     public String getReviews_widget_url() {
         return reviews_widget_url;
@@ -60,7 +68,8 @@ public class GoodreadsReviewInfo {
 
     /**
      * set the url of the goodreads reviews widget
-     * @param reviews_widget_url
+     *
+     * @param reviews_widget_url the reviews widget url
      */
     public void setReviews_widget_url(String reviews_widget_url) {
         this.reviews_widget_url = reviews_widget_url;
@@ -68,6 +77,7 @@ public class GoodreadsReviewInfo {
 
     /**
      * get the isbn of the book that the review info is for
+     *
      * @return the isbn (13)
      */
     public long getIsbn() {
@@ -76,6 +86,7 @@ public class GoodreadsReviewInfo {
 
     /**
      * set the isbn of the reviews the book is for
+     *
      * @param isbn the isbn to be set
      */
     public void setIsbn(long isbn) {
@@ -84,6 +95,7 @@ public class GoodreadsReviewInfo {
 
     /**
      * get the isbn10 of the book that the review info is for
+     *
      * @return the 10 digit isbn
      */
     public long getIsbn10() {
@@ -92,7 +104,8 @@ public class GoodreadsReviewInfo {
 
     /**
      * set the isbn10 of the reviews the book is for
-     * @param isbn10
+     *
+     * @param isbn10 the isbn 10
      */
     public void setIsbn10(long isbn10) {
         this.isbn10 = isbn10;

@@ -23,10 +23,20 @@ import com.example.atheneum.views.adapters.RecommendedBooksListAdapter;
 
 import java.util.List;
 
+/**
+ * The Recommended books activity.
+ * handles showing recommended books to users
+ */
 public class RecommendedBooksActivity extends AppCompatActivity {
     private static final String TAG = RecommendedBooksActivity.class.getSimpleName();
+    /**
+     * The constant INTENT_KEY_BORROWER_ID.
+     */
     public static final String INTENT_KEY_BORROWER_ID = RecommendedBooksActivity.class.getCanonicalName()
                                                         + ":BORROWER_ID";
+    /**
+     * The constant INTENT_KEY_ISBN.
+     */
     public static final String INTENT_KEY_ISBN = RecommendedBooksActivity.class.getCanonicalName()
                                                     + ":ISBN";
 

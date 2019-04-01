@@ -49,8 +49,9 @@ public class BorrowerBooksViewModel extends ViewModel {
     }
 
     /**
-     * @return Lifecycle-aware observable stream of {@code ArrayList<Book>} that the view can observe
-     *         for changes. The books in this list are owned by the owner.
+     * Borrower books live data live data.
+     *
+     * @return Lifecycle -aware observable stream of {@code ArrayList<Book>} that the view can observe         for changes. The books in this list are owned by the owner.
      */
     public LiveData<ArrayList<Book>> borrowerBooksLiveData() {
         return borrowerBooksLiveData;

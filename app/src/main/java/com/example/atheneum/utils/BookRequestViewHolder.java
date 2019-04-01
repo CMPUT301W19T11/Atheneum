@@ -16,11 +16,28 @@ import com.example.atheneum.activities.BookInfoActivity;
  * @see BookInfoActivity
  */
 public class BookRequestViewHolder extends RecyclerView.ViewHolder {
+    /**
+     * The Request item.
+     */
     public LinearLayout requestItem;
+    /**
+     * The Requester name text view.
+     */
     public TextView requesterNameTextView;
+    /**
+     * The Decline request image view.
+     */
     public ImageView declineRequestImageView;
+    /**
+     * The Accept request image view.
+     */
     public ImageView acceptRequestImageView;
 
+    /**
+     * Instantiates a new Book request view holder.
+     *
+     * @param bookView the book view
+     */
     public BookRequestViewHolder(@NonNull View bookView) {
         super(bookView);
         requestItem = (LinearLayout) bookView.findViewById(R.id.request_on_book_card);

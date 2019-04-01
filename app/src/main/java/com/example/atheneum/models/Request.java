@@ -40,8 +40,9 @@ public class Request {
 
     /**
      * Init requester
-     * @param requesterID
-     * @param bookID
+     *
+     * @param requesterID the requester id
+     * @param bookID      the book id
      */
     public Request(String requesterID, String bookID) {
         this.requesterID = requesterID;

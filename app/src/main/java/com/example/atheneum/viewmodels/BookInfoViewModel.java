@@ -15,6 +15,10 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+/**
+ * The type Book info view model.
+ * view model for displaying/getting book information
+ */
 public class BookInfoViewModel extends ViewModel {
     private static final String TAG = BookInfoViewModel.class.getSimpleName();
     // Raw stream of read-only DataSnapshot values retrieved from query
@@ -25,11 +29,22 @@ public class BookInfoViewModel extends ViewModel {
     private final DatabaseReference bookRef;
     private final String bookID;
 
+    /**
+     * Generate view model provider key string.
+     *
+     * @param bookID the book id
+     * @return the string
+     */
     public static String generateViewModelProviderKey(String bookID) {
         return BookInfoViewModel.class.getCanonicalName() + ":" + bookID;
     }
 
 
+    /**
+     * Instantiates a new Book info view model.
+     *
+     * @param bookID the book id
+     */
     public BookInfoViewModel(String bookID) {
         this.bookID = bookID;
 
@@ -38,10 +53,20 @@ public class BookInfoViewModel extends ViewModel {
         bookLiveData = Transformations.map(queryLiveData, new Deserializer());
     }
 
+    /**
+     * Delete book.
+     *
+     * @param ownerUserID the owner user id
+     */
     public void deleteBook(String ownerUserID) {
         DatabaseWriteHelper.deleteBook(ownerUserID, this.bookID);
     }
 
+    /**
+     * Update book.
+     *
+     * @param book the book
+     */
     public void updateBook(Book book) {
         DatabaseWriteHelper.updateBook(book);
     }
@@ -56,6 +81,11 @@ public class BookInfoViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Gets book live data.
+     *
+     * @return the book live data
+     */
     @NonNull
     public LiveData<Book> getBookLiveData() {
         return bookLiveData;

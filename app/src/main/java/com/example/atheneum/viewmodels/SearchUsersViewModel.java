@@ -60,8 +60,9 @@ public class SearchUsersViewModel extends ViewModel {
     }
 
     /**
-     * @return Lifecycle-aware observable stream of {@code List<User>} that the view can observe
-     *         for changes.
+     * Gets user list live data.
+     *
+     * @return Lifecycle -aware observable stream of {@code List<User>} that the view can observe         for changes.
      */
     public LiveData<List<User>> getUserListLiveData() {
         return userListLiveData;

@@ -33,6 +33,9 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private static final String TAG = HomeFragment.class.getSimpleName();
 
+    /**
+     * Instantiates a new Home fragment.
+     */
     public HomeFragment() {
         // Required empty public constructor
     }

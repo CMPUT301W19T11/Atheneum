@@ -19,6 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Borrower requests view model.
+ * view model for handling requests made by borrowers
+ */
 public class BorrowerRequestsViewModel extends ViewModel {
     private final String TAG = BorrowerRequestsViewModel.class.getSimpleName();
 
@@ -27,6 +31,11 @@ public class BorrowerRequestsViewModel extends ViewModel {
 
     private final LiveData<List<Request>> borrowerRequestLiveData;
 
+    /**
+     * Instantiates a new Borrower requests view model.
+     *
+     * @param userID the user id
+     */
     public BorrowerRequestsViewModel(String userID) {
         this.userID = userID;
 //        FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -48,10 +57,21 @@ public class BorrowerRequestsViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Gets borrower request live data.
+     *
+     * @return the borrower request live data
+     */
     public LiveData<List<Request>> getBorrowerRequestLiveData() {
         return borrowerRequestLiveData;
     }
 
+    /**
+     * Filter requests by status list.
+     *
+     * @param status the status
+     * @return the list
+     */
     public List<Request> filterRequestsByStatus(Request.Status status) {
         List<Request> requestList = borrowerRequestLiveData.getValue();
         if (requestList != null && status != null) {

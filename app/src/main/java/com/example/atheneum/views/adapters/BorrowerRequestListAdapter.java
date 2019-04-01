@@ -28,6 +28,10 @@ import com.example.atheneum.viewmodels.UserViewModelFactory;
 
 import org.w3c.dom.Text;
 
+/**
+ * The type Borrower request list adapter.
+ * handles displaying request lists for borrowers
+ */
 public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerRequestListAdapter.ViewHolder> {
     private static final String TAG = BorrowerRequestListAdapter.class.getSimpleName();
     private static final DiffUtil.ItemCallback<Request> DIFF_CALLBACK = new DiffUtil.ItemCallback<Request>() {
@@ -42,7 +46,16 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         }
     };
 
+    /**
+     * The interface On request item click listener.
+     */
     public interface OnRequestItemClickListener {
+        /**
+         * On click.
+         *
+         * @param v       the v
+         * @param request the request
+         */
         void onClick(View v, Request request);
     }
 
@@ -58,7 +71,7 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         /**
          * Create view holder object
          *
-         * @param view
+         * @param view the view
          */
         public ViewHolder(@NonNull View view) {
             super(view);
@@ -85,6 +98,11 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         super(DIFF_CALLBACK);
     }
 
+    /**
+     * Sets on request item click listener.
+     *
+     * @param onRequestItemClickListener the on request item click listener
+     */
     public void setOnRequestItemClickListener(OnRequestItemClickListener onRequestItemClickListener) {
         this.onRequestItemClickListener = onRequestItemClickListener;
     }

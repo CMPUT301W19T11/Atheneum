@@ -14,9 +14,18 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+/**
+ * The type Transaction view model factory.
+ * generate TransactionViewModel objects
+ */
 public class TransactionViewModelFactory implements ViewModelProvider.Factory {
     private final String bookID;
 
+    /**
+     * Instantiates a new Transaction view model factory.
+     *
+     * @param bookID the book id
+     */
     public TransactionViewModelFactory(String bookID) {this.bookID = bookID;}
 
     /**

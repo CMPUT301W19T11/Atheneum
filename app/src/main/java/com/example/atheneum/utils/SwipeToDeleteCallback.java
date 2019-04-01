@@ -18,7 +18,7 @@ import com.example.atheneum.views.adapters.NotificationListAdapter;
 /**
  * Callback for swiping items to delete in a RecyclerView
  * Used in NotificationsActivity
- *
+ * <p>
  * See: https://medium.com/@zackcosborn/step-by-step-recyclerview-swipe-to-delete-and-undo-7bbae1fce27e
  */
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
@@ -27,6 +27,11 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private Drawable seenIcon;
     private final ColorDrawable background;
 
+    /**
+     * Instantiates a new Swipe to delete callback.
+     *
+     * @param adapter the adapter
+     */
     public SwipeToDeleteCallback(NotificationListAdapter adapter) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;

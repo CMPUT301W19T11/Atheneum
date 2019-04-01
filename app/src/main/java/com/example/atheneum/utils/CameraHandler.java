@@ -44,7 +44,7 @@ public class CameraHandler<T> {
      * Factory method to create a new instance of CameraHandler given an Activity.
      *
      * @param activity Activity that needs to handle camera requests
-     * @return
+     * @return camera handler
      */
     public static CameraHandler<Activity> newInstance(Activity activity) {
         return new CameraHandler<Activity>(activity);
@@ -54,7 +54,7 @@ public class CameraHandler<T> {
      * Factory method to create a new instance of CameraHandler given an Fragment.
      *
      * @param fragment Fragment that needs to handle camera requests
-     * @return
+     * @return camera handler
      */
     public static CameraHandler<Fragment> newInstance(Fragment fragment) {
         return new CameraHandler<Fragment>(fragment);
@@ -77,7 +77,7 @@ public class CameraHandler<T> {
     /**
      * Sets the interface of callback(s) to handle events from camera
      *
-     * @param pictureTakenListener
+     * @param pictureTakenListener the picture taken listener
      */
     public void setPictureTakenListener(OnPictureTakenListener pictureTakenListener) {
         this.pictureTakenListener = pictureTakenListener;
@@ -85,7 +85,7 @@ public class CameraHandler<T> {
 
     /**
      * Removes the interfade of callback(s) used to handle events from camera.
-     *
+     * <p>
      * Useful when trying to handle multiple camera events in the same activity/fragment since the
      * handler can be immediately removed after called.
      */
@@ -123,24 +123,23 @@ public class CameraHandler<T> {
 
     /**
      * Handles result of permission request made to the fragment/activity.
-     *
+     * <p>
      * Instantiate an instance of pictureController somewhere in the activity/fragment and then
      * override the onRequestPermissionsResult() method for the activity/fragment and call the onRequestPermissionsResult()
      * method of the picture controller instance in order to handle events.
-     *
+     * <p>
      * Example:
-     *
+     * <p>
      * {@code
-     *     @Override
-     *     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-     *         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-     *         pictureController.onRequestPermissionsResult(requestCode, permissions, grantResults);
-     *     }
-     * }
      *
-     * @param requestCode Type of permissions request
-     * @param permissions Array of strings containing permissions requested
+     * @param requestCode  Type of permissions request
+     * @param permissions  Array of strings containing permissions requested
      * @param grantResults Results of permissions granted
+     * @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+     * super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+     * pictureController.onRequestPermissionsResult(requestCode, permissions, grantResults);
+     * }
+     * }*
      */
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
@@ -163,24 +162,23 @@ public class CameraHandler<T> {
      * Handle result of event triggered by startActivityForResult() from the fragment/activity.
      * This method must be called in the fragment's/activity's onActivityResult() method or else
      * events from the controller will never be handled.
-     *
+     * <p>
      * Instantiate an instance of pictureController somewhere in the activity/fragment and then
      * override the onActivityResult() method for the activity/fragment and call the onActivityResult()
      * method of the picture controller instance in order to handle events.
-     *
+     * <p>
      * Example:
-     *
+     * <p>
      * {@code
-     *      @Override
-     *      public void onActivityResult(int requestCode, int resultCode, Intent data) {
-     *          super.onActivityResult(requestCode, resultCode, data);
-     *          pictureController.onActivityResult(requestCode, resultCode, data);
-     *      }
-     * }
      *
      * @param requestCode Request Code for starting activity/fragment
-     * @param resultCode Result of starting activity/fragment
-     * @param data Data obtained from the request
+     * @param resultCode  Result of starting activity/fragment
+     * @param data        Data obtained from the request
+     * @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
+     * super.onActivityResult(requestCode, resultCode, data);
+     * pictureController.onActivityResult(requestCode, resultCode, data);
+     * }
+     * }*
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult");

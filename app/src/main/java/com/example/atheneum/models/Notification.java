@@ -200,6 +200,9 @@ public class Notification {
 
     /**
      * Constructs the message
+     *
+     * @param userName the user name
+     * @param bookName the book name
      */
     public void constructMessage(String userName, String bookName) {
         if (this.rNotificationType == NotificationType.REQUEST) {
@@ -223,7 +226,7 @@ public class Notification {
     /**
      * Sets isSeen
      *
-     * @param isSeen
+     * @param isSeen the is seen
      */
     public void setIsSeen(boolean isSeen) {
         this.isSeen = isSeen;
@@ -232,7 +235,7 @@ public class Notification {
     /**
      * Gets creation date of notification
      *
-     * @return creationDate
+     * @return creationDate creation date
      */
     public Date getCreationDate() {
         return creationDate;

@@ -30,6 +30,9 @@ import java.util.ArrayList;
  * and other profiles
  */
 public class ViewProfileActivity extends AppCompatActivity {
+    /**
+     * The constant USER_ID.
+     */
     public static final String USER_ID = "user_id";
 
     private static final String TAG = "View Profile Activity";
@@ -111,6 +114,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     /**
      * Set the action bar title
+     *
      * @param title string to set action bar title
      */
     public void setActionBarTitle(String title) {

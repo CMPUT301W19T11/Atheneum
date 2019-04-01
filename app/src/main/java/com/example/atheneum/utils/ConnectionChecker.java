@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 
 /**
  * Class for checking whether or not device is connected to the internet.
- * 
  */
 public class ConnectionChecker {
     // taken from https://stackoverflow.com/questions/14571478/using-google-books-api-in-android
@@ -16,6 +15,7 @@ public class ConnectionChecker {
     /**
      * Constructor for connection checker. This is needed because the getSystemService call
      * needs the current context in order to be used.
+     *
      * @param context the context in which ConnectionChecker is instantiated
      */
     public ConnectionChecker(Context context) {

@@ -57,10 +57,9 @@ import static com.example.atheneum.utils.GoogleMapConstants.PERMISSIONS_REQUEST_
 import static com.example.atheneum.viewmodels.LocationViewModel.addLocation;
 
 
-
 /**
  * An activity that displays a Google map with a marker (pin) to indicate a particular location.
- *
+ * <p>
  * See: https://gist.github.com/mitchtabian/2b9a3dffbfdc565b81f8d26b25d059bf
  */
 public class MapActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -74,10 +73,19 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
 
     private String bookID;
 
+    /**
+     * The Location view model.
+     */
     LocationViewModel locationViewModel;
 
+    /**
+     * The Location to view.
+     */
     LatLng locationToView;
 
+    /**
+     * The View only.
+     */
     boolean viewOnly = false;
 
     @Override
@@ -279,7 +287,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
     /**
      * Check if GPS enabled for Atheneum
      *
-     * @return boolean: true if GPS enabled, else false
+     * @return boolean : true if GPS enabled, else false
      */
     public boolean isMapsEnabled(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
@@ -377,6 +385,11 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.On
         transaction.replace(R.id.content_frame, new MapFragment()).commit();
     }
 
+    /**
+     * Is location permission given boolean.
+     *
+     * @return the boolean
+     */
     public static boolean isLocationPermissionGiven(){
         return locationPermissionGiven;
     }

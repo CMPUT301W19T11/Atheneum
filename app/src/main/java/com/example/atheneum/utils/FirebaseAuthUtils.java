@@ -10,6 +10,7 @@ public class FirebaseAuthUtils {
     private static final FirebaseAuth authInstance = FirebaseAuth.getInstance();
 
     /**
+     * Gets current user.
      *
      * @return Current user
      */

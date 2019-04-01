@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Adapter for notifications RecyclerView
- *
+ * <p>
  * See: https://developer.android.com/reference/android/support/v7/recyclerview/extensions/ListAdapter
  */
 public class NotificationListAdapter extends ListAdapter<Notification, NotificationListAdapter.ViewHolder> {
@@ -29,6 +29,9 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
     private final Context mContext;
     private NotificationsViewModel mNotificationsViewModel;
 
+    /**
+     * The constant DIFF_CALLBACK.
+     */
     public static final DiffUtil.ItemCallback<Notification> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<Notification>() {
                 @Override
@@ -43,16 +46,31 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
                 }
             };
 
+    /**
+     * Instantiates a new Notification list adapter.
+     *
+     * @param context the context
+     */
     public NotificationListAdapter(Context context)
     {
         super(DIFF_CALLBACK);
         mContext = context;
     }
 
+    /**
+     * Gets context.
+     *
+     * @return the context
+     */
     public Context getContext() {
         return mContext;
     }
 
+    /**
+     * Sets notifications view model.
+     *
+     * @param notificationsViewModel the notifications view model
+     */
     public void setNotificationsViewModel(NotificationsViewModel notificationsViewModel) {
         mNotificationsViewModel = notificationsViewModel;
     }
@@ -68,7 +86,7 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
         /**
          * Create view holder object
          *
-         * @param view
+         * @param view the view
          */
         public ViewHolder(@NonNull View view) {
             super(view);
@@ -91,11 +109,21 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
      * Provide interface to handle onClick events for any Notification in the list
      */
     public interface onClickListener {
+        /**
+         * On click.
+         *
+         * @param notification the notification
+         */
         public void onClick(@NonNull Notification notification);
     }
 
     private NotificationListAdapter.onClickListener onClickListener;
 
+    /**
+     * Sets on click listener.
+     *
+     * @param onClickListener the on click listener
+     */
     public void setOnClickListener(NotificationListAdapter.onClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
@@ -145,7 +173,7 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
     /**
      * Delete notification from list
      *
-     * @param position
+     * @param position the position
      */
     public void deleteItem(int position) {
         Notification deletedNotification = getItem(position);
@@ -155,6 +183,8 @@ public class NotificationListAdapter extends ListAdapter<Notification, Notificat
 
     /**
      * Make notification in list seen
+     *
+     * @param position the position
      */
     public void makeItemSeen(int position) {
         Notification seenNotification = getItem(position);

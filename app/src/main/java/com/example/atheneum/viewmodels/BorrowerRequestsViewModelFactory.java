@@ -4,9 +4,18 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+/**
+ * The type Borrower requests view model factory.
+ * generate BorrowerRequestsViewModel objects
+ */
 public class BorrowerRequestsViewModelFactory implements ViewModelProvider.Factory {
     private String userID;
 
+    /**
+     * Instantiates a new Borrower requests view model factory.
+     *
+     * @param userID the user id
+     */
     public BorrowerRequestsViewModelFactory(String userID) {
         this.userID = userID;
     }

@@ -62,11 +62,15 @@ public class EditProfileFragment extends Fragment {
     public interface OnEditProfileCompleteListener {
         /**
          * Handles success of editing the profile
+         *
+         * @param editProfileFragment the edit profile fragment
          */
         void onSuccess(EditProfileFragment editProfileFragment);
 
         /**
          * Handles failure to edit the profile
+         *
+         * @param editProfileFragment the edit profile fragment
          */
         void onFailure(EditProfileFragment editProfileFragment);
     }

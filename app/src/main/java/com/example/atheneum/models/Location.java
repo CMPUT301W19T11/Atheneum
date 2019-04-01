@@ -10,7 +10,7 @@ public class Location {
 
     /**
      * Creates a new Location object using default values for attributes.
-     *
+     * <p>
      * Empty constructor needed for Firebase. Do not use in application code.
      */
     public Location() {
@@ -30,6 +30,7 @@ public class Location {
     }
 
     /**
+     * Gets lat.
      *
      * @return Latitude of location
      */
@@ -47,6 +48,7 @@ public class Location {
     }
 
     /**
+     * Gets lon.
      *
      * @return Longitude of the location
      */

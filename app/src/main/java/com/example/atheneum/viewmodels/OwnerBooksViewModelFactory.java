@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 /**
  * Factory that instantiates a OwnerBooksViewModel with a particular userID.
  * Read the StackOverflow post linked here to understand we can't instantiate OwnerBooksViewModel directly.
- *
+ * <p>
  * See: https://stackoverflow.com/a/46704702/11039833
  */
 public class OwnerBooksViewModelFactory implements ViewModelProvider.Factory {

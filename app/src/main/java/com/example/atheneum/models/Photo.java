@@ -28,7 +28,7 @@ public class Photo {
     /**
      * Decodes a Base64 encoded string into a bitmap photo
      *
-     * @param encodedString
+     * @param encodedString the encoded string
      * @return Photo represented as a Bitmap
      */
     public static Bitmap DecodeBase64BitmapPhoto(String encodedString) {
@@ -50,7 +50,7 @@ public class Photo {
     /**
      * Creates an new instance of Photo using an encodedString.
      *
-     * @param photoID  Unique identifier of Photo.
+     * @param photoID       Unique identifier of Photo.
      * @param encodedString Base64 encoding of the Photo.
      */
     public Photo(String photoID, String encodedString) {
@@ -63,7 +63,7 @@ public class Photo {
      * a Photo since Photos are sent as a bitmap by the PhotoController.
      *
      * @param photoID Unique identifier of Photo.
-     * @param bitmap Raw bitmap of the Photo.
+     * @param bitmap  Raw bitmap of the Photo.
      */
     public Photo(String photoID, Bitmap bitmap) {
         this.photoID = photoID;
@@ -71,6 +71,8 @@ public class Photo {
     }
 
     /**
+     * Gets photo id.
+     *
      * @return Unique identifier of Photo.
      */
     public String getPhotoID() {
@@ -79,11 +81,11 @@ public class Photo {
 
     /**
      * Updates the photoID.
-     *
+     * <p>
      * Note: When storing a list of photos in Firebase, push keys should be used as the photoID
-     *       since push keys use the current timestamp to generate the key so that the data is
-     *       ordered when pushed to the server. Push keys are collision resistant when multiple clients
-     *       update the server at the same time.
+     * since push keys use the current timestamp to generate the key so that the data is
+     * ordered when pushed to the server. Push keys are collision resistant when multiple clients
+     * update the server at the same time.
      *
      * @param photoID Unique identifier of Photo.
      */
@@ -92,6 +94,8 @@ public class Photo {
     }
 
     /**
+     * Gets encoded string.
+     *
      * @return Base64 encoding of the Photo.
      */
     public String getEncodedString() {

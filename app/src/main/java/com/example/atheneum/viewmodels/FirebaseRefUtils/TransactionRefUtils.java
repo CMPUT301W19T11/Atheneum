@@ -15,13 +15,32 @@ import com.example.atheneum.models.Transaction;
 import com.google.firebase.database.DatabaseReference;
 
 
+/**
+ * The type Transaction ref utils.
+ * utility class for getting firebase references to transactions
+ */
 public class TransactionRefUtils extends RootRefUtils{
+    /**
+     * The constant TRANSACTION_REF.
+     */
     public static final DatabaseReference TRANSACTION_REF = ROOT_REF.child("transactions");
 
+    /**
+     * Get transaction ref database reference.
+     *
+     * @param transaction the transaction
+     * @return the database reference
+     */
     public static final DatabaseReference getTransactionRef(Transaction transaction){
         return TRANSACTION_REF.child(transaction.getBookID());
     }
 
+    /**
+     * Get transaction ref database reference.
+     *
+     * @param bookID the book id
+     * @return the database reference
+     */
     public static DatabaseReference getTransactionRef(String bookID){
         return TRANSACTION_REF.child(bookID);
     }

@@ -49,7 +49,8 @@ import java.util.ArrayList;
 import static com.example.atheneum.fragments.OwnerPageFragment.REQUEST_DELETE_ENTRY;
 
 /**
- *
+ * The Borrowed books fragment.
+ * to show borrowed books
  */
 public class BorrowedBooksFragment extends Fragment {
 
@@ -66,6 +67,9 @@ public class BorrowedBooksFragment extends Fragment {
     private static final String TAG = BorrowedBooksFragment.class.getSimpleName();
 
 
+    /**
+     * Instantiates a new Borrowed books fragment.
+     */
     public BorrowedBooksFragment() {
         // Required empty public constructor
     }

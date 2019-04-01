@@ -4,9 +4,18 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+/**
+ * The type Notifications view model factory.
+ * generate NotificationsViewModel objects
+ */
 public class NotificationsViewModelFactory implements ViewModelProvider.Factory {
     private final String userID;
 
+    /**
+     * Instantiates a new Notifications view model factory.
+     *
+     * @param userID the user id
+     */
     public NotificationsViewModelFactory(String userID) {
         this.userID = userID;
     }

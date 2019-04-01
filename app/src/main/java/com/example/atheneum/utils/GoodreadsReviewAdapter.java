@@ -27,6 +27,7 @@ public class GoodreadsReviewAdapter {
 
     /**
      * Constructor for the object
+     *
      * @param xml the XML response string
      */
     public GoodreadsReviewAdapter(String xml) {
@@ -267,6 +268,7 @@ public class GoodreadsReviewAdapter {
 
     /**
      * Get the reviewInfo(of type {@link GoodreadsReviewInfo}
+     *
      * @return the {@link GoodreadsReviewInfo} object
      */
     public GoodreadsReviewInfo getReviewInfo() {

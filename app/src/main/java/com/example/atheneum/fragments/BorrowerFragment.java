@@ -30,6 +30,10 @@ import com.example.atheneum.activities.MainActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Borrower fragment.
+ * to show borrower page
+ */
 public class BorrowerFragment extends Fragment {
     private View view;
     private Context context;
@@ -37,7 +41,9 @@ public class BorrowerFragment extends Fragment {
     private MainActivity mainActivity = null;
 
 
-
+    /**
+     * Instantiates a new Borrower fragment.
+     */
     public BorrowerFragment() {
         // Required empty public constructor
     }
@@ -78,6 +84,11 @@ public class BorrowerFragment extends Fragment {
         private final List<Fragment>  mFragmentList = new ArrayList<>();
         private final List<String> mFragmnetTitleList = new ArrayList<>();
 
+        /**
+         * Instantiates a new Tabs adapter.
+         *
+         * @param manager the manager
+         */
         public TabsAdapter(FragmentManager manager){
             super(manager);
         }
@@ -91,6 +102,13 @@ public class BorrowerFragment extends Fragment {
         public int getCount(){
             return mFragmentList.size();
         }
+
+        /**
+         * Add fragment.
+         *
+         * @param fragment the fragment
+         * @param title    the title
+         */
         public void addFragment(Fragment fragment, String  title){
             mFragmentList.add(fragment);
             mFragmnetTitleList.add(title);

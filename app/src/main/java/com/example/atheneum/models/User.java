@@ -16,6 +16,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * The User model
+ * Class for the User objects
+ */
 public class User implements Serializable {
     private String userID = "";
     private String userName = "";
@@ -26,7 +30,7 @@ public class User implements Serializable {
 
     /**
      * init user class with blank constructor
-     *
+     * <p>
      * Note: Needed for Firebase, use the other constructors in application code.
      */
     public User(){
@@ -35,8 +39,8 @@ public class User implements Serializable {
     /**
      * init user class with only username and userID, all other values are default
      *
-     * @param userID
-     * @param userName
+     * @param userID   the user id
+     * @param userName the user name
      */
     public User(String userID, String userName) {
         this.userID = userID;
@@ -45,11 +49,12 @@ public class User implements Serializable {
 
     /**
      * init user class with specified attributes
-     * @param userID
-     * @param userName
-     * @param phoneNumber
-     * @param ownerRate
-     * @param borrowerRate
+     *
+     * @param userID       the user id
+     * @param userName     the user name
+     * @param phoneNumber  the phone number
+     * @param ownerRate    the owner rate
+     * @param borrowerRate the borrower rate
      */
     public User(String userID, String userName, String phoneNumber, double ownerRate, double borrowerRate) {
         this.userID = userID;
@@ -61,7 +66,7 @@ public class User implements Serializable {
 
     /**
      * Note: No setter provided since can't change userID after construction, provided unique ID by
-     *       Firebase Auth
+     * Firebase Auth
      *
      * @return UUID of the user
      */
@@ -79,69 +84,80 @@ public class User implements Serializable {
     }
 
     /**
+     * Get user name string.
      *
      * @return user name of class
      */
     public String getUserName(){return this.userName;}
 
     /**
+     * Set phone number.
      *
-     * @param phoneNumber
+     * @param phoneNumber the phone number
      */
     public void setPhoneNumber(String phoneNumber){this.phoneNumber = phoneNumber;}
 
     /**
+     * Get phone number string.
      *
      * @return phone number of the user
      */
     public String getPhoneNumber(){return this.phoneNumber;}
 
     /**
+     * Set owner rate.
      *
-     * @param rate
+     * @param rate the rate
      */
     public void setOwnerRate(double rate){this.ownerRate = rate;}
 
     /**
+     * Get owner rate double.
      *
      * @return owner rating of the user
      */
     public double getOwnerRate(){return this.ownerRate;}
 
     /**
+     * Set borrower rate.
      *
-     * @param rate
+     * @param rate the rate
      */
     public void setBorrowerRate(double rate){this.borrowerRate = rate;}
 
     /**
+     * Get borrower rate double.
      *
      * @return borrower rating of the user
      */
     public double getBorrowerRate(){return  this.borrowerRate;}
 
     /**
+     * Set photos.
      *
-     * @param photos
+     * @param photos the photos
      */
     public void setPhotos(ArrayList<String> photos){this.photos = photos;}
 
     /**
+     * Get photos array list.
      *
      * @return collection of the photos of books
      */
     public ArrayList<String> getPhotos(){return this.photos;}
 
     /**
+     * Add photos.
      *
-     * @param photo
+     * @param photo the photo
      */
     public void addPhotos(String photo){this.photos.add(photo);}
 
 
     /**
+     * Delete photos.
      *
-     * @param photo
+     * @param photo the photo
      */
     public void deletePhotos(String photo){this.photos.remove(photo);}
 
@@ -171,6 +187,7 @@ public class User implements Serializable {
     }
 
     /**
+     * Print string.
      *
      * @return String representation of the User object for debugging.
      */

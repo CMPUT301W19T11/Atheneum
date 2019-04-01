@@ -29,13 +29,18 @@ import java.util.List;
 
 /**
  * Activity responsible for authentication (sign-in and sign-up) of a user.
- *
+ * <p>
  * Leverages Firebase UI Auth library to dynamically generate the sign-in activity.
  * Entry point to the app.
- *
  */
 public class FirebaseUIAuthActivity extends AppCompatActivity {
+    /**
+     * The constant TAG.
+     */
     final static String TAG = FirebaseUIAuthActivity.class.getSimpleName();
+    /**
+     * The Auth rc code.
+     */
     static final int AUTH_RC_CODE = 1917;
 
     @Override

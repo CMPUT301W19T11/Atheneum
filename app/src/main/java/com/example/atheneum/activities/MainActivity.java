@@ -50,7 +50,6 @@ import java.util.ArrayList;
 
 /**
  * The Main activity.
- *
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = MainActivity.class.getSimpleName();
@@ -212,9 +211,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * allows for setting title of action bar from different fragments
-     * @param title
      *
-     * See: https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+     * @param title See: https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
      */
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);

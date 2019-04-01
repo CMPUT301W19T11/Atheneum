@@ -20,15 +20,15 @@ import java.util.UUID;
 
 /**
  * Bind Measurements to OwnerBooksRecyclerView in MainActivity
- *
+ * <p>
  * See: https://developer.android.com/guide/topics/ui/layout/recyclerview#java
  * See: https://www.androidhive.info/2016/01/android-working-with-recycler-view/
- *
+ * <p>
  * Might no longer need it once FirebaseRecyclerAdapter is done
  *
  * @author marcus
  * @version 1.0
- * @since 2019-01-27
+ * @since 2019 -01-27
  */
 public class OwnerBooksAdapter extends
         RecyclerView.Adapter<OwnerBooksAdapter.MeasurementViewHolder> {
@@ -43,16 +43,24 @@ public class OwnerBooksAdapter extends
     public static class MeasurementViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout bookItem;
 
+        /**
+         * The Title text view.
+         */
         public TextView titleTextView;
+        /**
+         * The Author text view.
+         */
         public TextView authorTextView;
+        /**
+         * The Status text view.
+         */
         public TextView statusTextView;
-
 
 
         /**
          * Instantiates a new books view holder.
          *
-         * @param view
+         * @param view the view
          */
         public MeasurementViewHolder(View view) {
             super(view);
@@ -67,7 +75,8 @@ public class OwnerBooksAdapter extends
     /**
      * Instantiates a new Book adapter.
      *
-     * @param ownerBooks
+     * @param ownerBooks the owner books
+     * @param context    the context
      */
     public OwnerBooksAdapter(ArrayList<Book> ownerBooks, Context context) {
         this.ownerBooks = ownerBooks;

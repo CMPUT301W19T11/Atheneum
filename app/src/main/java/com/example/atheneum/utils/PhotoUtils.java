@@ -27,7 +27,7 @@ public class PhotoUtils {
     /**
      * Decodes a Base64 encoded string into a bitmap photo
      *
-     * @param encodedString
+     * @param encodedString the encoded string
      * @return Photo represented as a Bitmap
      */
     public static Bitmap DecodeBase64BitmapPhoto(String encodedString) {

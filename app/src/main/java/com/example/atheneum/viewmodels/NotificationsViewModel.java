@@ -19,6 +19,10 @@ import com.google.firebase.database.Query;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Notifications view model.
+ * handle writing/deleting notification data
+ */
 public class NotificationsViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
@@ -28,6 +32,11 @@ public class NotificationsViewModel extends ViewModel {
 
     private final String TAG = NotificationsViewModel.class.getSimpleName();
 
+    /**
+     * Instantiates a new Notifications view model.
+     *
+     * @param userID the user id
+     */
     public NotificationsViewModel(String userID) {
         notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
         queryLiveData = new FirebaseQueryLiveData(notificationsRef);
@@ -47,7 +56,7 @@ public class NotificationsViewModel extends ViewModel {
     /**
      * Make notification seen in Firebase
      *
-     * @param notification
+     * @param notification the notification
      */
     public void makeNotificationSeen(Notification notification) {
         if (!notification.getIsSeen()) {
@@ -58,6 +67,8 @@ public class NotificationsViewModel extends ViewModel {
 
     /**
      * Make all notifications seen in Firebase
+     *
+     * @param userID the user id
      */
     public void makeAllNotificationsSeen(String userID) {
         DatabaseWriteHelper.makeAllNotificationsSeen(userID);
@@ -66,7 +77,7 @@ public class NotificationsViewModel extends ViewModel {
     /**
      * Delete notification from Firebase
      *
-     * @param deletedNotification
+     * @param deletedNotification the deleted notification
      */
     public void deleteNotification(Notification deletedNotification) {
         Log.i(TAG, "delete notification from LiveData: " + deletedNotification.getMessage());
@@ -76,13 +87,14 @@ public class NotificationsViewModel extends ViewModel {
     /**
      * Delete all notifications from Firebase
      *
-     * @param userID
+     * @param userID the user id
      */
     public void deleteAllNotifications(String userID) {
         DatabaseWriteHelper.deleteAllNotifications(userID);
     }
 
     /**
+     * Gets notification live data.
      *
      * @return Observable list of Notification data from Firebase
      */

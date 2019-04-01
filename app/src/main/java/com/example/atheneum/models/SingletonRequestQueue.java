@@ -8,9 +8,8 @@ import com.android.volley.toolbox.Volley;
 
 /**
  * Singleton for app wide RequestQueue for API calls
- *
+ * <p>
  * Taken from https://developer.android.com/training/volley/requestqueue
- *
  */
 public class SingletonRequestQueue {
     private static SingletonRequestQueue instance;
@@ -45,7 +44,7 @@ public class SingletonRequestQueue {
      * Initialize a singleton object of RequestQueue type within the singleton. This is for allowing
      * expantion of the class to potentially hold other data as well. Currently, this is not necessarily
      * needed and could be included in the SingletonRequestQueue constructor.
-     *
+     * <p>
      * Used when accessing the request queue.
      *
      * @return the RequestQueue instance
@@ -62,8 +61,8 @@ public class SingletonRequestQueue {
     /**
      * Add a request to the requestQueue
      *
-     * @param req the request object
      * @param <T> the generic type parameter for the request object
+     * @param req the request object
      */
     public <T> void addToRequestQueue(Request<T> req) {
         getRequestQueue().add(req);
