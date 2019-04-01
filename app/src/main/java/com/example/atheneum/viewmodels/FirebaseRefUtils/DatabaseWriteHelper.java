@@ -410,6 +410,7 @@ public class DatabaseWriteHelper {
                     Notification notification = ds.getValue(Notification.class);
                     if (!notification.getIsSeen()) {
                         makeNotificationSeen(notification);
+                        Log.i(TAG, notification.getMessage());
                     }
                 }
             }
