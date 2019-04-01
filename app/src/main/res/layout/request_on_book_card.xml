@@ -22,6 +22,7 @@
         android:id="@+id/request_decline"
         android:src="@drawable/close"
         android:onClick="declineRequest"
+        android:layout_marginLeft="25dp"
         />
 
     <ImageView
@@ -31,6 +32,8 @@
         android:layout_gravity="right"
         android:gravity="right"
         android:src="@drawable/check"
-        android:onClick="acceptRequest" />
+        android:onClick="acceptRequest"
+        android:layout_marginLeft="25dp"
+        />
 
 </LinearLayout>

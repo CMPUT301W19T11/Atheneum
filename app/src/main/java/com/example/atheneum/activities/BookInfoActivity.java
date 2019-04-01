@@ -16,9 +16,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -65,7 +62,6 @@ import com.example.atheneum.models.Transaction;
 
 
 import com.example.atheneum.models.Photo;
-//import com.example.atheneum.models.Request;
 
 import com.example.atheneum.models.User;
 import com.example.atheneum.utils.BookRequestViewHolder;
@@ -148,8 +144,8 @@ public class BookInfoActivity extends AppCompatActivity {
     private Button getReviewsBtn;
 
 
-    private Button deleteBtn;
-    private Button editBtn;
+    private Button setLoc;
+    private Button getLoc;
     private Button scanBtn;
 
     private Book book;
@@ -181,7 +177,7 @@ public class BookInfoActivity extends AppCompatActivity {
                             transactionLiveData.observe(this, new Observer<Transaction>() {
                                 @Override
                                 public void onChanged(@Nullable Transaction transaction) {
-                                    if (transaction != null){
+                                    if (transaction != null) {
                                         Log.i(TAG, "updateTransaction(): got transaction" + transaction.toString());
                                         Log.i(TAG, "bookID:  " + String.valueOf(transaction.getBookID()));
                                         Log.i(TAG, "BScan value:" + String.valueOf(transaction.getBScan()));
@@ -207,6 +203,9 @@ public class BookInfoActivity extends AppCompatActivity {
                                             transactionLiveData.removeObserver(this);
                                             transactionViewModel.updateTransactionReturned(book);
                                             scanBtn.setClickable(true);
+
+                                            getLoc.setVisibility(View.GONE);
+                                            findViewById(R.id.location_prompt).setVisibility(View.GONE);
                                         }
 
                                         if(transaction.getType().equals(Transaction.CHECKOUT)){
@@ -345,6 +344,20 @@ public class BookInfoActivity extends AppCompatActivity {
         loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
+    public void setLocation() {
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        mapIntent.putExtra("BookID", bookID);
+        mapIntent.putExtra("ViewOnly", false);
+        startActivity(mapIntent);
+    }
+
+    public void getLocation() {
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        mapIntent.putExtra("BookID", bookID);
+        mapIntent.putExtra("ViewOnly", true);
+        startActivity(mapIntent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -370,6 +383,26 @@ public class BookInfoActivity extends AppCompatActivity {
 
 
         borrowerProfileArea = (LinearLayout) findViewById(R.id.borrower_prof_area);
+
+        setLoc = findViewById(R.id.set_location);
+        setLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation();
+            }
+        });
+        setLoc.setVisibility(View.GONE);
+
+        getLoc = findViewById(R.id.get_location);
+        getLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLocation();
+            }
+        });
+        getLoc.setVisibility(View.GONE);
+        findViewById(R.id.location_prompt).setVisibility(View.GONE);
+
         ownerProfileArea = (LinearLayout) findViewById(R.id.owner_prof_area);
 
         FirstBookPhotoViewModelFactory bookPhotoViewModelFactory = new FirstBookPhotoViewModelFactory(bookID);
@@ -738,6 +771,11 @@ public class BookInfoActivity extends AppCompatActivity {
 
         Transaction transaction = new Transaction(Transaction.CHECKOUT, null, requester.getUserID(), loggedInUser.getUserID(), bookID, false, false);
         DatabaseWriteHelper.addNewTransaction(transaction);
+
+        //US 09.01.01
+        //As an owner
+        //specify a geo location on a map of where to receive a book when I accept a request on the book
+        setLocation();
     }
 
     private void hideRequestStatus() {
@@ -764,22 +802,30 @@ public class BookInfoActivity extends AppCompatActivity {
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String requestStatus = dataSnapshot.getValue(String.class);
-                    Log.i(TAG, "Request status: " + requestStatus);
-                    // update the request status text
-                    requestStatusTextView.setText((String) requestStatus);
-                    // set color
-                    if(requestStatus.equals("PENDING")){
-                        requestStatusTextView.setTextColor(Color.BLUE);
-                    }
-                    else if(requestStatus.equals("ACCEPTED")){
-                        requestStatusTextView.setTextColor(Color.GREEN);
-                    }
-                    else if(requestStatus.equals("DECLINED")){
-                        requestStatusTextView.setTextColor(Color.RED);
-                    }
-                    else {
-                        Log.e(TAG, "Bad request status, shouldn't be here");
+                    if (dataSnapshot.exists()) {
+                        String requestStatus = dataSnapshot.getValue(String.class);
+                        Log.i(TAG, "Request status: " + requestStatus);
+                        // update the request status text
+                        requestStatusTextView.setText((String) requestStatus);
+                        // set color
+                        if(requestStatus.equals("PENDING")){
+                            requestStatusTextView.setTextColor(Color.BLUE);
+                        }
+                        else if(requestStatus.equals("ACCEPTED")){
+                            requestStatusTextView.setTextColor(Color.GREEN);
+                            getLoc.setVisibility(View.VISIBLE);
+                            findViewById(R.id.requester).setVisibility(View.GONE);
+                            findViewById(R.id.location_prompt).setVisibility(View.VISIBLE);
+                        }
+                        else if(requestStatus.equals("DECLINED")){
+                            requestStatusTextView.setTextColor(Color.RED);
+                        }
+                        else {
+                            Log.e(TAG, "Bad request status, shouldn't be here");
+                        }
+                    } else {
+                        Log.i(TAG, "no request!");
+                        requestStatusTextView.setText("");
                     }
                 }
 
@@ -1120,6 +1166,10 @@ public class BookInfoActivity extends AppCompatActivity {
 
         if (view_type.equals(OWNER_VIEW)) {
             if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
+                getLoc.setVisibility(View.VISIBLE);
+                findViewById(R.id.requester).setVisibility(View.GONE);
+                findViewById(R.id.location_prompt).setVisibility(View.VISIBLE);
+
                 Log.i(TAG, "***//scan button visible");
                 scanBtn.setVisibility(View.VISIBLE);
                 scanBtn.setOnClickListener(new View.OnClickListener() {
@@ -1246,3 +1296,4 @@ public class BookInfoActivity extends AppCompatActivity {
 
     }
 }
+

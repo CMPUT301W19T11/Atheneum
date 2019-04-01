@@ -36,6 +36,7 @@ import com.example.atheneum.utils.PhotoUtils;
 import com.example.atheneum.viewmodels.UserViewModel;
 import com.example.atheneum.viewmodels.UserViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
@@ -180,7 +181,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.content_frame, new BorrowerFragment()).addToBackStack("BorrowerPage").commit();
         } else if (id == R.id.nav_search) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, new SearchFragment()).addToBackStack("Search").commit();
-
+//        } else if (id == R.id.nav_map) {
+//            Intent mapIntent = new Intent(this, MapActivity.class);
+//            mapIntent.putExtra("ViewOnly", false);
+//            mapIntent.putExtra("ViewOnly", true);
+//            startActivity(mapIntent);
         } else if (id == R.id.nav_logout) {
             Log.i(TAG, "logging out");
             // stop notifications service
