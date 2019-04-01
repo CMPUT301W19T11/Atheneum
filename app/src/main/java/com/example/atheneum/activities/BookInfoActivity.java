@@ -771,9 +771,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         }
                     }
                     else{
-                        requestStatusTextView.setVisibility(View.GONE);
-                        TextView requestStatusText =  findViewById(R.id.requestStatusText);
-                        requestStatusText.setVisibility(View.GONE);
+                        hideRequestStatus();
                         Log.i(TAG, "request is null");
                     }
                 }
