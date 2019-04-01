@@ -28,6 +28,9 @@ import com.example.atheneum.viewmodels.UserViewModelFactory;
 
 import org.w3c.dom.Text;
 
+/**
+ * Displays a list of requests for a user to a recyclerview.
+ */
 public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerRequestListAdapter.ViewHolder> {
     private static final String TAG = BorrowerRequestListAdapter.class.getSimpleName();
     private static final DiffUtil.ItemCallback<Request> DIFF_CALLBACK = new DiffUtil.ItemCallback<Request>() {

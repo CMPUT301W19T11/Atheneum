@@ -29,6 +29,8 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass that displays the home page.
+ *
+ * Shows recommendation books based on popularity.
  */
 public class HomeFragment extends Fragment {
     private static final String TAG = HomeFragment.class.getSimpleName();
