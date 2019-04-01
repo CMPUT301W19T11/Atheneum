@@ -8,6 +8,9 @@ _noun_
 2. a library or reading room.
 3. ( initial capital letter ) a sanctuary of Athena at Athens, built by the Roman emperor Hadrian, and frequented by poets and scholars. 
 
+## Promotional Video
+
+[![](http://img.youtube.com/vi/g6DsP0W9_no/0.jpg)](http://www.youtube.com/watch?v=g6DsP0W9_no "Atheneum Promotional Video")
 
 ## Running UI Tests
 
