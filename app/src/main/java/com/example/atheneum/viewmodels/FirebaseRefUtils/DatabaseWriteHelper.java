@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.atheneum.models.Book;
+import com.example.atheneum.models.Location;
 import com.example.atheneum.models.Notification;
 import com.example.atheneum.models.Photo;
 import com.example.atheneum.models.Request;
@@ -429,6 +430,10 @@ public class DatabaseWriteHelper {
 
     public static void updateTransaction(Transaction transaction){
         TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(transaction);
+    }
+
+    public static void writeLocation(String BookID, Location location) {
+        TransactionRefUtils.getTransactionRef(BookID).child("location").setValue(location);
     }
 
     public static void updateTransactionBookBorrow(Book book, Transaction transaction){
