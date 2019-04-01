@@ -1,4 +1,8 @@
 <resources>
+
+    <!--Maps, Directions, and Places-->
+    <string name="google_maps_api_key">AIzaSyAi9_RRiwiwsIMzGs99KVEHSaueKQp_Z4k</string>
+
     <string name="app_name">Atheneum</string>
     <string name="title_activity_main">Home</string>
     <string name="title_activity_complete_registration">Complete Registration</string>
@@ -126,6 +130,7 @@
     <string name="newbooktest_desc">Lorem ipsum dolor sit amet</string>
     <string name="editbooktest_newtitle">New Title</string>
     <string name="editbooktest_newdesc">Some different text here</string>
+    <string name="title_activity_map">MapActivity</string>
     <!--End of Strings for Add/edit/delete book tests-->
 
     <!--Strings for ViewEditBookPhotosActivity-->
