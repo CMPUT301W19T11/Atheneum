@@ -36,6 +36,12 @@ import java.util.List;
 
 /**
  * The Borrower page fragment to list borrower's requested books.b
+ * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
+ * See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
+ * See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
+ * See: https://developer.android.com/guide/topics/ui/controls/spinner
+ * See: https://stackoverflow.com/questions/2399086/how-to-use-spinner
+ * See: https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
  */
 public class BorrowerRequestsFragment extends Fragment {
     private View view;

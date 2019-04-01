@@ -29,7 +29,13 @@ import com.example.atheneum.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ *The Fragment for showing sliding windows for BorrwerRequestFragment and BorrowerBookFragment
+ *  See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
+ *  See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
+ *  See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
+ *  See: https://stackoverflow.com/questions/41413150/fragment-tabs-inside-fragment/41656303#41656303
+ */
 public class BorrowerFragment extends Fragment {
     private View view;
     private Context context;
