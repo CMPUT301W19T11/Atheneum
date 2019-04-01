@@ -16,7 +16,8 @@ import com.example.atheneum.R;
 
 /**
  * An activity to hold and show the reviews page of the book from goodreads. This was done since
- * Goodreads removed having reviews directly available in their API in 2012.
+ * Goodreads removed having reviews directly available in their API in 2012. The URL was  taken from
+ * the API response of the goodreads request
  */
 public class GoodreadsReviewsActivity extends AppCompatActivity {
     public static final String WEBVIEW_URL = "webview_url";
@@ -91,12 +92,19 @@ public class GoodreadsReviewsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * hide the webview and show an error message in its place
+     * @param message the message to show
+     */
     private void showWebviewErrorMessage(String message) {
         webView.setVisibility(View.GONE);
         errorMessageTextView.setText(message);
         errorMessageTextView.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hide the error message and show the webview
+     */
     private void showWebview() {
         errorMessageTextView.setVisibility(View.GONE);
         webView.setVisibility(View.VISIBLE);
