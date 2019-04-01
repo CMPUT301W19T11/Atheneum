@@ -1216,8 +1216,12 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         }
         else if (view_type.equals(REQUSET_VIEW)) {
-            // TODO hide button if you are not the borrower
-
+            // hide button if you are not the borrower
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (book.getBorrowerID() != null && currentUser != null && !book.getBorrowerID().equals(currentUser.getUid())) {
+                hideScanButtonArea();
+                return;
+            }
 
             scanBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
