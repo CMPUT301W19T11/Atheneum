@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Utility class to abstract writes to the database. Abstracting writes to the database in a central
@@ -400,15 +401,15 @@ public class DatabaseWriteHelper {
     }
 
     public static void makeAllNotificationsSeen(String userID) {
-        Query notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
+        final Query notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
         notificationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                notificationsRef.removeEventListener(this);
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Notification notification = dataSnapshot.getValue(Notification.class);
+                    Notification notification = ds.getValue(Notification.class);
                     if (!notification.getIsSeen()) {
                         makeNotificationSeen(notification);
-                        Log.i(TAG, notification.getMessage());
                     }
                 }
             }
