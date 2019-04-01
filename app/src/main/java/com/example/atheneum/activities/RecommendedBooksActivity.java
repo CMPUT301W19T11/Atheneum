@@ -23,6 +23,9 @@ import com.example.atheneum.views.adapters.RecommendedBooksListAdapter;
 
 import java.util.List;
 
+/**
+ * Show targeted recommendations to the user after they return a book.
+ */
 public class RecommendedBooksActivity extends AppCompatActivity {
     private static final String TAG = RecommendedBooksActivity.class.getSimpleName();
     public static final String INTENT_KEY_BORROWER_ID = RecommendedBooksActivity.class.getCanonicalName()

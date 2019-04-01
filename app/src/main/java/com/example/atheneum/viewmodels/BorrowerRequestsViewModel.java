@@ -19,6 +19,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Abstracts operations on a list of borrower requests from a Firebase query and provides
+ * a LiveData stream to a View (either an Activity or Fragment). This livedata stream can be observed
+ * for changes by adding an observer and then updating the view based on the changes to the data.
+ */
 public class BorrowerRequestsViewModel extends ViewModel {
     private final String TAG = BorrowerRequestsViewModel.class.getSimpleName();
 
@@ -27,6 +33,11 @@ public class BorrowerRequestsViewModel extends ViewModel {
 
     private final LiveData<List<Request>> borrowerRequestLiveData;
 
+    /**
+     * Instantiate a new instance of BorrowerRequestsViewModel
+     *
+     * @param userID User ID of the borrower
+     */
     public BorrowerRequestsViewModel(String userID) {
         this.userID = userID;
 //        FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -48,10 +59,19 @@ public class BorrowerRequestsViewModel extends ViewModel {
         });
     }
 
+    /**
+     * @return Lifecycle-aware observable stream of {@code List<Request>} that the view can observe
+     * for changes.
+     */
     public LiveData<List<Request>> getBorrowerRequestLiveData() {
         return borrowerRequestLiveData;
     }
 
+    /**
+     *
+     * @param status Status to filter on. If null, shows requests with all statuses.
+     * @return Filtered list of requests
+     */
     public List<Request> filterRequestsByStatus(Request.Status status) {
         List<Request> requestList = borrowerRequestLiveData.getValue();
         if (requestList != null && status != null) {
