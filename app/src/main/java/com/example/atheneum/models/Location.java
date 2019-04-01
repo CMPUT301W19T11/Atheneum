@@ -4,6 +4,7 @@ package com.example.atheneum.models;
  * Stores Locations as a lat and lon pair.
  */
 public class Location {
+
     private double lat;
     private double lon;
 

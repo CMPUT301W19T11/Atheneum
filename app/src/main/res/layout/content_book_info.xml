@@ -338,6 +338,32 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/location_area"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="25dp">
+            <TextView
+                android:id="@+id/location_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meeting Location:"
+                android:textColor="@color/design_default_color_primary_dark" />
+            <Button
+                android:id="@+id/set_location"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Set Location"
+                android:gravity="center"/>
+
+            <Button
+                android:id="@+id/get_location"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Get Location"
+                android:gravity="center"/>
+        </LinearLayout>
 
 
         </LinearLayout>
