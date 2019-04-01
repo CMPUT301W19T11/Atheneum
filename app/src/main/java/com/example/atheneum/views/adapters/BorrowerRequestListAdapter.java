@@ -36,7 +36,8 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
     private static final DiffUtil.ItemCallback<Request> DIFF_CALLBACK = new DiffUtil.ItemCallback<Request>() {
         @Override
         public boolean areItemsTheSame(@NonNull Request Request, @NonNull Request other) {
-            return Request.getRequesterID().equals(other.getRequesterID());
+            return Request.getBookID().equals(other.getBookID())
+                    && Request.getRequesterID().equals(other.getRequesterID());
         }
 
         @Override
