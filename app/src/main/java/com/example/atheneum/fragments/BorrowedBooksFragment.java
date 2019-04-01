@@ -49,8 +49,11 @@ import java.util.ArrayList;
 import static com.example.atheneum.fragments.OwnerPageFragment.REQUEST_DELETE_ENTRY;
 
 /**
- * The Borrowed books fragment.
- * to show borrowed books
+ * The Fragment for showing books borrowed by current user
+ *
+ *  See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
+ *  See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
+ *  See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
  */
 public class BorrowedBooksFragment extends Fragment {
 
@@ -66,17 +69,22 @@ public class BorrowedBooksFragment extends Fragment {
 
     private static final String TAG = BorrowedBooksFragment.class.getSimpleName();
 
-
     /**
      * Instantiates a new Borrowed books fragment.
+     * Required empty public constructor
      */
     public BorrowedBooksFragment() {
         // Required empty public constructor
     }
 
 
-
-
+    /**
+     * creates view for the fragment
+     * @param inflater for inflating the layout
+     * @param container viewgroup that is base for layout/views
+     * @param savedInstanceState bundle of environment data
+     * @return
+     */
     @SuppressLint("RestrictedApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

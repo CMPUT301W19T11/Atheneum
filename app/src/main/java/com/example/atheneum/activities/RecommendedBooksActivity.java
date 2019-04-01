@@ -26,6 +26,7 @@ import java.util.List;
 /**
  * The Recommended books activity.
  * handles showing recommended books to users
+ * Shows targeted recommendations to the user after they return a book.
  */
 public class RecommendedBooksActivity extends AppCompatActivity {
     private static final String TAG = RecommendedBooksActivity.class.getSimpleName();

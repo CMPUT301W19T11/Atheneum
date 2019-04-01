@@ -98,8 +98,9 @@ import com.google.firebase.database.ValueEventListener;
 
 
 /**
- * Activity for viewing the specifics of a book.
- * Provides the UI fields and buttons for deleting and editing a book.
+ * Activity for viewing the specifics of a book that changes based on how it's being viewed.
+ * That is, it shows different UI elements for different view types(owner, borrower, viewing a request)
+ *
  */
 public class BookInfoActivity extends AppCompatActivity {
     private Context ctx;
@@ -929,7 +930,7 @@ public class BookInfoActivity extends AppCompatActivity {
                             notification.constructMessage(requester.getUserName(), book_to_request.getTitle());
                             DatabaseWriteHelper.makeRequest(newRequest, notification);
 
-                            // TODO finish with result to kill previous activity as well
+                            // finish with result to kill previous activity as well
                             Intent onFinishData = new Intent();
                             onFinishData.putExtra(NewRequestActivity.BOOK_REQUESTED, true);
                             setResult(Activity.RESULT_OK, onFinishData);
@@ -1119,9 +1120,6 @@ public class BookInfoActivity extends AppCompatActivity {
                                 public void onClick(View view) {
                                     Log.i(TAG, "accept request button pressed");
                                     acceptRequest(requester);
-
-                                    // TODO show scan button
-//                                    showScanButtonArea();
                                 }
                             });
                         }
@@ -1323,6 +1321,11 @@ public class BookInfoActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * shows the different UI elements depending on the type of view
+     * Enables and disables the variable elemts, while the other element sdo not change
+     * @param book
+     */
     private void setupViewComponents(final Book book) {
         if (this.view_type == null || this.view_type.equals("")){
             Log.e(TAG, "No view type, shouldn't be happening");

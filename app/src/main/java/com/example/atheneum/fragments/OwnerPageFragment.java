@@ -40,6 +40,9 @@ import java.util.ArrayList;
  * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
  * See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
  * See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
+ * See: https://developer.android.com/guide/topics/ui/controls/spinner
+ * See: https://stackoverflow.com/questions/2399086/how-to-use-spinner
+ * See: https://stackoverflow.com/questions/45340096/how-do-i-get-the-spinner-clicked-item-out-of-the-onitemselectedlistener-in-this
  */
 public class OwnerPageFragment extends Fragment {
     private View view;
@@ -160,8 +163,9 @@ public class OwnerPageFragment extends Fragment {
 
     /**
      * Retrieve books.
+     * and filter books owned by current user by status
      *
-     * @param status the status
+     * @param status
      */
     public void retrieveBooks(final String status){
 //        Log.i(TAG, "use Spinner retrive books");

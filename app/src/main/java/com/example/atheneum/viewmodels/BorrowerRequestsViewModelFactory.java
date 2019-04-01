@@ -7,14 +7,19 @@ import android.support.annotation.NonNull;
 /**
  * The type Borrower requests view model factory.
  * generate BorrowerRequestsViewModel objects
+ *
+ * Factory that instantiates a BorrowerRequestsViewModelFactory with a particular userID.
+ * Read the StackOverflow post linked here to understand we can't instantiate BorrowerRequestsViewModel directly.
+ *
+ * See: https://stackoverflow.com/a/46704702/11039833
  */
 public class BorrowerRequestsViewModelFactory implements ViewModelProvider.Factory {
     private String userID;
 
     /**
-     * Instantiates a new Borrower requests view model factory.
+     * Instantiate a new instance of BorrowerRequestsViewModelFactory
      *
-     * @param userID the user id
+     * @param userID User ID of the user who wants to see their requests
      */
     public BorrowerRequestsViewModelFactory(String userID) {
         this.userID = userID;

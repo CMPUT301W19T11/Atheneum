@@ -31,6 +31,7 @@ import org.w3c.dom.Text;
 /**
  * The type Borrower request list adapter.
  * handles displaying request lists for borrowers
+ * Displays a list of requests for a user to a recyclerview.
  */
 public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerRequestListAdapter.ViewHolder> {
     private static final String TAG = BorrowerRequestListAdapter.class.getSimpleName();

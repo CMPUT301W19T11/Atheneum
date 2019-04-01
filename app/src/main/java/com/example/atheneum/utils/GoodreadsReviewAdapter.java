@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Adapter class for converting the XML response from goodreads into a GoodreadsReveiwInfo Object.
+ * Adapter pattern class for converting the XML response from goodreads into a GoodreadsReveiwInfo Object.
  * Most of the XML handling taken from the Google tutorial found at
  * https://developer.android.com/training/basics/network-ops/xml
  */
@@ -177,7 +177,7 @@ public class GoodreadsReviewAdapter {
      * Takes the found isbn13 tag and returns the ISBN
      *
      * @param parser the XmlPullParser being used
-     * @return the ISBN
+     * @return the ISBN13
      * @throws IOException
      * @throws XmlPullParserException
      */
@@ -198,7 +198,7 @@ public class GoodreadsReviewAdapter {
      * Takes the found isbn tag and returns the ISBN (10)
      *
      * @param parser the XmlPullParser being used
-     * @return the ISBN
+     * @return the ISBN10
      * @throws IOException
      * @throws XmlPullParserException
      */
