@@ -1162,13 +1162,22 @@ public class BookInfoActivity extends AppCompatActivity {
 
     public void showScanButtonArea(final Book book) {
         LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
+        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+        transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
+        final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
 
         // finish quick if not in a state to have this button
-        final TextView requestStatusTextView = (TextView) findViewById(R.id.requestStatus);
-        if (requestStatusTextView.getText().toString().equals("PENDING") || requestStatusTextView.getText().toString().equals("DECLINED")){
-            hideScanButtonArea();
-            return;
-        }
+        transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
+            @Override
+            public void onChanged(@Nullable Transaction transaction) {
+                if (transaction == null) {
+                    Log.i(TAG, "Transaction is null, hidding scan area");
+                    hideScanButtonArea();
+                    transactionLiveData.removeObserver(this);
+                    return;
+                }
+            }
+        });
 
         if (view_type.equals(OWNER_VIEW)) {
             if (book.getStatus().equals(Book.Status.ACCEPTED) || book.getStatus().equals(Book.Status.BORROWED)) {
@@ -1181,11 +1190,7 @@ public class BookInfoActivity extends AppCompatActivity {
                 scanBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-                        transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
-                        final LiveData<Transaction> transactionLiveData1 = transactionViewModel.getTransactionLiveData();
-
-                        transactionLiveData1.observe(BookInfoActivity.this, new Observer<Transaction>() {
+                        transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
                             @Override
                             public void onChanged(@Nullable Transaction transaction) {
                                 if(transaction != null) {
@@ -1205,7 +1210,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                 else{
                                     Log.d(TAG, "Error transaction is null");
                                 }
-                                transactionLiveData1.removeObserver(this);
+                                transactionLiveData.removeObserver(this);
                             }
                         });
 
@@ -1217,14 +1222,16 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         }
         else if (view_type.equals(REQUSET_VIEW)) {
+            // hide button if you are not the borrower
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (book.getBorrowerID() != null && currentUser != null && !book.getBorrowerID().equals(currentUser.getUid())) {
+                hideScanButtonArea();
+                return;
+            }
+
             scanBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-
-                    TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
-                    TransactionViewModel transactionViewModel = ViewModelProviders.of(BookInfoActivity.this, factory).get(TransactionViewModel.class);
-                    final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
-
                     transactionLiveData.observe(BookInfoActivity.this, new Observer<Transaction>() {
                         @Override
                         public void onChanged(@Nullable Transaction transaction) {
@@ -1246,6 +1253,7 @@ public class BookInfoActivity extends AppCompatActivity {
                             }
                             else{
                                 Log.d(TAG, "Error transaction is null");
+                                hideScanButtonArea();
                             }
                             transactionLiveData.removeObserver(this);
                         }
