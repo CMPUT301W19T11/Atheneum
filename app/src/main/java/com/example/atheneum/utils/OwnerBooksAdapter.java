@@ -88,7 +88,7 @@ public class OwnerBooksAdapter extends
      *
      * @param parent
      * @param viewType
-     * @return
+     * @return the viewholder for this adapter
      */
     @Override
     public OwnerBooksAdapter.MeasurementViewHolder onCreateViewHolder(final ViewGroup parent,

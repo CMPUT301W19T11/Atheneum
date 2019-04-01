@@ -122,7 +122,7 @@ public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdap
      *
      * @param viewGroup
      * @param position
-     * @return
+     * @return viewholder for this adapter
      */
     @NonNull
     @Override

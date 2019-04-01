@@ -213,7 +213,7 @@ public class EditProfileFragment extends Fragment {
      * @param inflater
      * @param container
      * @param savedInstanceState
-     * @return
+     * @return view: the view for this fragment
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

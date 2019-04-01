@@ -128,18 +128,10 @@ public class CameraHandler<T> {
      * override the onRequestPermissionsResult() method for the activity/fragment and call the onRequestPermissionsResult()
      * method of the picture controller instance in order to handle events.
      * <p>
-     * Example:
-     * <p>
-     * {@code
      *
      * @param requestCode  Type of permissions request
      * @param permissions  Array of strings containing permissions requested
      * @param grantResults Results of permissions granted
-     * @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-     * super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-     * pictureController.onRequestPermissionsResult(requestCode, permissions, grantResults);
-     * }
-     * }*
      */
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
@@ -167,18 +159,10 @@ public class CameraHandler<T> {
      * override the onActivityResult() method for the activity/fragment and call the onActivityResult()
      * method of the picture controller instance in order to handle events.
      * <p>
-     * Example:
-     * <p>
-     * {@code
      *
      * @param requestCode Request Code for starting activity/fragment
      * @param resultCode  Result of starting activity/fragment
      * @param data        Data obtained from the request
-     * @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
-     * super.onActivityResult(requestCode, resultCode, data);
-     * pictureController.onActivityResult(requestCode, resultCode, data);
-     * }
-     * }*
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult");

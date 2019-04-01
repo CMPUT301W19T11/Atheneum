@@ -93,7 +93,7 @@ public class UserListAdapter extends ListAdapter<User, UserListAdapter.ViewHolde
      *
      * @param viewGroup
      * @param position
-     * @return
+     * @return viewholder for this adapter
      */
     @NonNull
     @Override

@@ -58,7 +58,7 @@ public class PushNotificationsService extends Service {
      * @param intent
      * @param flags
      * @param startId
-     * @return
+     * @return int: integer for this onStartCommand
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
