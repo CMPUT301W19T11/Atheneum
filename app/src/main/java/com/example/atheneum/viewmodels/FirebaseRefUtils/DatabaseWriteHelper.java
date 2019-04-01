@@ -401,26 +401,16 @@ public class DatabaseWriteHelper {
 
     public static void makeAllNotificationsSeen(String userID) {
         Query notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
-        notificationsRef.addChildEventListener(new ChildEventListener() {
+        notificationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Notification notification = dataSnapshot.getValue(Notification.class);
-                makeNotificationSeen(notification);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Notification notification = dataSnapshot.getValue(Notification.class);
+                    if (!notification.getIsSeen()) {
+                        makeNotificationSeen(notification);
+                        Log.i(TAG, notification.getMessage());
+                    }
+                }
             }
 
             @Override
