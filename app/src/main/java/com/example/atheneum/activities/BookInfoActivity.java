@@ -246,6 +246,7 @@ public class BookInfoActivity extends AppCompatActivity {
                     else{
                         Log.i(TAG, "Updating transaction bScan");
                         TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());
+
                         Log.i(TAG, "book  bookID is " + book.getBookID());
                         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this, factory).get(TransactionViewModel.class);
                         final LiveData<Transaction> transactionLiveData = transactionViewModel.getTransactionLiveData();
@@ -802,9 +803,12 @@ public class BookInfoActivity extends AppCompatActivity {
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                     if (dataSnapshot.exists()) {
                         String requestStatus = dataSnapshot.getValue(String.class);
                         Log.i(TAG, "Request status: " + requestStatus);
+
+
                         // update the request status text
                         requestStatusTextView.setText((String) requestStatus);
                         // set color
@@ -823,6 +827,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         else {
                             Log.e(TAG, "Bad request status, shouldn't be here");
                         }
+
                     } else {
                         Log.i(TAG, "no request!");
                         hideRequestStatus();

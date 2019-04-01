@@ -1,3 +1,4 @@
+
 package com.example.atheneum.viewmodels.FirebaseRefUtils;
 
 import android.graphics.Bitmap;
