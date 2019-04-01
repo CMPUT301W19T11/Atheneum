@@ -42,16 +42,31 @@ public class OwnerBooksListAdapter extends ListAdapter<Book, OwnerBooksListAdapt
      * Custom View Holder used to display the book and deal with onClick events.
      */
     public class OwnerBookViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * The Book item.
+         */
         public LinearLayout bookItem;
+        /**
+         * The Title text view.
+         */
         public TextView titleTextView;
+        /**
+         * The Author text view.
+         */
         public TextView authorTextView;
+        /**
+         * The Status text view.
+         */
         public TextView statusTextView;
+        /**
+         * The Borrower name text view.
+         */
         public TextView borrowerNameTextView;
 
         /**
          * Instantiates a new books view holder.
          *
-         * @param view
+         * @param view the view
          */
         public OwnerBookViewHolder(View view) {
             super(view);
@@ -70,7 +85,7 @@ public class OwnerBooksListAdapter extends ListAdapter<Book, OwnerBooksListAdapt
         /**
          * Handles onClick events on books in the list.
          *
-         * @param v View that was clicked.
+         * @param v    View that was clicked.
          * @param book Book bound to the view.
          */
         void onClick(View v, Book book);

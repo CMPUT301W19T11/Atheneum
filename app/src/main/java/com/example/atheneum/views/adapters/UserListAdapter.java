@@ -14,7 +14,7 @@ import com.example.atheneum.models.User;
 
 /**
  * Adapter that displays a list of users to a Recyclerview.
- *
+ * <p>
  * See: https://developer.android.com/reference/android/support/v7/recyclerview/extensions/ListAdapter
  */
 public class UserListAdapter extends ListAdapter<User, UserListAdapter.ViewHolder> {
@@ -41,7 +41,7 @@ public class UserListAdapter extends ListAdapter<User, UserListAdapter.ViewHolde
         /**
          * Create view holder object
          *
-         * @param view
+         * @param view the view
          */
         public ViewHolder(@NonNull View view) {
             super(view);
@@ -93,7 +93,7 @@ public class UserListAdapter extends ListAdapter<User, UserListAdapter.ViewHolde
      *
      * @param viewGroup
      * @param position
-     * @return
+     * @return viewholder for this adapter
      */
     @NonNull
     @Override

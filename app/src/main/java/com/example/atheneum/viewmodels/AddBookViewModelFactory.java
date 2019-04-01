@@ -4,9 +4,18 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+/**
+ * The type Add book view model factory.
+ * generates addbookviewmodel objects
+ */
 public class AddBookViewModelFactory implements ViewModelProvider.Factory {
     private final String userID;
 
+    /**
+     * Instantiates a new Add book view model factory.
+     *
+     * @param userID the user id
+     */
     public AddBookViewModelFactory(String userID) {
         this.userID = userID;
     }

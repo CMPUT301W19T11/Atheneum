@@ -16,16 +16,16 @@ import com.google.firebase.database.DatabaseReference;
  * Abstracts operations on a user retrieved from a Firebase query and provides a LiveData stream
  * to a View (either an Activity or Fragment). This livedata stream can be observed for changes by
  * adding a listener and then updating the view based on the changes to the data.
- *
+ * <p>
  * Since we can't call {@code ViewModelProviders.of(lifeCycleOwner).get(UserViewModel.class)} to get
  * a UserViewModel with a userID passed in, we have to use the UserViewModelFactory to instantiate
  * the UserViewModel: {@code ViewModelProviders.of(lifeCycleOwner, new UserViewModelFactory(userID)).get(UserViewModel.class) }
- *
+ * <p>
  * lifecyleOwner refers to either an Activity or a Fragment.
- *
+ * <p>
  * See: https://firebase.googleblog.com/2017/12/using-android-architecture-components.html
- *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_20.html
- *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_22.html
+ * https://firebase.googleblog.com/2017/12/using-android-architecture-components_20.html
+ * https://firebase.googleblog.com/2017/12/using-android-architecture-components_22.html
  */
 public class UserViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
@@ -35,6 +35,12 @@ public class UserViewModel extends ViewModel {
     // Reference to user in Firebase
     private final DatabaseReference userRef;
 
+    /**
+     * Generate view model provider key string.
+     *
+     * @param userID the user id
+     * @return the string
+     */
     public static String generateViewModelProviderKey(String userID) {
         return UserViewModel.class.getCanonicalName() + ":" + userID;
     }
@@ -72,6 +78,7 @@ public class UserViewModel extends ViewModel {
     }
 
     /**
+     * Gets user live data.
      *
      * @return Observable User data from Firebase
      */

@@ -9,7 +9,7 @@ import com.example.atheneum.models.Book;
 /**
  * Factory that instantiates a RecommendedBooksViewModelFactory with a particular borrowerID and isbn.
  * Read the StackOverflow post linked here to understand we can't instantiate RecommendedBooksViewModel directly.
- *
+ * <p>
  * See: https://stackoverflow.com/a/46704702/11039833
  */
 public class RecommendedBooksViewModelFactory implements ViewModelProvider.Factory {
@@ -20,7 +20,7 @@ public class RecommendedBooksViewModelFactory implements ViewModelProvider.Facto
      * Create a new instance of RecommendedBooksViewModelFactory
      *
      * @param borrowerID User ID of the borrower who just returned a book.
-     * @param isbn ISBN of the newly returned book.
+     * @param isbn       ISBN of the newly returned book.
      */
     public RecommendedBooksViewModelFactory(String borrowerID, Long isbn) {
         this.borrowerID = borrowerID;

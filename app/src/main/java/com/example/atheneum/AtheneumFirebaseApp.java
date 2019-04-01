@@ -5,7 +5,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Have to extend the base Android application class in order to enable disk persistence
- *
+ * <p>
  * See: https://stackoverflow.com/a/37766261/11039833
  */
 public class AtheneumFirebaseApp extends android.app.Application {

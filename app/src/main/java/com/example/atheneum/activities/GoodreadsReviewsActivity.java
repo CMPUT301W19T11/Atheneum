@@ -20,6 +20,9 @@ import com.example.atheneum.R;
  * the API response of the goodreads request
  */
 public class GoodreadsReviewsActivity extends AppCompatActivity {
+    /**
+     * The constant WEBVIEW_URL.
+     */
     public static final String WEBVIEW_URL = "webview_url";
     private static final String TAG = "GRReviewsActivity";
 

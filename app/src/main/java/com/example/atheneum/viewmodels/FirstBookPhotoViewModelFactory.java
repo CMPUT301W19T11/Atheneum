@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 /**
  * Factory that instantiates a FirstBookPhotoViewModel with a particular bookID.
  * Read the StackOverflow post linked here to understand we can't instantiate FirstBookPhotoViewModel directly.
- *
+ * <p>
  * See: https://stackoverflow.com/a/46704702/11039833
  */
 public class FirstBookPhotoViewModelFactory implements ViewModelProvider.Factory {

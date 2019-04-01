@@ -25,7 +25,7 @@ import java.util.HashMap;
  * Utility class to abstract writes to the database. Abstracting writes to the database in a central
  * hides information about the database from the views and makes it easier to write multi-path updates
  * correctly since multi-path updates can touch multiple paths within the database.
- *
+ * <p>
  * This class should be updated whenever new actions on the database are added.
  */
 public class DatabaseWriteHelper {
@@ -34,7 +34,7 @@ public class DatabaseWriteHelper {
     /**
      * Add a new book to the Database
      *
-     * @param owner Owner of the book.
+     * @param owner   Owner of the book.
      * @param newBook Book object to add to Database.
      */
     public static void addNewBook(User owner, Book newBook) {
@@ -66,7 +66,7 @@ public class DatabaseWriteHelper {
      * Removes a book and it's associated data from the Database.
      *
      * @param ownerUserID UserID of the book's owner.
-     * @param bookID Unique identifier of the book.
+     * @param bookID      Unique identifier of the book.
      */
     public static void deleteBook(String ownerUserID, String bookID) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
@@ -99,7 +99,7 @@ public class DatabaseWriteHelper {
      * Removes a book and it's associated data from the Database.
      *
      * @param owner Owner of the book.
-     * @param book Book object to remove from the Database.
+     * @param book  Book object to remove from the Database.
      */
     public static void deleteBook(User owner, Book book) {
         deleteBook(owner.getUserID(), book.getBookID());
@@ -117,7 +117,7 @@ public class DatabaseWriteHelper {
     /**
      * Add an new request to the Database.
      *
-     * @param request Request to add.
+     * @param request      Request to add.
      * @param notification Notification detailing request.
      */
     public static void makeRequest(Request request, Notification notification) {
@@ -162,8 +162,8 @@ public class DatabaseWriteHelper {
     /**
      * Accept a request on a book.
      *
-     * @param request Request to accept.
-     * @param acceptNotification Notification sent to book's accepted requester.
+     * @param request             Request to accept.
+     * @param acceptNotification  Notification sent to book's accepted requester.
      * @param declineNotification Notification sent to users whose requests have been declined.
      */
     public static void acceptRequest(final Request request,
@@ -218,8 +218,8 @@ public class DatabaseWriteHelper {
      * Triggers when a request is accepted
      * Used only by other DatabaseWriteHelper methods
      *
-     * @param bookID
-     * @param notification
+     * @param bookID       the book id
+     * @param notification the notification
      */
     public static void declineAllRequests(final String bookID, final Notification notification) {
         Log.i(TAG, "declineAllRequests!");
@@ -278,6 +278,14 @@ public class DatabaseWriteHelper {
         updates.put(pushNotificationsRef, notification);
     }
 
+    /**
+     * Decline request.
+     *
+     * @param requesterID        the requester id
+     * @param bookID             the book id
+     * @param notification       the notification
+     * @param shouldUpdateStatus the should update status
+     */
     public static void declineRequest(String requesterID, final String bookID,
                                       Notification notification, final boolean shouldUpdateStatus) {
         Log.i(TAG, "declining the request!");
@@ -319,6 +327,8 @@ public class DatabaseWriteHelper {
     /**
      * Triggers when all requests on a book are declined (no requests are accepted)
      * Used only by other DatabaseWriteHelper methods
+     *
+     * @param bookID the book id
      */
     public static void updateBookStatusToAvailable(final String bookID) {
         DatabaseReference bookRequestRef = RequestCollectionRefUtils
@@ -354,10 +364,21 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Delete push notification.
+     *
+     * @param notification the notification
+     */
     public static void deletePushNotification(Notification notification) {
         deletePushNotification(notification.getNotificationReceiverID(), notification.getNotificationID());
     }
 
+    /**
+     * Delete push notification.
+     *
+     * @param notificationReceiverID the notification receiver id
+     * @param notificationID         the notification id
+     */
     public static void deletePushNotification(String notificationReceiverID, String notificationID) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
@@ -379,6 +400,11 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Delete notification.
+     *
+     * @param notification the notification
+     */
     public static void deleteNotification(Notification notification) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
@@ -400,6 +426,11 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Make notification seen.
+     *
+     * @param notification the notification
+     */
     public static void makeNotificationSeen(Notification notification) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
@@ -421,6 +452,11 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Make all notifications seen.
+     *
+     * @param userID the user id
+     */
     public static void makeAllNotificationsSeen(String userID) {
         final Query notificationsRef = NotificationsRefUtils.getNotificationsRef(userID);
         notificationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -443,6 +479,11 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Delete all notifications.
+     *
+     * @param userID the user id
+     */
     public static void deleteAllNotifications(String userID) {
         HashMap<String, Object> updates = new HashMap<String, Object>();
 
@@ -464,19 +505,41 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Add new transaction.
+     *
+     * @param transaction the transaction
+     */
     public static void addNewTransaction(Transaction transaction){
         TransactionRefUtils.TRANSACTION_REF.child(transaction.getBookID()).setValue(transaction);
 
     }
 
+    /**
+     * Update transaction.
+     *
+     * @param transaction the transaction
+     */
     public static void updateTransaction(Transaction transaction){
         TransactionRefUtils.getTransactionRef(transaction.getBookID()).setValue(transaction);
     }
 
+    /**
+     * Write location.
+     *
+     * @param BookID   the book id
+     * @param location the location
+     */
     public static void writeLocation(String BookID, Location location) {
         TransactionRefUtils.getTransactionRef(BookID).child("location").setValue(location);
     }
 
+    /**
+     * Update transaction book borrow.
+     *
+     * @param book        the book
+     * @param transaction the transaction
+     */
     public static void updateTransactionBookBorrow(Book book, Transaction transaction){
         HashMap<String, Object> updates = new HashMap<>();
 
@@ -523,6 +586,11 @@ public class DatabaseWriteHelper {
         });
     }
 
+    /**
+     * Update transaction book return.
+     *
+     * @param book the book
+     */
     public static void updateTransactionBookReturn(Book book){
         HashMap<String, Object> updates = new HashMap<>();
 
@@ -555,7 +623,7 @@ public class DatabaseWriteHelper {
     /**
      * Add a photo for a particular book to the Database.
      *
-     * @param bookID Unique identifier for the book that the photo belongs to.
+     * @param bookID    Unique identifier for the book that the photo belongs to.
      * @param newBitmap New picture taken from camera.
      */
     public static void addBookPhoto(String bookID, Bitmap newBitmap) {
@@ -566,8 +634,8 @@ public class DatabaseWriteHelper {
     /**
      * Update a photo for a book.
      *
-     * @param bookID Unique identifier for the book that the photo belongs to.
-     * @param photo Photo object representing current state of the photo in the Database.
+     * @param bookID    Unique identifier for the book that the photo belongs to.
+     * @param photo     Photo object representing current state of the photo in the Database.
      * @param newBitmap New picture taken from camera.
      */
     public static void updateBookPhoto(String bookID, Photo photo, Bitmap newBitmap) {
@@ -579,7 +647,7 @@ public class DatabaseWriteHelper {
      * Delete a photo associated with a book.
      *
      * @param bookID Unique identifier for the book that the photo belongs to.
-     * @param photo Photo object.
+     * @param photo  Photo object.
      */
     public static void deleteBookPhoto(String bookID, Photo photo) {
         BookPhotosRefUtils.getBookPhotoRef(bookID, photo.getPhotoID()).removeValue();

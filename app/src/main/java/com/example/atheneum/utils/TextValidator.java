@@ -10,18 +10,17 @@ import android.widget.TextView;
 /**
  * Class that is used to validate changes to a TextView as the text within the TextView changes.
  * An instance of this class is used as a TextChangedListener for the TextView.
- *
+ * <p>
  * Obtained from StackOverflow: https://stackoverflow.com/a/11838715
  * License: https://creativecommons.org/licenses/by-sa/3.0/
  */
-
 public abstract class TextValidator implements TextWatcher {
     private final TextView textView;
 
     /**
      * Creates a new TextValidator object.
      *
-     * @param textView
+     * @param textView the text view
      */
     public TextValidator(TextView textView) {
         this.textView = textView;
@@ -32,8 +31,7 @@ public abstract class TextValidator implements TextWatcher {
      * procedure.
      *
      * @param textView TextView that we want to run validation on.
-     * @return true if the text within the text view is valid and false
-     *         otherwise.
+     * @return true if the text within the text view is valid and false         otherwise.
      */
     public abstract boolean validate(TextView textView);
 

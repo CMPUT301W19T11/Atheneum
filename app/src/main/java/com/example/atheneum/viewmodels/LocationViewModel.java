@@ -15,17 +15,31 @@ import com.google.firebase.database.DataSnapshot;
 import static com.example.atheneum.viewmodels.FirebaseRefUtils.DatabaseWriteHelper.writeLocation;
 import static com.example.atheneum.viewmodels.FirebaseRefUtils.TransactionRefUtils.getTransactionRef;
 
+/**
+ * The type Location view model.
+ * handles writing location data to firebase
+ */
 public class LocationViewModel extends ViewModel {
     private static final String TAG = "Location View Model";
 
     private FirebaseQueryLiveData queryLiveData;
 
+    /**
+     * Gets location live data.
+     *
+     * @return the location live data
+     */
     public LiveData<Location> getLocationLiveData() {
         return locationLiveData;
     }
 
     private LiveData<Location> locationLiveData;
 
+    /**
+     * Instantiates a new Location view model.
+     *
+     * @param BookID the book id
+     */
     public LocationViewModel(String BookID) {
         queryLiveData = new FirebaseQueryLiveData(getTransactionRef(BookID).child("location"));
         locationLiveData = Transformations.map(queryLiveData, new Deserializer());
@@ -42,6 +56,12 @@ public class LocationViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Add location.
+     *
+     * @param BookID the book id
+     * @param latLng the lat lng
+     */
     public static void addLocation(String BookID, LatLng latLng) {
         Log.d(TAG, "adding new location");
 

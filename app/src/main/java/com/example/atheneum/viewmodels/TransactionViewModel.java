@@ -25,6 +25,10 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.TransactionRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+/**
+ * The type Transaction view model.
+ * handles writing/deleting transaction data to/from firebase
+ */
 public class TransactionViewModel extends ViewModel {
     private static final String TAG = TransactionViewModel.class.getSimpleName();
 
@@ -36,6 +40,11 @@ public class TransactionViewModel extends ViewModel {
 
     private final String bookID;
 
+    /**
+     * Instantiates a new Transaction view model.
+     *
+     * @param bookID the book id
+     */
     public TransactionViewModel(String bookID){
         this.bookID = bookID;
 
@@ -51,18 +60,40 @@ public class TransactionViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Get transaction live data live data.
+     *
+     * @return the live data
+     */
     @NonNull
     public LiveData<Transaction> getTransactionLiveData(){return transactionLiveData;}
 
 
+    /**
+     * Update transaction.
+     *
+     * @param transaction the transaction
+     */
     public void updateTransaction(Transaction transaction){
         DatabaseWriteHelper.updateTransaction(transaction);
     }
 
 
+    /**
+     * Update transaction borrowed.
+     *
+     * @param book        the book
+     * @param transaction the transaction
+     */
     public void updateTransactionBorrowed(Book book, Transaction transaction){
         DatabaseWriteHelper.updateTransactionBookBorrow(book, transaction);
     }
+
+    /**
+     * Update transaction returned.
+     *
+     * @param book the book
+     */
     public void updateTransactionReturned(Book book){
         DatabaseWriteHelper.updateTransactionBookReturn(book);
     }

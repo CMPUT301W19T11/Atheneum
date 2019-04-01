@@ -38,9 +38,11 @@ import java.io.IOException;
 /**
  * Activity for scanning the barcode of a book. Provides the UI for camera preview.
  */
-
 public class ScanBarcodeActivity extends AppCompatActivity {
 
+    /**
+     * The Camera preview.
+     */
     SurfaceView cameraPreview;
     private static final String TAG = "ScanBookActivity";
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;

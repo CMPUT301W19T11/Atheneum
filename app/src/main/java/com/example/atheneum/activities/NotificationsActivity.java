@@ -28,6 +28,10 @@ import com.example.atheneum.views.adapters.NotificationListAdapter;
 
 import java.util.List;
 
+/**
+ * The Notifications activity.
+ * handles showing push notifications for requests
+ */
 public class NotificationsActivity extends AppCompatActivity {
     private static final String TAG = NotificationsActivity.class.getSimpleName();
 

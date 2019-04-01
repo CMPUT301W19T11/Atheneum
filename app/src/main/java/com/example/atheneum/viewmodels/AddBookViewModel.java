@@ -14,6 +14,10 @@ import com.example.atheneum.viewmodels.FirebaseRefUtils.UsersRefUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+/**
+ * The type Add book view model.
+ * view model for handling adding of books
+ */
 public class AddBookViewModel extends ViewModel {
     // Raw stream of read-only DataSnapshot values retrieved from query
     private final FirebaseQueryLiveData queryLiveData;
@@ -45,11 +49,18 @@ public class AddBookViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Add book.
+     *
+     * @param owner the owner
+     * @param book  the book
+     */
     public void addBook(User owner, Book book) {
         DatabaseWriteHelper.addNewBook(owner, book);
     }
 
     /**
+     * Gets owner live data.
      *
      * @return Observable User data from Firebase
      */

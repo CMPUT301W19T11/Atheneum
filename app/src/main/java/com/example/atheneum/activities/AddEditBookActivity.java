@@ -61,9 +61,21 @@ public class AddEditBookActivity extends AppCompatActivity {
     private Context context;
     private BookInfoViewModel bookInfoViewModel;
 
+    /**
+     * The Title.
+     */
     String title;
+    /**
+     * The Author.
+     */
     String author;
+    /**
+     * The Isbn.
+     */
     long isbn;
+    /**
+     * The Desc.
+     */
     String desc;
 
     // references for the various entry fields
@@ -326,6 +338,7 @@ public class AddEditBookActivity extends AppCompatActivity {
 
     /**
      * Checks whether all inputs have been filled
+     *
      * @return whether or not all required inputs were filled
      */
     public boolean allFieldsFilled() {

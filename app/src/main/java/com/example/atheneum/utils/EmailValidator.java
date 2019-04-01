@@ -10,7 +10,7 @@ public class EmailValidator extends TextValidator {
     /**
      * Creates a new TextValidator object.
      *
-     * @param textView
+     * @param textView the text view
      */
     public EmailValidator(TextView textView) {
         super(textView);

@@ -51,8 +51,9 @@ public class BookPhotosViewModel extends ViewModel {
     }
 
     /**
-     * @return Lifecycle-aware observable stream of {@code ArrayList<String>} that the view can observe
-     *         for changes.
+     * Gets photos live data.
+     *
+     * @return Lifecycle -aware observable stream of {@code ArrayList<String>} that the view can observe         for changes.
      */
     public LiveData<ArrayList<Photo>> getPhotosLiveData() {
         return photosLiveData;
@@ -70,7 +71,7 @@ public class BookPhotosViewModel extends ViewModel {
     /**
      * Update a photo associated with the book.
      *
-     * @param photo Photo to update.
+     * @param photo     Photo to update.
      * @param newBitmap New picture taken from camera.
      */
     public void updatePhoto(Photo photo, Bitmap newBitmap) {

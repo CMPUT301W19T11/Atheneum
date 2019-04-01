@@ -5,6 +5,9 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
 /**
+ * The type Borrower requests view model factory.
+ * generate BorrowerRequestsViewModel objects
+ *
  * Factory that instantiates a BorrowerRequestsViewModelFactory with a particular userID.
  * Read the StackOverflow post linked here to understand we can't instantiate BorrowerRequestsViewModel directly.
  *

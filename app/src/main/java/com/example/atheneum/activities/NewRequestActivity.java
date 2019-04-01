@@ -42,10 +42,22 @@ import java.util.Arrays;
  * Activity to handle new requests made by borrower of owner books
  */
 public class NewRequestActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+    /**
+     * The constant BOOK_REQUESTED.
+     */
     public static final String BOOK_REQUESTED = "book_requested";
+    /**
+     * The constant CREATE_NEW_REQUEST.
+     */
     public static final int CREATE_NEW_REQUEST = 11;
 
+    /**
+     * The Intent new request.
+     */
     Intent intentNewRequest;
+    /**
+     * The Intent request list.
+     */
     Intent intentRequestList;
 
     private User requester;
@@ -58,10 +70,25 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
     private static final String TAG = "AddRequest";
     private static final String TAG1 = "Search Query";
 
+    /**
+     * The Current user.
+     */
     FirebaseUser currentUser;
+    /**
+     * The Db.
+     */
     FirebaseDatabase db;
+    /**
+     * The Ref.
+     */
     DatabaseReference ref;
+    /**
+     * The Available book list.
+     */
     ListView availableBookList;
+    /**
+     * The Current user id.
+     */
     String currentUserID;
 
 
@@ -227,7 +254,6 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
     /**
      * getting requested books done by current user
      */
-
     public void retriveBook(){
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("books");
@@ -275,9 +301,10 @@ public class NewRequestActivity extends AppCompatActivity implements SearchView.
 
     /**
      * search an available book by a set of key words in description
-     * @param book
-     * @param query
-     * @return
+     *
+     * @param book  the book
+     * @param query the query
+     * @return boolean
      */
     public boolean searchCheck(Book book, String query){
         Log.d(TAG, "Get Query "+query+query.length());

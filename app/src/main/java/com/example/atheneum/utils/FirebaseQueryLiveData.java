@@ -12,10 +12,10 @@ import com.google.firebase.database.ValueEventListener;
 
 /**
  * Provides a LiveData wrapper for a DataSnapshot obtained from a Firebase Query
- *
+ * <p>
  * See: https://firebase.googleblog.com/2017/12/using-android-architecture-components.html
- *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_20.html
- *      https://firebase.googleblog.com/2017/12/using-android-architecture-components_22.html
+ * https://firebase.googleblog.com/2017/12/using-android-architecture-components_20.html
+ * https://firebase.googleblog.com/2017/12/using-android-architecture-components_22.html
  */
 public class FirebaseQueryLiveData extends LiveData<DataSnapshot> {
     private static final String TAG = FirebaseQueryLiveData.class.getSimpleName();
@@ -49,7 +49,7 @@ public class FirebaseQueryLiveData extends LiveData<DataSnapshot> {
 
     /**
      * Create a new instance of FirebaseQueryLiveData
-     *
+     * <p>
      * Note: DatabaseReference is a subclass of Query
      *
      * @param ref Database referenence to observe

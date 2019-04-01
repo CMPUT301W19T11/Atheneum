@@ -8,6 +8,9 @@ import java.util.UUID;
  * The Book class.
  */
 public class Book {
+    /**
+     * The constant INVALILD_ISBN.
+     */
     public static final long INVALILD_ISBN = -1;
 
     private long isbn;
@@ -66,6 +69,14 @@ public class Book {
 
     /**
      * Instantiates a new Book with specified arguments.
+     *
+     * @param isbn        the isbn
+     * @param title       the title
+     * @param description the description
+     * @param author      the author
+     * @param owner       the owner
+     * @param borrower    the borrower
+     * @param status      the status
      */
     public Book(long isbn, String title, String description, String author, User owner,
                 User borrower, Status status) {
@@ -81,6 +92,14 @@ public class Book {
 
     /**
      * Instantiates a new Book with specified arguments.
+     *
+     * @param isbn        the isbn
+     * @param title       the title
+     * @param description the description
+     * @param author      the author
+     * @param ownerID     the owner id
+     * @param borrowerID  the borrower id
+     * @param status      the status
      */
     public Book(long isbn, String title, String description, String author, String ownerID,
                 String borrowerID, Status status) {

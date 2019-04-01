@@ -104,17 +104,44 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class BookInfoActivity extends AppCompatActivity {
     private Context ctx;
+    /**
+     * The constant VIEW_TYPE.
+     */
     public static final String VIEW_TYPE = "view_type";
+    /**
+     * The constant OWNER_VIEW.
+     */
     public static final String OWNER_VIEW = "owner_view_book_info";
+    /**
+     * The constant BORROWER_VIEW.
+     */
     public static final String BORROWER_VIEW = "borrower_view_book_info";
+    /**
+     * The constant REQUSET_VIEW.
+     */
     public static final String REQUSET_VIEW = "request_view_book_info";
     private String view_type;
 
+    /**
+     * The constant BOOK_ID.
+     */
     public static final String BOOK_ID = "bookID";
 
+    /**
+     * The Title.
+     */
     String title;
+    /**
+     * The Author.
+     */
     String author;
+    /**
+     * The Isbn.
+     */
     long isbn;
+    /**
+     * The Desc.
+     */
     String desc;
     private String bookID;
     private String borrowerID;
@@ -346,6 +373,9 @@ public class BookInfoActivity extends AppCompatActivity {
         loggedInUserRef.removeEventListener(loggedInUserFirebaseListener);
     }
 
+    /**
+     * Sets location.
+     */
     public void setLocation() {
         Intent mapIntent = new Intent(this, MapActivity.class);
         mapIntent.putExtra("BookID", bookID);
@@ -353,6 +383,9 @@ public class BookInfoActivity extends AppCompatActivity {
         startActivity(mapIntent);
     }
 
+    /**
+     * Gets location.
+     */
     public void getLocation() {
         Intent mapIntent = new Intent(this, MapActivity.class);
         mapIntent.putExtra("BookID", bookID);
@@ -570,6 +603,7 @@ public class BookInfoActivity extends AppCompatActivity {
     /**
      * Start activity for a user's profile
      *
+     * @param userID the user id
      */
     public void viewUserProfile(String userID) {
         Intent intent = new Intent(this, ViewProfileActivity.class);
@@ -607,6 +641,8 @@ public class BookInfoActivity extends AppCompatActivity {
 
     /**
      * Attempt to get information from goodreads
+     *
+     * @param isbn the isbn
      */
     public void getGoodreadsReviewInfo(final long isbn) {
         // show error instead if there is no internet connection
@@ -713,7 +749,7 @@ public class BookInfoActivity extends AppCompatActivity {
     /**
      * Set color of TextView for book status
      *
-     * @param book
+     * @param book the book
      */
     public void setStatusTextColor(@Nullable Book book) {
         Book.Status bkStatus = book.getStatus();
@@ -731,7 +767,7 @@ public class BookInfoActivity extends AppCompatActivity {
     /**
      * Decline request of single requester
      *
-     * @param requester
+     * @param requester the requester
      */
     public void declineRequest(User requester) {
         Notification notification = new Notification(
@@ -750,7 +786,7 @@ public class BookInfoActivity extends AppCompatActivity {
     /**
      * Accept request for one person, decline for everyone else
      *
-     * @param requester
+     * @param requester the requester
      */
     public void acceptRequest(User requester) {
         Notification acceptNotification = new Notification(
@@ -1145,6 +1181,9 @@ public class BookInfoActivity extends AppCompatActivity {
         requesterListArea.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hide scan button area.
+     */
     public void hideScanButtonArea() {
         LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
 
@@ -1153,6 +1192,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     /**
      * Hides the scan button and shows a message
+     *
      * @param msg the message to show
      */
     public void showScanButtonMessage(String msg) {
@@ -1164,6 +1204,11 @@ public class BookInfoActivity extends AppCompatActivity {
         scanBtnArea.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Show scan button area.
+     *
+     * @param book the book
+     */
     public void showScanButtonArea(final Book book) {
         LinearLayout scanBtnArea = (LinearLayout) findViewById(R.id.scan_button_area);
         TransactionViewModelFactory factory = new TransactionViewModelFactory(book.getBookID());

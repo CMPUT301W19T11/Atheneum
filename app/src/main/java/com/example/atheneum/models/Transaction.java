@@ -15,7 +15,13 @@ import java.util.UUID;
  * at a specified location.
  */
 public class Transaction {
+    /**
+     * The constant CHECKOUT.
+     */
     public static final String CHECKOUT = "CHECKOUT";
+    /**
+     * The constant RETURN.
+     */
     public static final String RETURN = "RETURN";
 
     private String type;
@@ -54,13 +60,13 @@ public class Transaction {
     /**
      * Creates a new Transaction object using specified values for attributes
      *
-     * @param type     Determines type of transaction (ie. checkout or return)
-     * @param location Location where transaction will occur
+     * @param type       Determines type of transaction (ie. checkout or return)
+     * @param location   Location where transaction will occur
      * @param borrowerID String ID of user who is borrowing book
      * @param ownerID    String ID of user who owns the book
-     * @param bookID   Identifier of book
-     * @param bScan    Represents if the borrower has scanned the book
-     * @param oScan    Represents if the owner has scanned the book
+     * @param bookID     Identifier of book
+     * @param bScan      Represents if the borrower has scanned the book
+     * @param oScan      Represents if the owner has scanned the book
      */
     public Transaction(@Type String type, Location location, String borrowerID, String ownerID, String bookID, boolean bScan, boolean oScan) {
         this.type = type;
@@ -73,6 +79,7 @@ public class Transaction {
     }
 
     /**
+     * Gets type.
      *
      * @return Type of transaction (ie. checkout or return)
      */
@@ -82,12 +89,15 @@ public class Transaction {
     }
 
     /**
+     * Set type.
      *
      * @param type New type of transaction
      */
     public void setType(@Type String type){this.type = type;}
 
     /**
+     * Gets location.
+     *
      * @return Location of the transaction
      */
     @PropertyName("location")
@@ -96,6 +106,8 @@ public class Transaction {
     }
 
     /**
+     * Sets location.
+     *
      * @param location New location of transaction
      */
     @PropertyName("location")
@@ -104,6 +116,7 @@ public class Transaction {
     }
 
     /**
+     * Gets borrower id.
      *
      * @return Borrower of the book associated with the transaction
      */
@@ -113,8 +126,9 @@ public class Transaction {
     }
 
     /**
+     * Set borrower id.
      *
-     * @param borrowerID
+     * @param borrowerID the borrower id
      */
     @PropertyName("borrower")
     public void setBorrowerID(String borrowerID){
@@ -132,8 +146,9 @@ public class Transaction {
     }
 
     /**
+     * Set owner id.
      *
-     * @param ownerID
+     * @param ownerID the owner id
      */
     @PropertyName("owner")
     public void setOwnerID(String ownerID){
@@ -151,15 +166,18 @@ public class Transaction {
     }
 
     /**
+     * Gets b scan.
+     *
      * @return True if borrower has scanned the book, false otherwise
      */
-
     @PropertyName("bScan")
     public boolean getBScan() {
         return bScan;
     }
 
     /**
+     * Sets b scan.
+     *
      * @param bScan New value of bScan
      */
     @Exclude
@@ -169,15 +187,18 @@ public class Transaction {
     }
 
     /**
+     * Gets o scan.
+     *
      * @return True if owner has scanned the book, false otherwise
      */
-
     @PropertyName("oScan")
     public boolean getOScan() {
         return oScan;
     }
 
     /**
+     * Sets o scan.
+     *
      * @param oScan New value of oScan
      */
     @PropertyName("oScan")

@@ -1,8 +1,9 @@
 com.example.atheneum
 com.example.atheneum.activities
-com.example.atheneum.controllers
 com.example.atheneum.fragments
 com.example.atheneum.models
+com.example.atheneum.services
 com.example.atheneum.utils
 com.example.atheneum.viewmodels
 com.example.atheneum.viewmodels.FirebaseRefUtils
+com.example.atheneum.views.adapters

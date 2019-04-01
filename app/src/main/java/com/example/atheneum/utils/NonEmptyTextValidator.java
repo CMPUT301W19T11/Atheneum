@@ -8,6 +8,11 @@ import android.widget.TextView;
  */
 public class NonEmptyTextValidator extends TextValidator {
 
+    /**
+     * Instantiates a new Non empty text validator.
+     *
+     * @param textView the text view
+     */
     public NonEmptyTextValidator(TextView textView) {
         super(textView);
     }

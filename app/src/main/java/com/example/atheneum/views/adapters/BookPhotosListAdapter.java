@@ -20,7 +20,7 @@ import com.example.atheneum.utils.PhotoUtils;
 
 /**
  * Adapter that displays a list of photos for a book to a Recyclerview.
- *
+ * <p>
  * See: https://developer.android.com/reference/android/support/v7/recyclerview/extensions/ListAdapter
  */
 public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdapter.ViewHolder> {
@@ -45,7 +45,7 @@ public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdap
         /**
          * Handles click events for a particular photo within the list.
          *
-         * @param v ImageView containing the photo.
+         * @param v     ImageView containing the photo.
          * @param photo Photo object from the list.
          */
         public void onClick(View v, Photo photo);
@@ -53,7 +53,7 @@ public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdap
         /**
          * Handles long click events for a particular photo within the list.
          *
-         * @param v ImageView containing the photo.
+         * @param v     ImageView containing the photo.
          * @param photo Photo object from the list.
          */
         public void onLongClick(View v, Photo photo);
@@ -69,7 +69,7 @@ public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdap
         /**
          * Create view holder object
          *
-         * @param itemView
+         * @param itemView the item view
          */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,7 +102,7 @@ public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdap
     /**
      * Sets listener(s) for click and long click events for a photo in the list.
      *
-     * @param onItemClickListener
+     * @param onItemClickListener the on item click listener
      */
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -122,7 +122,7 @@ public class BookPhotosListAdapter extends ListAdapter<Photo, BookPhotosListAdap
      *
      * @param viewGroup
      * @param position
-     * @return
+     * @return viewholder for this adapter
      */
     @NonNull
     @Override

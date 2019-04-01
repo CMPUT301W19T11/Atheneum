@@ -29,8 +29,11 @@ import com.example.atheneum.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
 /**
- *The Fragment for showing sliding windows for BorrwerRequestFragment and BorrowerBookFragment
+ * The Fragment for showing sliding windows for BorrowerRequestFragment and BorrowerBookFragment
+ *
  *  See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
  *  See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
  *  See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
@@ -43,7 +46,9 @@ public class BorrowerFragment extends Fragment {
     private MainActivity mainActivity = null;
 
 
-
+    /**
+     * Instantiates a new Borrower fragment.
+     */
     public BorrowerFragment() {
         // Required empty public constructor
     }
@@ -84,6 +89,11 @@ public class BorrowerFragment extends Fragment {
         private final List<Fragment>  mFragmentList = new ArrayList<>();
         private final List<String> mFragmnetTitleList = new ArrayList<>();
 
+        /**
+         * Instantiates a new Tabs adapter.
+         *
+         * @param manager the manager
+         */
         public TabsAdapter(FragmentManager manager){
             super(manager);
         }
@@ -97,6 +107,13 @@ public class BorrowerFragment extends Fragment {
         public int getCount(){
             return mFragmentList.size();
         }
+
+        /**
+         * Add fragment.
+         *
+         * @param fragment the fragment
+         * @param title    the title
+         */
         public void addFragment(Fragment fragment, String  title){
             mFragmentList.add(fragment);
             mFragmnetTitleList.add(title);

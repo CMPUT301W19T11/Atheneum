@@ -49,6 +49,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     /**
      * Create a new instance of the map fragment.
+     *
      * @return the map fragment
      */
     public static MapFragment newInstance() {
@@ -166,6 +167,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView.onLowMemory();
     }
 
+    /**
+     * Move camera.
+     *
+     * @param latLng the lat lng
+     * @param zoom   the zoom
+     */
     public static void moveCamera(LatLng latLng, float zoom) {
         if (googleMap != null) {
             Log.d(TAG, "move to " + latLng.toString());
@@ -173,6 +180,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Add marker.
+     *
+     * @param latLng the lat lng
+     * @param title  the title
+     */
     public static void addMarker(LatLng latLng, String title) {
         if (googleMap != null) {
             Log.d(TAG, "addMarker " + latLng.toString());
@@ -220,6 +233,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * Set the meeting location to display based on lat/lon from firebase
      * go to the place
      * add a marker
+     *
+     * @param locationToView the location to view
      */
     public static void goToViewLocation(LatLng locationToView) {
         Log.d(TAG, "in gotoviewlocation locationtoview is " + locationToView.toString());

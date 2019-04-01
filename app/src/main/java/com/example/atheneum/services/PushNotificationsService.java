@@ -33,7 +33,13 @@ import com.google.firebase.database.DatabaseReference;
  * See: https://developer.android.com/guide/components/services
  */
 public class PushNotificationsService extends Service {
+    /**
+     * The constant pushNotificationsRef.
+     */
     public static DatabaseReference pushNotificationsRef = null;
+    /**
+     * The constant pushNotificationsListener.
+     */
     public static ChildEventListener pushNotificationsListener = null;
 
     private int pushNotificationID = 0;
@@ -52,7 +58,7 @@ public class PushNotificationsService extends Service {
      * @param intent
      * @param flags
      * @param startId
-     * @return
+     * @return int: integer for this onStartCommand
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

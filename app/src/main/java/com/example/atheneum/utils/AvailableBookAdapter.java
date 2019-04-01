@@ -22,6 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+/**
+ * The Available book adapter.
+ * for handling requests on available books
+ */
 public class AvailableBookAdapter extends ArrayAdapter {
     private int resource_id;
     private static User owner;

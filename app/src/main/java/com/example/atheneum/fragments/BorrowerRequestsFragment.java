@@ -35,7 +35,8 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 
 /**
- * The Borrower page fragment to list borrower's requested books.b
+ * The Borrower page fragment to list borrower's requested books
+ *
  * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
  * See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
  * See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
@@ -56,6 +57,9 @@ public class BorrowerRequestsFragment extends Fragment {
     private Request.Status requestStatus;
 
     private static String rStatus = "ALL";
+    /**
+     * The Current user.
+     */
     FirebaseUser currentUser;
     /**
      * The Book object borrowed.

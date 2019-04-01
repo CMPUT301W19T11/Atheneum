@@ -33,8 +33,14 @@ import java.util.ArrayList;
  */
 public class ViewEditBookPhotosActivity extends AppCompatActivity {
     private static final String TAG = ViewEditBookPhotosActivity.class.getSimpleName();
+    /**
+     * The constant INTENT_BOOK_ID.
+     */
     public static final String INTENT_BOOK_ID =
             ViewEditBookPhotosActivity.class.getCanonicalName() + ":BOOK_ID";
+    /**
+     * The constant INTENT_OWNER_USER_ID.
+     */
     public static final String INTENT_OWNER_USER_ID =
             ViewEditBookPhotosActivity.class.getCanonicalName() + ":OWNER_USER_ID";
 

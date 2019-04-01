@@ -14,6 +14,9 @@ import com.example.atheneum.fragments.EditProfileFragment;
  * Lets user change phone number and photo
  */
 public class EditProfileActivity extends AppCompatActivity {
+    /**
+     * The Tag.
+     */
     static final String TAG = "EditProfileActivity";
 
     @Override

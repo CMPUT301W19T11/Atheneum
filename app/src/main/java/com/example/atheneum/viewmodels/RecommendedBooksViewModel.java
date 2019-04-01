@@ -53,6 +53,11 @@ public class RecommendedBooksViewModel extends ViewModel {
     private class SortComparator implements Comparator<Long> {
         private final HashMap<Long, Integer> isbnFrequencyMap;
 
+        /**
+         * Instantiates a new Sort comparator.
+         *
+         * @param isbnFrequencyMap the isbn frequency map
+         */
         public SortComparator(HashMap<Long, Integer> isbnFrequencyMap) {
             this.isbnFrequencyMap = isbnFrequencyMap;
         }
@@ -74,8 +79,7 @@ public class RecommendedBooksViewModel extends ViewModel {
     /**
      * Instantiate a new instance of RecommendedBooksViewModel.
      *
-     * @param borrowerID UserID of the user who just returned the book with the isbn passed into this
-     *                   constructor.
+     * @param borrowerID UserID of the user who just returned the book with the isbn passed into this                   constructor.
      * @param isbn       ISBN of the book that the user just returned.
      */
     public RecommendedBooksViewModel(final String borrowerID, final Long isbn) {
@@ -272,8 +276,9 @@ public class RecommendedBooksViewModel extends ViewModel {
     }
 
     /**
-     * @return Lifecycle-aware observable stream of {@code List<Book>} that the view can observe
-     * for changes.
+     * Gets recommended books live data.
+     *
+     * @return Lifecycle -aware observable stream of {@code List<Book>} that the view can observe for changes.
      */
     public LiveData<List<Book>> getRecommendedBooksLiveData() {
         return recommendedBooksLiveData;

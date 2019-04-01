@@ -62,11 +62,15 @@ public class EditProfileFragment extends Fragment {
     public interface OnEditProfileCompleteListener {
         /**
          * Handles success of editing the profile
+         *
+         * @param editProfileFragment the edit profile fragment
          */
         void onSuccess(EditProfileFragment editProfileFragment);
 
         /**
          * Handles failure to edit the profile
+         *
+         * @param editProfileFragment the edit profile fragment
          */
         void onFailure(EditProfileFragment editProfileFragment);
     }
@@ -209,7 +213,7 @@ public class EditProfileFragment extends Fragment {
      * @param inflater
      * @param container
      * @param savedInstanceState
-     * @return
+     * @return view: the view for this fragment
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

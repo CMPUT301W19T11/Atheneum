@@ -36,7 +36,7 @@ import java.util.ArrayList;
 /**
  * The Owner page fragment that can be navigated to using the hamburger menu on the main pages
  * after user has logged in.
- *
+ * <p>
  * See: https://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
  * See: https://medium.com/android-grid/how-to-use-firebaserecycleradpater-with-latest-firebase-dependencies-in-android-aff7a33adb8b
  * See: https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-the-firebaserecycleradapter
@@ -55,6 +55,9 @@ public class OwnerPageFragment extends Fragment {
 
     private static final String TAG = OwnerPageFragment.class.getSimpleName();
 
+    /**
+     * The constant REQUEST_DELETE_ENTRY.
+     */
     public static final int REQUEST_DELETE_ENTRY = 1;
 
     private Spinner ownBookSpinner;
@@ -159,7 +162,9 @@ public class OwnerPageFragment extends Fragment {
     }
 
     /**
-     * Filter books owned by current user by status
+     * Retrieve books.
+     * and filter books owned by current user by status
+     *
      * @param status
      */
     public void retrieveBooks(final String status){

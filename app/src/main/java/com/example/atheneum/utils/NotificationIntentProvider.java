@@ -6,7 +6,18 @@ import android.content.Intent;
 import com.example.atheneum.activities.BookInfoActivity;
 import com.example.atheneum.models.Notification;
 
+/**
+ * The Notification intent provider.
+ * produces intents for push notifications
+ */
 public class NotificationIntentProvider {
+    /**
+     * Obtain intent intent.
+     *
+     * @param c            the c
+     * @param notification the notification
+     * @return the intent
+     */
     public static Intent obtainIntent(Context c, Notification notification) {
         Intent notifyIntent = null;
         if (notification.getrNotificationType() == Notification.NotificationType.REQUEST) {

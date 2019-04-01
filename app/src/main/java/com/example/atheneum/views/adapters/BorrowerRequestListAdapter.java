@@ -29,6 +29,8 @@ import com.example.atheneum.viewmodels.UserViewModelFactory;
 import org.w3c.dom.Text;
 
 /**
+ * The type Borrower request list adapter.
+ * handles displaying request lists for borrowers
  * Displays a list of requests for a user to a recyclerview.
  */
 public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerRequestListAdapter.ViewHolder> {
@@ -46,7 +48,16 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         }
     };
 
+    /**
+     * The interface On request item click listener.
+     */
     public interface OnRequestItemClickListener {
+        /**
+         * On click.
+         *
+         * @param v       the v
+         * @param request the request
+         */
         void onClick(View v, Request request);
     }
 
@@ -62,7 +73,7 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         /**
          * Create view holder object
          *
-         * @param view
+         * @param view the view
          */
         public ViewHolder(@NonNull View view) {
             super(view);
@@ -89,6 +100,11 @@ public class BorrowerRequestListAdapter extends ListAdapter<Request, BorrowerReq
         super(DIFF_CALLBACK);
     }
 
+    /**
+     * Sets on request item click listener.
+     *
+     * @param onRequestItemClickListener the on request item click listener
+     */
     public void setOnRequestItemClickListener(OnRequestItemClickListener onRequestItemClickListener) {
         this.onRequestItemClickListener = onRequestItemClickListener;
     }
