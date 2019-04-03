@@ -143,7 +143,7 @@ public class PushNotificationsService extends Service {
         stackBuilder.addNextIntentWithParentStack(notifyIntent);
         // Get the PendingIntent containing the entire back stack
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
-                this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                this, pushNotificationID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
         );
 
         String channelId = getString(R.string.profile_title);
